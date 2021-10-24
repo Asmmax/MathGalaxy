@@ -13,8 +13,8 @@ public:
 
 	virtual int createEntity() = 0;
 
-	virtual Acceleration& attach(int entity, const Acceleration& acc) = 0;
-	virtual Mass& attach(int entity, const Mass& mass) = 0;
-	virtual Position& attach(int entity, const Position& pos) = 0;
-	virtual Velocity& attach(int entity, const Velocity& vel) = 0;
+	virtual void attach(int entity, const Mass& mass) = 0;
+	virtual const Acceleration& attach(int entity, const Acceleration& acc) = 0;
+	virtual const Position& attach(int entity, const Position& pos) = 0;
+	virtual const Velocity& attach(int entity, const Velocity& vel) = 0;
 };

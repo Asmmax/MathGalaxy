@@ -28,7 +28,9 @@ TEST_CASE("All bodies must move", "[Movement]")
 		simul.movement(step);
 	}
 
-	REQUIRE(Approx(bodyPos.x).margin(1) == startPos.x + startVel.x * time + acc.x / 2 * time * time);
-	REQUIRE(Approx(bodyPos.y).margin(1) == startPos.y + startVel.y * time + acc.y / 2 * time * time);
-	REQUIRE(Approx(bodyPos.z).margin(1) == startPos.z + startVel.z * time + acc.z / 2 * time * time);
+	double tolerance = 2 * time * step;
+
+	REQUIRE(Approx(bodyPos.x).margin(tolerance) == startPos.x + startVel.x * time + acc.x / 2 * time * time);
+	REQUIRE(Approx(bodyPos.y).margin(tolerance) == startPos.y + startVel.y * time + acc.y / 2 * time * time);
+	REQUIRE(Approx(bodyPos.z).margin(tolerance) == startPos.z + startVel.z * time + acc.z / 2 * time * time);
 }
