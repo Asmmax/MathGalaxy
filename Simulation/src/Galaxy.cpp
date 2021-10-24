@@ -1,5 +1,5 @@
-#include "Simulation.hpp"
-#include "World.hpp"
+#include "Galaxy.hpp"
+#include "GalaxyRegistry.hpp"
 
 #include "components/Position.hpp"
 #include "components/Velocity.hpp"
@@ -10,19 +10,19 @@
 
 const double gravConst = 6.6743e-11;
 
-Simulation::Simulation():
-	_world(new World())
+Galaxy::Galaxy():
+	_registry(new GalaxyRegistry())
 {
 }
 
-IWorld* Simulation::getWorld()
+IGalaxyRegistry* Galaxy::getRegistry()
 {
-	return _world.get();
+	return _registry.get();
 }
 
-void Simulation::movement(double deltaTime)
+void Galaxy::movement(double deltaTime)
 {
-	entt::registry& registry = _world->getRegistry();
+	entt::registry& registry = _registry->getEnttRegistry();
 
 	auto celestialBodies = registry.view<Position, Velocity, const Acceleration>();
 
@@ -32,9 +32,9 @@ void Simulation::movement(double deltaTime)
 		});
 }
 
-void Simulation::gravity()
+void Galaxy::gravity()
 {
-	entt::registry& registry = _world->getRegistry();
+	entt::registry& registry = _registry->getEnttRegistry();
 
 	auto celestialBodies = registry.view<Acceleration, const Position, const Mass>();
 

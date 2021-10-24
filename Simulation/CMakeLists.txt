@@ -3,11 +3,11 @@
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 set(simulations_private_include 
-"include/private/World.hpp")
+"include/private/GalaxyRegistry.hpp")
 
 set(simulations_public_include 
-"include/public/IWorld.hpp"
-"include/public/Simulation.hpp"
+"include/public/IGalaxyRegistry.hpp"
+"include/public/Galaxy.hpp"
 "include/public/components/Position.hpp"
 "include/public/components/Velocity.hpp"
 "include/public/components/Acceleration.hpp"
@@ -15,8 +15,8 @@ set(simulations_public_include
 "include/public/Vector.hpp")
 
 set(simulations_src 
-"src/World.cpp"
-"src/Simulation.cpp"
+"src/GalaxyRegistry.cpp"
+"src/Galaxy.cpp"
 "src/Vector.cpp")
 
 

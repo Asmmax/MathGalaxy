@@ -1,8 +1,8 @@
 #pragma once
-#include "IWorld.hpp"
+#include "IGalaxyRegistry.hpp"
 #include "entt.hpp"
 
-class World : public IWorld
+class GalaxyRegistry : public IGalaxyRegistry
 {
 private:
 	entt::registry _registry;
@@ -14,5 +14,5 @@ public:
 	const Position& attach(int entity, const Position& pos) override;
 	const Velocity& attach(int entity, const Velocity& vel) override;
 
-	inline entt::registry& getRegistry() { return _registry; }
+	inline entt::registry& getEnttRegistry() { return _registry; }
 };

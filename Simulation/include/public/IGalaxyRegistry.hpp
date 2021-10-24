@@ -6,10 +6,10 @@ struct Mass;
 struct Position;
 struct Velocity;
 
-class IWorld 
+class IGalaxyRegistry
 {
 public:
-	virtual ~IWorld() {}
+	virtual ~IGalaxyRegistry() {}
 
 	virtual int createEntity() = 0;
 
