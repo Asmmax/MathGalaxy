@@ -27,13 +27,8 @@ void Simulation::movement(double deltaTime)
 	auto celestialBodies = registry.view<Position, Velocity, const Acceleration>();
 
 	celestialBodies.each([deltaTime](Position& pos, Velocity& vel, const Acceleration& acc) {
-		pos.x += vel.x * deltaTime;
-		pos.y += vel.y * deltaTime;
-		pos.z += vel.z * deltaTime;
-
-		vel.x += acc.x * deltaTime;
-		vel.y += acc.y * deltaTime;
-		vel.z += acc.z * deltaTime;
+		pos.value += vel.value * deltaTime;
+		vel.value += acc.value * deltaTime;
 		});
 }
 
@@ -46,26 +41,17 @@ void Simulation::gravity()
 	for (auto firstBody : celestialBodies) {
 		auto& firstAcc = celestialBodies.get<Acceleration>(firstBody);
 		auto& firstPos = celestialBodies.get<const Position>(firstBody);
-		auto& firstMass = celestialBodies.get<const Mass>(firstBody);
 
 		for (auto secondBody : celestialBodies) {
 
 			if (firstBody == secondBody)
 				continue;
 
-			auto& secondAcc = celestialBodies.get<Acceleration>(secondBody);
 			auto& secondPos = celestialBodies.get<const Position>(secondBody);
 			auto& secondMass = celestialBodies.get<const Mass>(secondBody);
 
-			double dirX = secondPos.x - firstPos.x;
-			double dirY = secondPos.y - firstPos.y;
-			double dirZ = secondPos.z - firstPos.z;
-
-			double dirLength = sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ);
-
-			firstAcc.x = gravConst * secondMass.value * dirX / (dirLength * dirLength * dirLength);
-			firstAcc.y = gravConst * secondMass.value * dirY / (dirLength * dirLength * dirLength);
-			firstAcc.z = gravConst * secondMass.value * dirZ / (dirLength * dirLength * dirLength);
+			Vector dir = secondPos.value - firstPos.value;
+			firstAcc.value = gravConst * secondMass.value * dir / (dir.length() * dir.sqrLength());
 		}
 	}
 }

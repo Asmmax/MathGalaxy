@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Vector.hpp"
+
 struct Position
 {
-	double x;
-	double y;
-	double z;
+	Vector value;
 };

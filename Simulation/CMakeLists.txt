@@ -11,11 +11,13 @@ set(simulations_public_include
 "include/public/components/Position.hpp"
 "include/public/components/Velocity.hpp"
 "include/public/components/Acceleration.hpp"
-"include/public/components/Mass.hpp")
+"include/public/components/Mass.hpp"
+"include/public/Vector.hpp")
 
 set(simulations_src 
 "src/World.cpp"
-"src/Simulation.cpp")
+"src/Simulation.cpp"
+"src/Vector.cpp")
 
 
 add_library (Simulation SHARED 

@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Vector.hpp"
+
 struct Velocity
 {
-	double x;
-	double y;
-	double z;
+	Vector value;
 };

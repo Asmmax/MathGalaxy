@@ -31,6 +31,6 @@ TEST_CASE("All bodies with mass must gravitate", "[Gravity]")
 
 	simul.gravity();
 
-	REQUIRE(Approx(firstBodyAcc.y) == gravConst * secondMass.value);
-	REQUIRE(Approx(secondBodyAcc.y) == -gravConst * firstMass.value);
+	REQUIRE(Approx(firstBodyAcc.value.y) == gravConst * secondMass.value);
+	REQUIRE(Approx(secondBodyAcc.value.y) == -gravConst * firstMass.value);
 }
