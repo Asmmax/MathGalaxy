@@ -43,6 +43,7 @@ void Galaxy::gravity()
 		auto& firstAcc = celestialBodies.get<Acceleration>(firstBody);
 		auto& firstPos = celestialBodies.get<const Position>(firstBody);
 
+		firstAcc.value.toZero();
 		for (auto secondBody : celestialBodies) {
 
 			if (firstBody == secondBody)
@@ -52,7 +53,7 @@ void Galaxy::gravity()
 			auto& secondMass = celestialBodies.get<const Mass>(secondBody);
 
 			Vector dir = secondPos.value - firstPos.value;
-			firstAcc.value = gravConst * secondMass.value * dir / (dir.length() * dir.sqrLength());
+			firstAcc.value += gravConst * secondMass.value * dir / (dir.length() * dir.sqrLength());
 		}
 	}
 }

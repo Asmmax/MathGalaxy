@@ -8,6 +8,7 @@ struct Vector
 
 	double sqrLength() const;
 	double length() const;
+	void toZero();
 
 	Vector& operator+=(const Vector& right);
 	Vector& operator-=(const Vector& right);

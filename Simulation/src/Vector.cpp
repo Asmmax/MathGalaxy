@@ -10,6 +10,13 @@ double Vector::length() const
 	return sqrt(sqrLength());
 }
 
+void Vector::toZero()
+{
+	x = 0;
+	y = 0;
+	z = 0;
+}
+
 Vector& Vector::operator+=(const Vector& right)
 {
 	x += right.x;
