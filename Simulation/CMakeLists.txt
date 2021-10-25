@@ -12,7 +12,8 @@ set(simulations_public_include
 "include/public/components/Velocity.hpp"
 "include/public/components/Acceleration.hpp"
 "include/public/components/Mass.hpp"
-"include/public/Vector.hpp")
+"include/public/Vector.hpp"
+"include/public/IView.hpp")
 
 set(simulations_src 
 "src/GalaxyRegistry.cpp"

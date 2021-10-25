@@ -6,12 +6,15 @@
 #include "components/Mass.hpp"
 #include "components/Acceleration.hpp"
 
+#include "helpers/StubView.hpp"
+
 const double gravConst = 6.6743e-11;
 
 TEST_CASE("All bodies with mass must gravitate", "[Gravity]")
 {
 	Galaxy galaxy;
 	auto* registry = galaxy.getRegistry();
+	StubView stubView;
 
 	Position firstPos{ 1,0,0 };
 	Mass firstMass{ 5e10 };
@@ -22,14 +25,18 @@ TEST_CASE("All bodies with mass must gravitate", "[Gravity]")
 	int firstBody = registry->createEntity();
 	registry->attach(firstBody, firstMass);
 	registry->attach(firstBody, firstPos);
-	auto& firstBodyAcc = registry->attach(firstBody, Acceleration{ 0,0,0 });
+	registry->attach(firstBody, Acceleration{ 0,0,0 });
 
 	int secondBody = registry->createEntity();
-	auto& secondBodyPos = registry->attach(secondBody, secondPos);
-	auto& secondBodyAcc = registry->attach(secondBody, Acceleration{ 0,0,0 });
+	registry->attach(secondBody, secondPos);
+	registry->attach(secondBody, Acceleration{ 0,0,0 });
 	registry->attach(secondBody, secondMass);
 
 	galaxy.gravity();
+	galaxy.update(&stubView);
+
+	auto& firstBodyAcc = stubView.getAcceleration(firstBody);
+	auto& secondBodyAcc = stubView.getAcceleration(secondBody);
 
 	REQUIRE(Approx(firstBodyAcc.value.y) == gravConst * secondMass.value);
 	REQUIRE(Approx(secondBodyAcc.value.y) == -gravConst * firstMass.value);

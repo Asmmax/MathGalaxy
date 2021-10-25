@@ -10,9 +10,9 @@ public:
 	int createEntity() override;
 
 	void attach(int entity, const Mass& mass) override;
-	const Acceleration& attach(int entity, const Acceleration& acc) override;
-	const Position& attach(int entity, const Position& pos) override;
-	const Velocity& attach(int entity, const Velocity& vel) override;
+	void attach(int entity, const Acceleration& acc) override;
+	void attach(int entity, const Position& pos) override;
+	void attach(int entity, const Velocity& vel) override;
 
 	inline entt::registry& getEnttRegistry() { return _registry; }
 };

@@ -1,5 +1,6 @@
 #include "Galaxy.hpp"
 #include "GalaxyRegistry.hpp"
+#include "IView.hpp"
 
 #include "components/Position.hpp"
 #include "components/Velocity.hpp"
@@ -54,4 +55,21 @@ void Galaxy::gravity()
 			firstAcc.value = gravConst * secondMass.value * dir / (dir.length() * dir.sqrLength());
 		}
 	}
+}
+
+void Galaxy::update(IView* view)
+{
+	entt::registry& registry = _registry->getEnttRegistry();
+
+	registry.view<const Position>().each([view](auto entity, const Position& pos) {
+		view->update(static_cast<int>(entity), pos);
+		});
+
+	registry.view<const Velocity>().each([view](auto entity, const Velocity& vel) {
+		view->update(static_cast<int>(entity), vel);
+		});
+
+	registry.view<const Acceleration>().each([view](auto entity, const Acceleration& acc) {
+		view->update(static_cast<int>(entity), acc);
+		});
 }

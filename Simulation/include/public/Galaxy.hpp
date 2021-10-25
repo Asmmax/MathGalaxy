@@ -3,6 +3,7 @@
 
 class IGalaxyRegistry;
 class GalaxyRegistry;
+class IView;
 
 class Galaxy
 {
@@ -14,4 +15,5 @@ public:
 
 	void movement(double deltaTime);
 	void gravity();
+	void update(IView* view);
 };

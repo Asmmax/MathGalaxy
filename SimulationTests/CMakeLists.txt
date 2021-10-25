@@ -1,6 +1,8 @@
 ﻿cmake_minimum_required (VERSION 3.8)
 
 add_executable (SimulationTests 
+"helpers/StubView.hpp"
+"helpers/StubView.cpp"
 "Tests.cpp"  
 "MovementTests.cpp" 
 "GravityTests.cpp")
