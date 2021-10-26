@@ -20,20 +20,29 @@
 
 TEST_CASE("All bodies must move", "[Movement]") 
 {
+	int stepCount = 1000;
+	double step = 0.01;
+	double time = step * stepCount;
+
 	std::vector<std::string> schemeNames;
 	std::vector<std::shared_ptr<IDifferenceScheme>> schemes;
+	std::vector<double> tolerances;
 
 	schemeNames.emplace_back("EulerScheme");
 	schemes.emplace_back(std::make_shared<EulerScheme>());
+	tolerances.emplace_back(2 * time * step);
 
 	schemeNames.emplace_back("EulerKromerScheme");
 	schemes.emplace_back(std::make_shared<EulerKromerScheme>());
+	tolerances.emplace_back(2 * time * step);
 
 	schemeNames.emplace_back("CentralDifferenceScheme");
 	schemes.emplace_back(std::make_shared<CentralDifferenceScheme>());
+	tolerances.emplace_back(2 * time * step * step);
 
 	schemeNames.emplace_back("VerletScheme");
 	schemes.emplace_back(std::make_shared<VerletScheme>());
+	tolerances.emplace_back(6 * time * step * step * step);
 
 	for (int i = 0; i < schemes.size(); i++) {
 
@@ -50,10 +59,6 @@ TEST_CASE("All bodies must move", "[Movement]")
 		registry->attach(someBody, Velocity{ startVel });
 		registry->attach(someBody, Acceleration{ acc });
 
-		int stepCount = 1000;
-		double step = 0.01;
-		double time = step * stepCount;
-
 		galaxy.start(step);
 
 		for (int i = 1; i < stepCount; i++) {
@@ -62,12 +67,11 @@ TEST_CASE("All bodies must move", "[Movement]")
 
 		galaxy.update(&stubView);
 
-		double tolerance = 2 * time * step;
 		Vector newPos = startPos + startVel * time + acc / 2 * time * time;
 		auto& bodyPos = stubView.getPosition(someBody);
 
-		REQUIRE_MESSAGE(Approx(bodyPos.value.x).margin(tolerance) == newPos.x, schemeNames[i]);
-		REQUIRE_MESSAGE(Approx(bodyPos.value.y).margin(tolerance) == newPos.y, schemeNames[i]);
-		REQUIRE_MESSAGE(Approx(bodyPos.value.z).margin(tolerance) == newPos.z, schemeNames[i]);
+		REQUIRE_MESSAGE(Approx(bodyPos.value.x).margin(tolerances[i]) == newPos.x, schemeNames[i]);
+		REQUIRE_MESSAGE(Approx(bodyPos.value.y).margin(tolerances[i]) == newPos.y, schemeNames[i]);
+		REQUIRE_MESSAGE(Approx(bodyPos.value.z).margin(tolerances[i]) == newPos.z, schemeNames[i]);
 	}
 }
