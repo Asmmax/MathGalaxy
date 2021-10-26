@@ -17,7 +17,8 @@ set(simulations_public_include
 "include/public/IDifferenceScheme.hpp"
 "include/public/schemes/EulerScheme.hpp"
 "include/public/schemes/EulerKromerScheme.hpp"
-"include/public/schemes/CentralDifferenceScheme.hpp")
+"include/public/schemes/CentralDifferenceScheme.hpp"
+"include/public/schemes/VerletScheme.hpp")
 
 set(simulations_src 
 "src/GalaxyRegistry.cpp"
@@ -25,7 +26,8 @@ set(simulations_src
 "src/Vector.cpp"
 "src/schemes/EulerScheme.cpp"
 "src/schemes/EulerKromerScheme.cpp"
-"src/schemes/CentralDifferenceScheme.cpp")
+"src/schemes/CentralDifferenceScheme.cpp"
+"src/schemes/VerletScheme.cpp")
 
 
 add_library (Simulation SHARED 

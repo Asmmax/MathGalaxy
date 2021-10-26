@@ -9,6 +9,7 @@
 #include "schemes/EulerScheme.hpp"
 #include "schemes/EulerKromerScheme.hpp"
 #include "schemes/CentralDifferenceScheme.hpp"
+#include "schemes/VerletScheme.hpp"
 
 #include "helpers/StubView.hpp"
 
@@ -30,6 +31,9 @@ TEST_CASE("All bodies must move", "[Movement]")
 
 	schemeNames.emplace_back("CentralDifferenceScheme");
 	schemes.emplace_back(std::make_shared<CentralDifferenceScheme>());
+
+	schemeNames.emplace_back("VerletScheme");
+	schemes.emplace_back(std::make_shared<VerletScheme>());
 
 	for (int i = 0; i < schemes.size(); i++) {
 
