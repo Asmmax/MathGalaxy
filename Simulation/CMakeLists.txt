@@ -13,12 +13,15 @@ set(simulations_public_include
 "include/public/components/Acceleration.hpp"
 "include/public/components/Mass.hpp"
 "include/public/Vector.hpp"
-"include/public/IView.hpp")
+"include/public/IView.hpp"
+"include/public/IDifferenceScheme.hpp"
+"include/public/schemes/EulerScheme.hpp")
 
 set(simulations_src 
 "src/GalaxyRegistry.cpp"
 "src/Galaxy.cpp"
-"src/Vector.cpp")
+"src/Vector.cpp"
+"src/schemes/EulerScheme.cpp")
 
 
 add_library (Simulation SHARED 

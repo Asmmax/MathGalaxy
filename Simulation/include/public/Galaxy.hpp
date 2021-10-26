@@ -4,13 +4,15 @@
 class IGalaxyRegistry;
 class GalaxyRegistry;
 class IView;
+class IDifferenceScheme;
 
 class Galaxy
 {
 private:
 	std::shared_ptr<GalaxyRegistry> _registry;
+	std::shared_ptr<IDifferenceScheme> _scheme;
 public:
-	Galaxy();
+	Galaxy(const std::shared_ptr<IDifferenceScheme>& scheme = nullptr);
 	IGalaxyRegistry* getRegistry();
 
 	void movement(double deltaTime);
