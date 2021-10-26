@@ -15,13 +15,15 @@ set(simulations_public_include
 "include/public/Vector.hpp"
 "include/public/IView.hpp"
 "include/public/IDifferenceScheme.hpp"
-"include/public/schemes/EulerScheme.hpp")
+"include/public/schemes/EulerScheme.hpp"
+"include/public/schemes/EulerKromerScheme.hpp")
 
 set(simulations_src 
 "src/GalaxyRegistry.cpp"
 "src/Galaxy.cpp"
 "src/Vector.cpp"
-"src/schemes/EulerScheme.cpp")
+"src/schemes/EulerScheme.cpp"
+"src/schemes/EulerKromerScheme.cpp")
 
 
 add_library (Simulation SHARED 
