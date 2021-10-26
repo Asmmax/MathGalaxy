@@ -27,6 +27,17 @@ IGalaxyRegistry* Galaxy::getRegistry()
 	return _registry.get();
 }
 
+void Galaxy::start(double deltaTime)
+{
+	entt::registry& registry = _registry->getEnttRegistry();
+	IDifferenceScheme* scheme = _scheme.get();
+
+	auto celestialBodies = registry.view<Position, Velocity, const Acceleration>();
+	celestialBodies.each([deltaTime, scheme](Position& pos, Velocity& vel, const Acceleration& acc) {
+		scheme->init(deltaTime, pos, vel, acc);
+		});
+}
+
 void Galaxy::movement(double deltaTime)
 {
 	entt::registry& registry = _registry->getEnttRegistry();

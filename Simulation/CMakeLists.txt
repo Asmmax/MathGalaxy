@@ -16,14 +16,16 @@ set(simulations_public_include
 "include/public/IView.hpp"
 "include/public/IDifferenceScheme.hpp"
 "include/public/schemes/EulerScheme.hpp"
-"include/public/schemes/EulerKromerScheme.hpp")
+"include/public/schemes/EulerKromerScheme.hpp"
+"include/public/schemes/CentralDifferenceScheme.hpp")
 
 set(simulations_src 
 "src/GalaxyRegistry.cpp"
 "src/Galaxy.cpp"
 "src/Vector.cpp"
 "src/schemes/EulerScheme.cpp"
-"src/schemes/EulerKromerScheme.cpp")
+"src/schemes/EulerKromerScheme.cpp"
+"src/schemes/CentralDifferenceScheme.cpp")
 
 
 add_library (Simulation SHARED 

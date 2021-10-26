@@ -15,6 +15,7 @@ public:
 	Galaxy(const std::shared_ptr<IDifferenceScheme>& scheme = nullptr);
 	IGalaxyRegistry* getRegistry();
 
+	void start(double deltaTime);
 	void movement(double deltaTime);
 	void gravity();
 	void update(IView* view);

@@ -8,6 +8,7 @@
 
 #include "schemes/EulerScheme.hpp"
 #include "schemes/EulerKromerScheme.hpp"
+#include "schemes/CentralDifferenceScheme.hpp"
 
 #include "helpers/StubView.hpp"
 
@@ -26,6 +27,9 @@ TEST_CASE("All bodies must move", "[Movement]")
 
 	schemeNames.emplace_back("EulerKromerScheme");
 	schemes.emplace_back(std::make_shared<EulerKromerScheme>());
+
+	schemeNames.emplace_back("CentralDifferenceScheme");
+	schemes.emplace_back(std::make_shared<CentralDifferenceScheme>());
 
 	for (int i = 0; i < schemes.size(); i++) {
 
@@ -46,7 +50,9 @@ TEST_CASE("All bodies must move", "[Movement]")
 		double step = 0.01;
 		double time = step * stepCount;
 
-		for (int i = 0; i < stepCount; i++) {
+		galaxy.start(step);
+
+		for (int i = 1; i < stepCount; i++) {
 			galaxy.movement(step);
 		}
 
