@@ -3,8 +3,7 @@
 add_executable (SimulationTests 
 "helpers/StubView.hpp"
 "helpers/StubView.cpp"
-"Tests.cpp"  
-"MovementTests.cpp" 
+"Tests.cpp"
 "GravityTests.cpp")
 
 target_compile_features (SimulationTests PRIVATE cxx_std_14)

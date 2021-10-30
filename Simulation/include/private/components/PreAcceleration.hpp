@@ -2,7 +2,7 @@
 
 #include "Vector.hpp"
 
-struct Acceleration
+struct PreAcceleration
 {
 	Vector value;
 };

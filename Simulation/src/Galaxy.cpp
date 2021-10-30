@@ -1,62 +1,25 @@
 #include "Galaxy.hpp"
 #include "GalaxyRegistry.hpp"
 #include "IView.hpp"
-#include "IDifferenceScheme.hpp"
-#include "schemes/EulerScheme.hpp"
 #include "components/Position.hpp"
 #include "components/Velocity.hpp"
 #include "components/Acceleration.hpp"
 #include "components/Mass.hpp"
 
-#include <cmath>
-
 const double gravConst = 6.6743e-11;
 
-Galaxy::Galaxy(const std::shared_ptr<IDifferenceScheme>& scheme):
-	_scheme(scheme),
+Galaxy::Galaxy():
 	_registry(new GalaxyRegistry())
 {
-	//if scheme is null, set scheme by default to Euler
-	if (!_scheme) {
-		_scheme = std::make_shared<EulerScheme>();
-	}
+}
+
+Galaxy::~Galaxy()
+{
 }
 
 IGalaxyRegistry* Galaxy::getRegistry()
 {
 	return _registry.get();
-}
-
-void Galaxy::start(double deltaTime)
-{
-	entt::registry& registry = _registry->getEnttRegistry();
-	IDifferenceScheme* scheme = _scheme.get();
-
-	auto accBodies = registry.view<Acceleration>();
-	accBodies.each([](Acceleration& acc) {
-		acc.preValue = acc.value;
-		});
-		
-	auto celestialBodies = registry.view<Position, Velocity, const Acceleration>();
-	celestialBodies.each([deltaTime, scheme](Position& pos, Velocity& vel, const Acceleration& acc) {
-		scheme->init(deltaTime, pos, vel, acc);
-		});
-}
-
-void Galaxy::movement(double deltaTime)
-{
-	entt::registry& registry = _registry->getEnttRegistry();
-	IDifferenceScheme* scheme = _scheme.get();
-
-	auto celestialBodies = registry.view<Position, Velocity, const Acceleration>();
-	celestialBodies.each([deltaTime, scheme](Position& pos, Velocity& vel, const Acceleration& acc) {
-		scheme->step(deltaTime, pos, vel, acc);
-		});
-
-	auto accBodies = registry.view<Acceleration>();
-	accBodies.each([](Acceleration& acc) {
-		acc.preValue = acc.value;
-		});
 }
 
 void Galaxy::gravity()

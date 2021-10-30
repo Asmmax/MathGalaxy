@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 
 struct Acceleration;
 struct Mass;
