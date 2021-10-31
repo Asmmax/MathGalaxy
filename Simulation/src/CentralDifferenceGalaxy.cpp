@@ -3,40 +3,34 @@
 #include "components/Position.hpp"
 #include "components/Velocity.hpp"
 #include "components/Acceleration.hpp"
-
-CentralDifferenceGalaxy::CentralDifferenceGalaxy() :
-	_isFirstStep(true)
-{
-}
+#include "components/PreVelocity.hpp"
 
 void CentralDifferenceGalaxy::step(double deltaTime)
 {
-	if (_isFirstStep){
-		startStep(deltaTime);
-		_isFirstStep = false;
-		return;
-	}
+	initHalfStep(deltaTime);
 
 	entt::registry& registry = _registry->getEnttRegistry();
 
-	auto celestialBodies = registry.view<Position, Velocity, const Acceleration>();
-	celestialBodies.each([deltaTime](Position& pos, Velocity& vel, const Acceleration& acc) {
+	registry.view<Position, PreVelocity, const Acceleration>().each(
+		[deltaTime](Position& pos, PreVelocity& vel, const Acceleration& acc) {
 		vel.value += acc.value * deltaTime;
 		pos.value += vel.value * deltaTime;
 		});
 
 	gravity();
+
+	registry.view<Velocity, const PreVelocity, const Acceleration>().each(
+		[deltaTime](auto& vel, auto& preVel, auto& acc) {
+			vel.value = preVel.value + acc.value * deltaTime / 2;
+	});
 }
 
-void CentralDifferenceGalaxy::startStep(double deltaTime)
+void CentralDifferenceGalaxy::initHalfStep(double deltaTime)
 {
 	entt::registry& registry = _registry->getEnttRegistry();
 
-	auto celestialBodies = registry.view<Position, Velocity, const Acceleration>();
-	celestialBodies.each([deltaTime](Position& pos, Velocity& vel, const Acceleration& acc) {
-		vel.value += acc.value * deltaTime / 2;
-		pos.value += vel.value * deltaTime;
+	registry.view<const Velocity, const Acceleration>(entt::exclude<PreVelocity>).each(
+		[&registry, deltaTime](auto entity, auto& vel, auto& acc) {
+			registry.emplace<PreVelocity>(entity, vel.value - acc.value * deltaTime / 2);
 		});
-
-	gravity();
 }

@@ -3,7 +3,9 @@
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 set(simulations_private_include 
-"include/private/GalaxyRegistry.hpp")
+"include/private/GalaxyRegistry.hpp"
+"include/private/components/PreAcceleration.hpp"
+"include/private/components/PreVelocity.hpp")
 
 set(simulations_public_include 
 "include/public/IGalaxyRegistry.hpp"
@@ -32,7 +34,7 @@ set(simulations_src
 add_library (Simulation SHARED 
 ${simulations_private_include}  
 ${simulations_public_include} 
-${simulations_src} "include/private/components/PreAcceleration.hpp")
+${simulations_src})
 
 target_compile_features (Simulation PRIVATE cxx_std_17)
 target_include_directories(Simulation PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/private")
