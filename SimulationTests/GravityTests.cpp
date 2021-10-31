@@ -23,23 +23,28 @@ TEST_CASE("Two-body problem with the same orbit", "[Movement]")
 
 	std::vector<std::string> schemeNames;
 	std::vector<std::shared_ptr<Galaxy>> galaxies;
-	std::vector<double> tolerances;
+	std::vector<double> posTolerances;
+	std::vector<double> velTolerances;
 
 	schemeNames.emplace_back("EulerGalaxy");
 	galaxies.emplace_back(std::make_shared<EulerGalaxy>());
-	tolerances.emplace_back(10);
+	posTolerances.emplace_back(10);
+	velTolerances.emplace_back(10);
 
 	schemeNames.emplace_back("EulerKromerGalaxy");
 	galaxies.emplace_back(std::make_shared<EulerKromerGalaxy>());
-	tolerances.emplace_back(200 * deltaTime * deltaTime);
+	posTolerances.emplace_back(200 * deltaTime * deltaTime);
+	velTolerances.emplace_back(200 * deltaTime * deltaTime);
 
 	schemeNames.emplace_back("CentralDifferenceGalaxy");
 	galaxies.emplace_back(std::make_shared<CentralDifferenceGalaxy>());
-	tolerances.emplace_back(100 * deltaTime * deltaTime);
+	posTolerances.emplace_back(100 * deltaTime * deltaTime);
+	velTolerances.emplace_back(100 * deltaTime * deltaTime);
 
 	schemeNames.emplace_back("VerletGalaxy");
 	galaxies.emplace_back(std::make_shared<VerletGalaxy>());
-	tolerances.emplace_back( 100 * deltaTime * deltaTime);
+	posTolerances.emplace_back( 100 * deltaTime * deltaTime);
+	velTolerances.emplace_back(100 * deltaTime * deltaTime);
 
 	for (int i = 0; i < galaxies.size(); i++) {
 
@@ -73,7 +78,16 @@ TEST_CASE("Two-body problem with the same orbit", "[Movement]")
 		double secondDist = (secondBodyPos.value - Vector{ 1,0,0 }).length();
 
 		INFO(schemeNames[i]);
-		REQUIRE(Approx(fisrtDist).margin(tolerances[i]) == 0.);
-		REQUIRE(Approx(secondDist).margin(tolerances[i]) == 0.);
+		REQUIRE(Approx(fisrtDist).margin(posTolerances[i]) == 0.);
+		REQUIRE(Approx(secondDist).margin(posTolerances[i]) == 0.);
+
+		auto& firstBodyVel = stubView.getVelocity(firstBody);
+		auto& secondBodyVel = stubView.getVelocity(secondBody);
+
+		double firstDev = (firstBodyVel.value - Vector{ 0,1,0 }).length();
+		double secondDev = (secondBodyVel.value - Vector{ 0,-1,0 }).length();
+
+		REQUIRE(Approx(firstDev).margin(velTolerances[i]) == 0.);
+		REQUIRE(Approx(secondDev).margin(velTolerances[i]) == 0.);
 	}
 }
