@@ -14,8 +14,7 @@ void VerletGalaxy::step(double deltaTime)
 		pos.value += vel.value * deltaTime + acc.value * deltaTime * deltaTime / 2;
 		});
 
-	storeAccelerations();
-	gravity();
+	computeAccelerations();
 
 	registry.view<Velocity, const Acceleration, const PreAcceleration>().each(
 		[deltaTime](auto& vel, auto& acc, auto& preAcc) {
@@ -23,7 +22,7 @@ void VerletGalaxy::step(double deltaTime)
 		});
 }
 
-void VerletGalaxy::storeAccelerations()
+void VerletGalaxy::computeAccelerations()
 {
 	entt::registry& registry = _registry->getEnttRegistry();
 
@@ -36,4 +35,6 @@ void VerletGalaxy::storeAccelerations()
 		[&registry](auto entity, auto& acc) {
 		registry.emplace<PreAcceleration>(entity, acc.value);
 		});
+
+	gravity();
 }

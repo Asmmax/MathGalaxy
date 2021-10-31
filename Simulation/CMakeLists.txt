@@ -5,7 +5,8 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 set(simulations_private_include 
 "include/private/GalaxyRegistry.hpp"
 "include/private/components/PreAcceleration.hpp"
-"include/private/components/PreVelocity.hpp")
+"include/private/components/PreVelocity.hpp"
+"include/private/components/PrePreAcceleration.hpp")
 
 set(simulations_public_include 
 "include/public/IGalaxyRegistry.hpp"
@@ -14,6 +15,7 @@ set(simulations_public_include
 "include/public/EulerKromerGalaxy.hpp"
 "include/public/CentralDifferenceGalaxy.hpp"
 "include/public/VerletGalaxy.hpp"
+"include/public/BeemanGalaxy.hpp"
 "include/public/components/Position.hpp"
 "include/public/components/Velocity.hpp"
 "include/public/components/Acceleration.hpp"
@@ -28,6 +30,7 @@ set(simulations_src
 "src/EulerKromerGalaxy.cpp"
 "src/CentralDifferenceGalaxy.cpp"
 "src/VerletGalaxy.cpp"
+"src/BeemanGalaxy.cpp"
 "src/Vector.cpp")
 
 

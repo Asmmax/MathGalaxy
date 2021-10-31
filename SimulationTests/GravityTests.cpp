@@ -4,6 +4,7 @@
 #include "EulerKromerGalaxy.hpp"
 #include "CentralDifferenceGalaxy.hpp"
 #include "VerletGalaxy.hpp"
+#include "BeemanGalaxy.hpp"
 
 #include "components/Position.hpp"
 #include "components/Velocity.hpp"
@@ -43,8 +44,13 @@ TEST_CASE("Two-body problem with the same orbit", "[Movement]")
 
 	schemeNames.emplace_back("VerletGalaxy");
 	galaxies.emplace_back(std::make_shared<VerletGalaxy>());
-	posTolerances.emplace_back( 100 * deltaTime * deltaTime);
+	posTolerances.emplace_back(100 * deltaTime * deltaTime);
 	velTolerances.emplace_back(100 * deltaTime * deltaTime);
+
+	schemeNames.emplace_back("BeemanGalaxy");
+	galaxies.emplace_back(std::make_shared<BeemanGalaxy>());
+	posTolerances.emplace_back(50 * deltaTime * deltaTime);
+	velTolerances.emplace_back(50 * deltaTime * deltaTime);
 
 	for (int i = 0; i < galaxies.size(); i++) {
 

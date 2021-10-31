@@ -8,5 +8,5 @@ class VerletGalaxy : public Galaxy
 public:
 	void step(double deltaTime) override;
 private:
-	void storeAccelerations();
+	void computeAccelerations();
 };
