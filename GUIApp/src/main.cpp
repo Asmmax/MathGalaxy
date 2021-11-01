@@ -3,6 +3,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
 #include <GLFW/glfw3.h>
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
 
 int main(int argc, char* argv[])
 {
@@ -13,7 +16,7 @@ int main(int argc, char* argv[])
         return -1;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(1280, 720, "Dear imGui Demo", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -23,35 +26,47 @@ int main(int argc, char* argv[])
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_DOUBLEBUFFER);
-    glDepthFunc(GL_LESS);
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
 
-    glClearColor(0, 0, 0, 1);
+    ImGui::StyleColorsDark();
 
-    glm::mat4 m = glm::perspective(45.0f, 4.0f / 3.0f, 1.0f, 100.0f);
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(glm::value_ptr(m));
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init();
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
-        /* Render here */
+        glfwPollEvents();
+        glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glColor4f(1, 0, 0, 1);
-        glBegin(GL_TRIANGLES);
-        glVertex3f(0, 0.5, -5);
-        glVertex3f(0.5, -0.5, -5);
-        glVertex3f(-0.5, -0.5, -5);
-        glEnd();
 
-        /* Swap front and back buffers */
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        //render geometry
+        //...
+
+        //render GUI
+        ImGui::ShowDemoWindow();
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+
         glfwSwapBuffers(window);
 
-        /* Poll for and process events */
-        glfwPollEvents();
     }
 
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
 }
