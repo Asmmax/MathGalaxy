@@ -26,4 +26,4 @@ ${imgui_src})
 
 target_compile_features (imgui PRIVATE cxx_std_11)
 target_include_directories(imgui PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/imgui/")
-target_link_libraries(imgui PRIVATE glfw PRIVATE ${OPENGL_LIBRARY})
+target_link_libraries(imgui PRIVATE glfw PRIVATE ${OPENGL_LIBRARY} PRIVATE ${CMAKE_DL_LIBS})
