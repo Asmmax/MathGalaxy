@@ -2,15 +2,16 @@ cmake_minimum_required (VERSION 3.8)
 
 set(guiapp_include 
 "include/Application.hpp"
-)
+"include/Window.hpp")
 
 set(guiapp_src 
 "src/Application.cpp"
+"src/Window.cpp"
 "src/main.cpp")
 
 add_executable (GUIApp 
 ${guiapp_include}
-${guiapp_src}  )
+${guiapp_src})
 
 target_compile_features (GUIApp PRIVATE cxx_std_17)
 target_include_directories(GUIApp PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
