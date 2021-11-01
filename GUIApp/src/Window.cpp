@@ -5,7 +5,8 @@
 #include "backends/imgui_impl_opengl3.h"
 
 Window::Window(int width, int height, const std::string& title):
-	_window(nullptr)
+	_window(nullptr),
+	_background{ 0.5f,0.5f,0.5f,1.0f }
 {
 	_window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
 
@@ -41,29 +42,44 @@ int Window::run()
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(_window))
     {
-        glfwPollEvents();
-        glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glfwPollEvents();
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        //render geometry
-        //...
-
-        //render GUI
-        ImGui::ShowDemoWindow();
-
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		setupGUI();
 
         int display_w, display_h;
         glfwGetFramebufferSize(_window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
 
+		glClearColor(_background.r*_background.a, _background.g * _background.a, _background.b * _background.a, _background.a);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		renderGeometry();
+		renderGUI();
+
         glfwSwapBuffers(_window);
 
     }
     return 0;
+}
+
+void Window::setupGUI()
+{
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	//setup GUI
+	ImGui::ShowDemoWindow();
+
+	ImGui::Render();
+}
+
+void Window::renderGUI()
+{
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void Window::renderGeometry()
+{
+
 }
