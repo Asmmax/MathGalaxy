@@ -3,6 +3,8 @@
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
+#include "IWidget.hpp"
+#include "IDrawable.hpp"
 
 Window::Window(int width, int height, const std::string& title):
 	_window(nullptr),
@@ -68,8 +70,10 @@ void Window::setupGUI()
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	//setup GUI
-	ImGui::ShowDemoWindow();
+	if (_widgetRoot)
+	{
+		_widgetRoot->setup();
+	}
 
 	ImGui::Render();
 }
@@ -81,5 +85,8 @@ void Window::renderGUI()
 
 void Window::renderGeometry()
 {
-
+	if (_drawableRoot)
+	{
+		_drawableRoot->draw();
+	}
 }

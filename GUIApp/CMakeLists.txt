@@ -2,12 +2,18 @@ cmake_minimum_required (VERSION 3.8)
 
 set(guiapp_include 
 "include/Application.hpp"
-"include/Window.hpp")
+"include/Window.hpp"
+"include/IDrawable.hpp"
+"include/IWidget.hpp"
+"include/widgets/DemoWidget.hpp"
+"include/drawables/Triangle.hpp")
 
 set(guiapp_src 
 "src/Application.cpp"
 "src/Window.cpp"
-"src/main.cpp")
+"src/main.cpp"
+"src/widgets/DemoWidget.cpp"
+"src/drawables/Triangle.cpp")
 
 add_executable (GUIApp 
 ${guiapp_include}
