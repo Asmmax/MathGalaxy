@@ -1,12 +1,13 @@
 #pragma once
-#include "IDrawable.hpp"
+#include "drawables/Node.hpp"
 #include "glm/glm.hpp"
 
-class Triangle : public IDrawable
+class Triangle : public Node
 {
 private:
-	glm::mat4 _projectionMatrix;
+	float _size;
+	glm::vec4 _color;
 public:
-	Triangle();
-	void draw() override;
+	Triangle(float size = 1.0f, const glm::vec4& color = glm::vec4(1.0f));
+	void draw();
 };

@@ -1,6 +1,11 @@
 #include "Application.hpp"
 #include "widgets/DemoWidget.hpp"
 #include "drawables/Triangle.hpp"
+#include "Camera.hpp"
+#include "Transform.hpp"
+#include "drawables/Group.hpp"
+#include "widgets/TransformWidget.hpp"
+#include "widgets/WidgetSet.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -9,11 +14,37 @@ int main(int argc, char* argv[])
 	if (!window)
 		return -1;
 
-	auto widget = std::make_shared<DemoWidget>();
-	window->setWidgetRoot(widget);
+	//construct drawable tree
+	auto root = std::make_shared<Group>();
+	auto drawable1 = std::make_shared<Triangle>(1.0f, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	drawable1->getTransform()->setPosition(glm::vec3(0, 0, 0));
+	root->addChild(drawable1);
 
-	auto drawable = std::make_shared<Triangle>();
-	window->setDrawableRoot(drawable);
+	auto drawable2 = std::make_shared<Triangle>(1.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	drawable2->getTransform()->setPosition(glm::vec3(2, 0, -5));
+	root->addChild(drawable2);
+
+	auto cameraTarget = std::make_shared<Group>();
+	auto cameraEye = std::make_shared<Group>();
+	cameraTarget->addChild(cameraEye);
+	root->addChild(cameraTarget);
+	cameraEye->getTransform()->setPosition(glm::vec3{ 0, 0, 5 });
+
+	window->setDrawableRoot(root);
+	window->setTransformRoot(root->getTransform());
+
+	auto camera = std::make_shared<Camera>(cameraEye->getTransform());
+	window->setCamera(camera);
+
+	//construct widgets
+	auto posWidget = std::make_shared<TransformWidget>("Eye", cameraEye->getTransform());
+	auto rotWidget = std::make_shared<TransformWidget>("Target", cameraTarget->getTransform());
+
+	auto groupWidget = std::make_shared<WidgetSet>();
+	groupWidget->addChild(posWidget);
+	groupWidget->addChild(rotWidget);
+
+	window->setWidgetRoot(groupWidget);
 
 	return window->run();
 }

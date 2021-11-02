@@ -5,6 +5,8 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "IWidget.hpp"
 #include "IDrawable.hpp"
+#include "Transform.hpp"
+#include "Camera.hpp"
 
 Window::Window(int width, int height, const std::string& title):
 	_window(nullptr),
@@ -24,6 +26,8 @@ Window::Window(int width, int height, const std::string& title):
 
 		ImGui_ImplGlfw_InitForOpenGL(_window, true);
 		ImGui_ImplOpenGL3_Init();
+
+		glEnable(GL_DEPTH_TEST);
 	}
 }
 
@@ -85,6 +89,14 @@ void Window::renderGUI()
 
 void Window::renderGeometry()
 {
+	if (_transformRoot)
+	{
+		_transformRoot->computeGlobalMatrices();
+	}
+	if (_camera)
+	{
+		_camera->setupView();
+	}
 	if (_drawableRoot)
 	{
 		_drawableRoot->draw();

@@ -5,15 +5,27 @@ set(guiapp_include
 "include/Window.hpp"
 "include/IDrawable.hpp"
 "include/IWidget.hpp"
+"include/Transform.hpp"
+"include/Camera.hpp"
 "include/widgets/DemoWidget.hpp"
-"include/drawables/Triangle.hpp")
+"include/widgets/TransformWidget.hpp"
+"include/widgets/WidgetSet.hpp"
+"include/drawables/Triangle.hpp"
+"include/drawables/Group.hpp"
+"include/drawables/Node.hpp")
 
 set(guiapp_src 
 "src/Application.cpp"
 "src/Window.cpp"
 "src/main.cpp"
+"src/Transform.cpp"
+"src/Camera.cpp"
 "src/widgets/DemoWidget.cpp"
-"src/drawables/Triangle.cpp")
+"src/widgets/TransformWidget.cpp"
+"src/widgets/WidgetSet.cpp"
+"src/drawables/Triangle.cpp"
+"src/drawables/Group.cpp"
+"src/drawables/Node.cpp")
 
 add_executable (GUIApp 
 ${guiapp_include}
