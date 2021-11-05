@@ -6,6 +6,7 @@
 #include "drawables/Group.hpp"
 #include "widgets/TransformWidget.hpp"
 #include "widgets/WidgetSet.hpp"
+#include "drawables/Sphere.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -16,13 +17,13 @@ int main(int argc, char* argv[])
 
 	//construct drawable tree
 	auto root = std::make_shared<Group>();
-	auto drawable1 = std::make_shared<Triangle>(1.0f, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	drawable1->getTransform()->setPosition(glm::vec3(0, 0, 0));
-	root->addChild(drawable1);
+	auto solar = std::make_shared<Sphere>(1.0f, 20, glm::vec4(1.0f, 0.5f, 0.0f, 1.0f));
+	solar->getTransform()->setPosition(glm::vec3(0, 0, 0));
+	root->addChild(solar);
 
-	auto drawable2 = std::make_shared<Triangle>(1.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-	drawable2->getTransform()->setPosition(glm::vec3(2, 0, -5));
-	root->addChild(drawable2);
+	auto earth = std::make_shared<Sphere>(0.5f, 10, glm::vec4(0.0f, 0.5f, 1.0f, 1.0f));
+	earth->getTransform()->setPosition(glm::vec3(2, 0, -5));
+	root->addChild(earth);
 
 	auto cameraTarget = std::make_shared<Group>();
 	auto cameraEye = std::make_shared<Group>();

@@ -10,7 +10,9 @@
 
 Window::Window(int width, int height, const std::string& title):
 	_window(nullptr),
-	_background{ 0.5f,0.5f,0.5f,1.0f }
+	_background{ 0.5f,0.5f,0.5f,1.0f },
+	_width(1),
+	_height(1)
 {
 	_window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
 
@@ -52,9 +54,8 @@ int Window::run()
 
 		setupGUI();
 
-        int display_w, display_h;
-        glfwGetFramebufferSize(_window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
+        glfwGetFramebufferSize(_window, &_width, &_height);
+        glViewport(0, 0, _width, _height);
 
 		glClearColor(_background.r*_background.a, _background.g * _background.a, _background.b * _background.a, _background.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -95,7 +96,7 @@ void Window::renderGeometry()
 	}
 	if (_camera)
 	{
-		_camera->setupView();
+		_camera->setupView(_width, _height);
 	}
 	if (_drawableRoot)
 	{

@@ -12,7 +12,8 @@ set(guiapp_include
 "include/widgets/WidgetSet.hpp"
 "include/drawables/Triangle.hpp"
 "include/drawables/Group.hpp"
-"include/drawables/Node.hpp")
+"include/drawables/Node.hpp"
+"include/drawables/Sphere.hpp")
 
 set(guiapp_src 
 "src/Application.cpp"
@@ -25,7 +26,8 @@ set(guiapp_src
 "src/widgets/WidgetSet.cpp"
 "src/drawables/Triangle.cpp"
 "src/drawables/Group.cpp"
-"src/drawables/Node.cpp")
+"src/drawables/Node.cpp"
+"src/drawables/Sphere.cpp")
 
 add_executable (GUIApp 
 ${guiapp_include}

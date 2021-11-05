@@ -25,6 +25,8 @@ private:
 	std::shared_ptr<IDrawable> _drawableRoot;
 	std::shared_ptr<Transform> _transformRoot;
 	std::shared_ptr<Camera> _camera;
+	int _width;
+	int _height;
 public:
 	Window(int width, int height, const std::string& title);
 	~Window();
