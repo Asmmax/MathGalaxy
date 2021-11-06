@@ -17,4 +17,6 @@ private:
 public:
 	TransformWidget(const std::string& name, const std::shared_ptr<Transform>& transform);
 	void setup() override;
+private:
+	void updateData();
 };

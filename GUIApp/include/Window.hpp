@@ -7,6 +7,7 @@ class IWidget;
 class IDrawable;
 class Transform;
 class Camera;
+class IController;
 
 class Window
 {
@@ -25,6 +26,7 @@ private:
 	std::shared_ptr<IDrawable> _drawableRoot;
 	std::shared_ptr<Transform> _transformRoot;
 	std::shared_ptr<Camera> _camera;
+	std::shared_ptr<IController> _controller;
 	int _width;
 	int _height;
 public:
@@ -35,6 +37,7 @@ public:
 	inline void setDrawableRoot(const std::shared_ptr<IDrawable>& drawableRoot) { _drawableRoot = drawableRoot; }
 	inline void setTransformRoot(const std::shared_ptr<Transform>& transformRoot) { _transformRoot = transformRoot; }
 	inline void setCamera(const std::shared_ptr<Camera>& camera) { _camera = camera; }
+	void setController(const std::shared_ptr<IController>& controller);
 
 	inline void setBackground(const Color& color) { _background = color; }
 	inline const Color& getBackground() const { return _background; }
@@ -44,4 +47,7 @@ private:
 	void setupGUI();
 	void renderGUI();
 	void renderGeometry();
+
+	static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mode);
+	static void mousePositionCallback(GLFWwindow* window, double x, double y);
 };

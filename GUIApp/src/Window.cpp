@@ -7,6 +7,7 @@
 #include "IDrawable.hpp"
 #include "Transform.hpp"
 #include "Camera.hpp"
+#include "IController.hpp"
 
 Window::Window(int width, int height, const std::string& title):
 	_window(nullptr),
@@ -30,6 +31,9 @@ Window::Window(int width, int height, const std::string& title):
 		ImGui_ImplOpenGL3_Init();
 
 		glEnable(GL_DEPTH_TEST);
+
+		glfwSetMouseButtonCallback(_window, mouseButtonCallback);
+		glfwSetCursorPosCallback(_window, mousePositionCallback);
 	}
 }
 
@@ -43,6 +47,12 @@ Window::~Window()
 
 		glfwDestroyWindow(_window);
 	}
+}
+
+void Window::setController(const std::shared_ptr<IController>& controller)
+{ 
+	_controller = controller;
+	glfwSetWindowUserPointer(_window, static_cast<void*>(_controller.get()));
 }
 
 int Window::run()
@@ -101,5 +111,45 @@ void Window::renderGeometry()
 	if (_drawableRoot)
 	{
 		_drawableRoot->draw();
+	}
+}
+
+void Window::mouseButtonCallback(GLFWwindow* window, int button, int action, int mode)
+{
+	auto* controller = static_cast<IController*>(glfwGetWindowUserPointer(window));
+
+	if (!controller)
+		return;
+
+	if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+		if (action == GLFW_PRESS) {
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			if (glfwRawMouseMotionSupported())
+				glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+			
+			double posX = 0, posY = 0;
+			glfwGetCursorPos(window, &posX, &posY);
+			controller->resetMousePos(posX, posY);
+		}
+		else if (action == GLFW_RELEASE)
+		{
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			if (glfwRawMouseMotionSupported())
+				glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
+		}
+	}
+}
+
+void Window::mousePositionCallback(GLFWwindow* window, double x, double y)
+{
+	auto* controller = static_cast<IController*>(glfwGetWindowUserPointer(window));
+
+	if (!controller)
+		return;
+
+	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
+	if (state == GLFW_PRESS)
+	{
+		controller->moveMouse(x, y);
 	}
 }

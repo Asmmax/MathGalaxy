@@ -1,5 +1,8 @@
 #include "Transform.hpp"
 #include "glm/gtx/transform.hpp"
+#include <cmath>
+
+const float pi = 3.1415926536f;
 
 Transform::Transform(const glm::vec3& localPosition,
 	const glm::vec3& localRotation,
@@ -21,7 +24,10 @@ void Transform::setPosition(const glm::vec3& localPosition)
 
 void Transform::setRotation(const glm::vec3& localRotation)
 {
-	_localRotation = localRotation;
+	_localRotation.x = fmod(localRotation.x + 360.0f, 360.0f);
+	_localRotation.y = fmod(localRotation.y + 360.0f, 360.0f);
+	_localRotation.z = fmod(localRotation.z + 360.0f, 360.0f);
+
 	_dirtyLocalMatrix = true;
 }
 
@@ -56,9 +62,10 @@ void Transform::computeGlobalMatrices(const glm::mat4& matrix)
 
 void Transform::computeLocalMatrix() const
 {
-	glm::mat4 rotationMatrix = glm::rotate(_localRotation.z, glm::vec3(0.0f, 0.0f, 1.0f)) *
-		glm::rotate(_localRotation.y, glm::vec3(0.0f, 1.0f, 0.0f)) *
-		glm::rotate(_localRotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 rotationMatrix = 
+		glm::rotate(_localRotation.z / 180 * pi, glm::vec3(0.0f, 0.0f, 1.0f)) *
+		glm::rotate(_localRotation.y / 180 * pi, glm::vec3(0.0f, 1.0f, 0.0f)) *
+		glm::rotate(_localRotation.x / 180 * pi, glm::vec3(1.0f, 0.0f, 0.0f));
 	_localMatrix = glm::translate(_localPosition) * rotationMatrix * glm::scale(_localScale);
 	_dirtyLocalMatrix = false;
 }

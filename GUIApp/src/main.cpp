@@ -7,6 +7,7 @@
 #include "widgets/TransformWidget.hpp"
 #include "widgets/WidgetSet.hpp"
 #include "drawables/Sphere.hpp"
+#include "CameraController.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -46,6 +47,9 @@ int main(int argc, char* argv[])
 	groupWidget->addChild(rotWidget);
 
 	window->setWidgetRoot(groupWidget);
+
+	auto controller = std::make_shared<CameraController>(cameraTarget->getTransform(), cameraEye->getTransform());
+	window->setController(controller);
 
 	return window->run();
 }
