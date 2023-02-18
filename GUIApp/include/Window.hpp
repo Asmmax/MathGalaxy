@@ -50,4 +50,5 @@ private:
 
 	static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mode);
 	static void mousePositionCallback(GLFWwindow* window, double x, double y);
+	static void mouseScrollCallback(GLFWwindow* window, double xOffset, double yOffset);
 };

@@ -1,11 +1,12 @@
 #include "CameraController.hpp"
 #include "Transform.hpp"
 
-CameraController::CameraController(const std::shared_ptr<Transform>& target, const std::shared_ptr<Transform>& eye):
+CameraController::CameraController(const std::shared_ptr<Transform>& target, const std::shared_ptr<Transform>& eye, double scrollSpeed):
 	_target(target),
 	_eye(eye),
 	_lastX(0),
-	_lastY(0)
+	_lastY(0),
+	_scrollSpeed(scrollSpeed)
 {
 }
 
@@ -30,7 +31,12 @@ void CameraController::moveMouse(double posX, double posY)
 	resetMousePos(posX, posY);
 }
 
-void CameraController::scrollMouse(int scrollStep)
+void CameraController::scrollMouse(double scrollStep)
 {
 
+	double scale = glm::pow(_scrollSpeed, -scrollStep);
+
+	auto position = _eye->getLocalPosition();
+	position.z *= static_cast<float>(scale);
+	_eye->setPosition(position);
 }

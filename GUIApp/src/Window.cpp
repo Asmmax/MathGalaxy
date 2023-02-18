@@ -34,6 +34,7 @@ Window::Window(int width, int height, const std::string& title):
 
 		glfwSetMouseButtonCallback(_window, mouseButtonCallback);
 		glfwSetCursorPosCallback(_window, mousePositionCallback);
+		glfwSetScrollCallback(_window, mouseScrollCallback);
 	}
 }
 
@@ -152,4 +153,14 @@ void Window::mousePositionCallback(GLFWwindow* window, double x, double y)
 	{
 		controller->moveMouse(x, y);
 	}
+}
+
+void Window::mouseScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
+{
+	auto* controller = static_cast<IController*>(glfwGetWindowUserPointer(window));
+
+	if (!controller)
+		return;
+
+	controller->scrollMouse(yOffset);
 }
