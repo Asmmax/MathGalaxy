@@ -1,20 +1,17 @@
-#include "widgets/TransformWidget.hpp"
+#include "gui/widgets/TransformWidget.hpp"
 #include "Transform.hpp"
 #include "imgui.h"
 
 TransformWidget::TransformWidget(const std::string& name, const std::shared_ptr<Transform>& transform):
-	_name(name),
+	AWidget(std::string("Transform of ") + name),
 	_transform(transform)
 {
 	updateData();
 }
 
-void TransformWidget::setup()
+void TransformWidget::draw()
 {
 	updateData();
-
-	std::string windowName = std::string("Transform of ") + _name;
-	ImGui::Begin(windowName.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
 	if (ImGui::DragFloat3("Position", _position, 0.1f, -FLT_MAX, FLT_MAX))
 	{
@@ -30,8 +27,6 @@ void TransformWidget::setup()
 	{
 		_transform->setScale(glm::vec3(_scale[0], _scale[1], _scale[2]));
 	}
-
-	ImGui::End();
 }
 
 void TransformWidget::updateData()

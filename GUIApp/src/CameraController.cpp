@@ -33,7 +33,6 @@ void CameraController::moveMouse(double posX, double posY)
 
 void CameraController::scrollMouse(double scrollStep)
 {
-
 	double scale = glm::pow(_scrollSpeed, -scrollStep);
 
 	auto position = _eye->getLocalPosition();

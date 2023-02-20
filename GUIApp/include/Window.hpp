@@ -3,7 +3,7 @@
 #include <memory>
 
 struct GLFWwindow;
-class IWidget;
+class IGUI;
 class IDrawable;
 class Transform;
 class Camera;
@@ -22,7 +22,7 @@ public:
 private:
 	GLFWwindow* _window;
 	Color _background;
-	std::shared_ptr<IWidget> _widgetRoot;
+	std::shared_ptr<IGUI> _gui;
 	std::shared_ptr<IDrawable> _drawableRoot;
 	std::shared_ptr<Transform> _transformRoot;
 	std::shared_ptr<Camera> _camera;
@@ -33,7 +33,7 @@ public:
 	Window(int width, int height, const std::string& title);
 	~Window();
 
-	inline void setWidgetRoot(const std::shared_ptr<IWidget>& widgetRoot) { _widgetRoot = widgetRoot; }
+	inline void setGUI(const std::shared_ptr<IGUI>& gui) { _gui = gui; }
 	inline void setDrawableRoot(const std::shared_ptr<IDrawable>& drawableRoot) { _drawableRoot = drawableRoot; }
 	inline void setTransformRoot(const std::shared_ptr<Transform>& transformRoot) { _transformRoot = transformRoot; }
 	inline void setCamera(const std::shared_ptr<Camera>& camera) { _camera = camera; }

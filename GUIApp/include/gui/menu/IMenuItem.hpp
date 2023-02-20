@@ -1,8 +1,8 @@
 #pragma once
 
-class IWidget
+class IMenuItem
 {
 public:
-	virtual ~IWidget() {}
+	virtual ~IMenuItem() {}
 	virtual void setup() = 0;
 };

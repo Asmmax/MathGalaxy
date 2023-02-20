@@ -1,12 +1,12 @@
 #pragma once
-#include "IWidget.hpp"
+#include "gui/AWidget.hpp"
 #include "glm/glm.hpp"
 #include <memory>
 #include <string>
 
 class Transform;
 
-class TransformWidget : public IWidget
+class TransformWidget : public AWidget
 {
 private:
 	std::string _name;
@@ -16,7 +16,10 @@ private:
 	float _scale[3];
 public:
 	TransformWidget(const std::string& name, const std::shared_ptr<Transform>& transform);
-	void setup() override;
+
+protected:
+	void draw() override;
+
 private:
 	void updateData();
 };

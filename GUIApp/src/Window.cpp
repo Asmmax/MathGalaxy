@@ -3,7 +3,7 @@
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
-#include "IWidget.hpp"
+#include "gui/GUI.hpp"
 #include "IDrawable.hpp"
 #include "Transform.hpp"
 #include "Camera.hpp"
@@ -31,6 +31,9 @@ Window::Window(int width, int height, const std::string& title):
 		ImGui_ImplOpenGL3_Init();
 
 		glEnable(GL_DEPTH_TEST);
+
+		auto& io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 		glfwSetMouseButtonCallback(_window, mouseButtonCallback);
 		glfwSetCursorPosCallback(_window, mousePositionCallback);
@@ -86,9 +89,9 @@ void Window::setupGUI()
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	if (_widgetRoot)
+	if (_gui)
 	{
-		_widgetRoot->setup();
+		_gui->setup();
 	}
 
 	ImGui::Render();
@@ -117,6 +120,8 @@ void Window::renderGeometry()
 
 void Window::mouseButtonCallback(GLFWwindow* window, int button, int action, int mode)
 {
+	ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mode);
+
 	auto* controller = static_cast<IController*>(glfwGetWindowUserPointer(window));
 
 	if (!controller)
@@ -143,6 +148,8 @@ void Window::mouseButtonCallback(GLFWwindow* window, int button, int action, int
 
 void Window::mousePositionCallback(GLFWwindow* window, double x, double y)
 {
+	ImGui_ImplGlfw_CursorPosCallback(window, x, y);
+
 	auto* controller = static_cast<IController*>(glfwGetWindowUserPointer(window));
 
 	if (!controller)
@@ -157,6 +164,11 @@ void Window::mousePositionCallback(GLFWwindow* window, double x, double y)
 
 void Window::mouseScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 {
+	if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)) {
+		ImGui_ImplGlfw_ScrollCallback(window, xOffset, yOffset);
+		return;
+	}
+
 	auto* controller = static_cast<IController*>(glfwGetWindowUserPointer(window));
 
 	if (!controller)
