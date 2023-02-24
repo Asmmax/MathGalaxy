@@ -15,10 +15,10 @@ private:
 	float _rotation[3];
 	float _scale[3];
 public:
-	TransformWidget(const std::string& name, const std::shared_ptr<Transform>& transform);
+	TransformWidget(const std::string& name, const std::shared_ptr<Transform>& transform, int width = 0, int height = 0);
 
 protected:
-	void draw() override;
+	void setupContent() override;
 
 private:
 	void updateData();

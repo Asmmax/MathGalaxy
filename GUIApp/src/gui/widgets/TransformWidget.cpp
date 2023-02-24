@@ -2,14 +2,14 @@
 #include "Transform.hpp"
 #include "imgui.h"
 
-TransformWidget::TransformWidget(const std::string& name, const std::shared_ptr<Transform>& transform):
-	AWidget(std::string("Transform of ") + name),
+TransformWidget::TransformWidget(const std::string& name, const std::shared_ptr<Transform>& transform, int width, int height):
+	AWidget(std::string("Transform of ") + name, width, height),
 	_transform(transform)
 {
 	updateData();
 }
 
-void TransformWidget::draw()
+void TransformWidget::setupContent()
 {
 	updateData();
 

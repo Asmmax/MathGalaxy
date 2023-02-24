@@ -1,54 +1,43 @@
 #pragma once
 #include <string>
 #include <memory>
+#include <vector>
 
-struct GLFWwindow;
 class IGUI;
 class IDrawable;
 class Transform;
-class Camera;
 class IController;
+class IWindowImpl;
+class View;
 
 class Window
 {
-public:
-	struct Color {
-		float r;
-		float g;
-		float b;
-		float a;
-	};
+	friend class Application;
 
 private:
-	GLFWwindow* _window;
-	Color _background;
+	IWindowImpl* _impl;
 	std::shared_ptr<IGUI> _gui;
 	std::shared_ptr<IDrawable> _drawableRoot;
 	std::shared_ptr<Transform> _transformRoot;
-	std::shared_ptr<Camera> _camera;
 	std::shared_ptr<IController> _controller;
-	int _width;
-	int _height;
-public:
-	Window(int width, int height, const std::string& title);
-	~Window();
+	std::vector<std::shared_ptr<View>> _views;
 
-	inline void setGUI(const std::shared_ptr<IGUI>& gui) { _gui = gui; }
-	inline void setDrawableRoot(const std::shared_ptr<IDrawable>& drawableRoot) { _drawableRoot = drawableRoot; }
-	inline void setTransformRoot(const std::shared_ptr<Transform>& transformRoot) { _transformRoot = transformRoot; }
-	inline void setCamera(const std::shared_ptr<Camera>& camera) { _camera = camera; }
+public:
+	void setGUI(const std::shared_ptr<IGUI>& gui);
+	void setDrawableRoot(const std::shared_ptr<IDrawable>& drawableRoot);
+	void setTransformRoot(const std::shared_ptr<Transform>& transformRoot) { _transformRoot = transformRoot; }
 	void setController(const std::shared_ptr<IController>& controller);
 
-	inline void setBackground(const Color& color) { _background = color; }
-	inline const Color& getBackground() const { return _background; }
-
 	int run();
-private:
-	void setupGUI();
-	void renderGUI();
-	void renderGeometry();
+	std::weak_ptr<View> creteView(int width, int height, const std::shared_ptr<Transform>& target = nullptr);
 
-	static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mode);
-	static void mousePositionCallback(GLFWwindow* window, double x, double y);
-	static void mouseScrollCallback(GLFWwindow* window, double xOffset, double yOffset);
+private:
+	Window(IWindowImpl* impl);
+
+	void setupGUI();
+	void runImpl();
+
+	void mouseButtonCallback(double x, double y);
+	void mousePositionCallback(double x, double y);
+	void mouseScrollCallback(double yOffset);
 };

@@ -1,17 +1,23 @@
 #include "Application.hpp"
-
-#include "GLFW/glfw3.h"
+#include "Window.hpp"
+#include "IApplicationImpl.hpp"
 
 Application::Application():
-    _isValid(true)
+    _isValid(false)
 {
-    _isValid = glfwInit();
+}
+
+void Application::initGraphics()
+{
+    if (_impl) {
+        _isValid = _impl->init();
+    }
 }
 
 Application::~Application()
 {
-    if (_isValid) {
-        glfwTerminate();
+    if (_isValid && _impl) {
+        _impl->terminate();
     }
 }
 
@@ -26,11 +32,14 @@ Window* Application::getWindow(int width, int height, const std::string& title)
     if (!_isValid)
         return nullptr;
 
-    if (_window)
-    {
-        _window.reset();
+    if (!_impl)
+        return nullptr;
+
+    auto windowImpl = _impl->createWindow(width, height, title);
+    if (!windowImpl) {
+        return nullptr;
     }
 
-    _window.reset(new Window(width, height, title));
+    _window.reset(new Window(windowImpl));
     return _window.get();
 }

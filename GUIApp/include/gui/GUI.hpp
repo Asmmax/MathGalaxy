@@ -14,5 +14,7 @@ private:
 public:
 	void addWidget(const std::shared_ptr<AWidget>& child);
 	void setMenu(const std::shared_ptr<MenuPanel>& menu);
+
+	void init() override;
 	void setup() override;
 };

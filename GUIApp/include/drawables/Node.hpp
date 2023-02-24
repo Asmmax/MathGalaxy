@@ -8,6 +8,7 @@ class Node : public IDrawable
 {
 private:
 	std::shared_ptr<Transform> _transform;
+
 public:
 	Node();
 

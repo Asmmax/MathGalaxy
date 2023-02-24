@@ -1,92 +1,86 @@
 #include "Window.hpp"
-#include "GLFW/glfw3.h"
-#include "imgui.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
 #include "gui/GUI.hpp"
 #include "IDrawable.hpp"
 #include "Transform.hpp"
-#include "Camera.hpp"
 #include "IController.hpp"
+#include "IWindowImpl.hpp"
+#include "IInputHandler.hpp"
+#include "IGraphicsContext.hpp"
+#include "View.hpp"
+#include "imgui.h"
 
-Window::Window(int width, int height, const std::string& title):
-	_window(nullptr),
-	_background{ 0.5f,0.5f,0.5f,1.0f },
-	_width(1),
-	_height(1)
+Window::Window(IWindowImpl* impl):
+	_impl(impl)
 {
-	_window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
+	auto inputHandler = _impl->getInputHandler();
+	inputHandler->setMouseRightButtonDownCallback([this](double x, double y) {
+		mouseButtonCallback(x, y); 
+		});
+	inputHandler->setMouseMoveCallback([this](double x, double y) {
+		mousePositionCallback(x, y);
+		});
+	inputHandler->setMouseScrollCallback([this](double yOffset) {
+		mouseScrollCallback(yOffset);
+		});
+}
 
-	if (_window)
-	{
-		/* Make the window's context current */
-		glfwMakeContextCurrent(_window);
+void Window::setGUI(const std::shared_ptr<IGUI>& gui)
+{
+	_gui = gui;
 
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-
-		ImGui::StyleColorsDark();
-
-		ImGui_ImplGlfw_InitForOpenGL(_window, true);
-		ImGui_ImplOpenGL3_Init();
-
-		glEnable(GL_DEPTH_TEST);
-
-		auto& io = ImGui::GetIO();
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-		glfwSetMouseButtonCallback(_window, mouseButtonCallback);
-		glfwSetCursorPosCallback(_window, mousePositionCallback);
-		glfwSetScrollCallback(_window, mouseScrollCallback);
+	if (_gui) {
+		_gui->init();
 	}
 }
 
-Window::~Window()
-{
-	if (_window) 
-	{
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
+void Window::setDrawableRoot(const std::shared_ptr<IDrawable>& drawableRoot)
+{ 
+	_drawableRoot = drawableRoot;
 
-		glfwDestroyWindow(_window);
+	if (_drawableRoot) {
+		_drawableRoot->init();
 	}
 }
 
 void Window::setController(const std::shared_ptr<IController>& controller)
 { 
 	_controller = controller;
-	glfwSetWindowUserPointer(_window, static_cast<void*>(_controller.get()));
 }
 
 int Window::run()
 {
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(_window))
-    {
-		glfwPollEvents();
+	_impl->run([this]() {
+		runImpl();
+		});
+	return 0;
+}
 
-		setupGUI();
+std::weak_ptr<View> Window::creteView(int width, int height, const std::shared_ptr<Transform>& target)
+{
+	auto view = std::make_shared<View>(width, height, target);
+	view->init();
 
-        glfwGetFramebufferSize(_window, &_width, &_height);
-        glViewport(0, 0, _width, _height);
+	_views.push_back(view);
+	return _views.back();
+}
 
-		glClearColor(_background.r*_background.a, _background.g * _background.a, _background.b * _background.a, _background.a);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+void Window::runImpl()
+{
+	if (_transformRoot) {
+		_transformRoot->computeGlobalMatrices();
+	}
+	for (auto& view : _views) {
+		view->render(_drawableRoot.get());
+	}
 
-		renderGeometry();
-		renderGUI();
-
-        glfwSwapBuffers(_window);
-
-    }
-    return 0;
+	auto&& graphicsContext = _impl->getGraphicsContext();
+	graphicsContext->setupImgui();
+	setupGUI();
+	graphicsContext->renderImgui();
 }
 
 void Window::setupGUI()
 {
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
 	if (_gui)
@@ -97,82 +91,24 @@ void Window::setupGUI()
 	ImGui::Render();
 }
 
-void Window::renderGUI()
+void Window::mouseButtonCallback(double posX, double posY)
 {
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	_controller->resetMousePos(posX, posY);
 }
 
-void Window::renderGeometry()
+void Window::mousePositionCallback(double x, double y)
 {
-	if (_transformRoot)
-	{
-		_transformRoot->computeGlobalMatrices();
-	}
-	if (_camera)
-	{
-		_camera->setupView(_width, _height);
-	}
-	if (_drawableRoot)
-	{
-		_drawableRoot->draw();
-	}
-}
-
-void Window::mouseButtonCallback(GLFWwindow* window, int button, int action, int mode)
-{
-	ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mode);
-
-	auto* controller = static_cast<IController*>(glfwGetWindowUserPointer(window));
-
-	if (!controller)
-		return;
-
-	if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-		if (action == GLFW_PRESS) {
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-			if (glfwRawMouseMotionSupported())
-				glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-			
-			double posX = 0, posY = 0;
-			glfwGetCursorPos(window, &posX, &posY);
-			controller->resetMousePos(posX, posY);
-		}
-		else if (action == GLFW_RELEASE)
-		{
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-			if (glfwRawMouseMotionSupported())
-				glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
-		}
-	}
-}
-
-void Window::mousePositionCallback(GLFWwindow* window, double x, double y)
-{
-	ImGui_ImplGlfw_CursorPosCallback(window, x, y);
-
-	auto* controller = static_cast<IController*>(glfwGetWindowUserPointer(window));
-
-	if (!controller)
-		return;
-
-	int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT);
-	if (state == GLFW_PRESS)
-	{
-		controller->moveMouse(x, y);
-	}
-}
-
-void Window::mouseScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
-{
-	if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)) {
-		ImGui_ImplGlfw_ScrollCallback(window, xOffset, yOffset);
+	auto inputHandler = _impl->getInputHandler();
+	if (!inputHandler) {
 		return;
 	}
 
-	auto* controller = static_cast<IController*>(glfwGetWindowUserPointer(window));
+	if (inputHandler->isRightMousePressed()) {
+		_controller->moveMouse(x, y);
+	}
+}
 
-	if (!controller)
-		return;
-
-	controller->scrollMouse(yOffset);
+void Window::mouseScrollCallback(double yOffset)
+{
+	_controller->scrollMouse(yOffset);
 }

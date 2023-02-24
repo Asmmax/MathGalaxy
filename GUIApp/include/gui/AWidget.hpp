@@ -7,8 +7,10 @@ private:
 	std::string _name;
 	AWidget* _parent;
 	bool _isVisible;
+	int _width;
+	int _height;
 public:
-	AWidget(const std::string& name);
+	AWidget(const std::string& name, int width = 0, int height = 0);
 	virtual ~AWidget() {}
 
 	void setParent(AWidget* parent);
@@ -19,9 +21,9 @@ public:
 	void setup();
 
 protected:
-	virtual void draw() = 0;
+	virtual void setupContent() = 0;
 
 private:
-	void drawAsChild();
-	void drawAsRoot();
+	void setupAsChild();
+	void setupAsRoot();
 };

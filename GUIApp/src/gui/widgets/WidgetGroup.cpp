@@ -1,8 +1,8 @@
 #include "gui/widgets/WidgetGroup.hpp"
 #include "gui/AWidget.hpp"
 
-WidgetGroup::WidgetGroup(const std::string& name):
-	AWidget(name)
+WidgetGroup::WidgetGroup(const std::string& name, int width, int height):
+	AWidget(name, width, height)
 {
 }
 
@@ -12,7 +12,7 @@ void WidgetGroup::addChild(const std::shared_ptr<AWidget>& widget)
 	widget->setParent(this);
 }
 
-void WidgetGroup::draw()
+void WidgetGroup::setupContent()
 {
 	for (auto& child : _children) {
 		child->setup();

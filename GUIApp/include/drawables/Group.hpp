@@ -12,5 +12,6 @@ public:
 	unsigned int getChildCount() const;
 	std::shared_ptr<Node> getChild(unsigned int id) const;
 
-	void draw() override;
+	void init() override;
+	void draw(const DrawContext& context) override;
 };

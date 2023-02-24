@@ -16,10 +16,18 @@ std::shared_ptr<Node> Group::getChild(unsigned int id) const
 	return _children[id];
 }
 
-void Group::draw()
+void Group::init()
 {
 	for (auto child : _children)
 	{
-		child->draw();
+		child->init();
+	}
+}
+
+void Group::draw(const DrawContext& context)
+{
+	for (auto child : _children)
+	{
+		child->draw(context);
 	}
 }

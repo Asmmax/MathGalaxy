@@ -1,15 +1,25 @@
-#include "drawables/Sphere.hpp"
-#include "GLFW/glfw3.h"
-#include "glm/gtc/type_ptr.hpp"
-#include "Transform.hpp"
+#include "meshes/Sphere.hpp"
+#include "gl/gl_core_4_3.hpp"
 
 const float pi = 3.1415926536f;
 
-Sphere::Sphere(float radius, unsigned int segCount, const glm::vec4& color):
+Sphere::Sphere(float radius, unsigned int segCount):
 	_radius(radius),
-	_segCount(segCount),
-	_color(color)
+	_segCount(segCount)
 {
+}
+
+size_t Sphere::getIndicesCount()
+{
+	const unsigned int V = _segCount + 1;
+	const unsigned int G = _segCount * 2 + 1;
+	const unsigned int indicesCount = 6 * (V - 1) * (G - 1);
+	return static_cast<size_t>(indicesCount);
+}
+
+void Sphere::generateMesh(std::vector<glm::vec3>& vertices, std::vector<unsigned short>& indices)
+{
+	createGeosphere(-pi / 2, pi / 2, _segCount, _radius, vertices, indices);
 }
 
 void Sphere::createGeosphere(float fStart, float fEnd, int nSegs, float radius, std::vector<glm::vec3>& vertices, std::vector<unsigned short>& indices)
@@ -42,25 +52,4 @@ void Sphere::createGeosphere(float fStart, float fEnd, int nSegs, float radius, 
 		};
 	};
 #undef SET
-}
-
-void Sphere::draw()
-{
-	std::vector<glm::vec3> vertices;
-	std::vector<unsigned short> indices;
-	createGeosphere(-pi / 2, pi / 2, _segCount, _radius, vertices, indices);
-
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glMultMatrixf(glm::value_ptr(getTransform()->getGlobalMatrix()));
-
-	glColor4f(_color.r, _color.g, _color.b, _color.a);
-	glBegin(GL_TRIANGLES);
-	for (auto index : indices) {
-		glVertex3f(vertices[index].x, vertices[index].y, vertices[index].z);
-	}
-	glEnd();
-
-	glPopMatrix();
-
 }
