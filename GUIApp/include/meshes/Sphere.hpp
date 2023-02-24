@@ -10,7 +10,7 @@ private:
 public:
 	Sphere(float radius = 1.0f, unsigned int segCount = 20);
 
-	size_t getIndicesCount() override;
+	int getIndicesCount() override;
 
 protected:
 	void generateMesh(std::vector<glm::vec3>& vertices, std::vector<unsigned short>& indices) override;

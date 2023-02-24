@@ -6,7 +6,7 @@ Triangle::Triangle(float size):
 {
 }
 
-size_t Triangle::getIndicesCount()
+int Triangle::getIndicesCount()
 {
     return 3;
 }

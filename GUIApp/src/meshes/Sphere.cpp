@@ -9,12 +9,12 @@ Sphere::Sphere(float radius, unsigned int segCount):
 {
 }
 
-size_t Sphere::getIndicesCount()
+int Sphere::getIndicesCount()
 {
-	const unsigned int V = _segCount + 1;
-	const unsigned int G = _segCount * 2 + 1;
-	const unsigned int indicesCount = 6 * (V - 1) * (G - 1);
-	return static_cast<size_t>(indicesCount);
+	const int V = _segCount + 1;
+	const int G = _segCount * 2 + 1;
+	const int indicesCount = 6 * (V - 1) * (G - 1);
+	return indicesCount;
 }
 
 void Sphere::generateMesh(std::vector<glm::vec3>& vertices, std::vector<unsigned short>& indices)

@@ -9,7 +9,7 @@ private:
 public:
 	Triangle(float size = 1.0f);
 
-	size_t getIndicesCount() override;
+	int getIndicesCount() override;
 
 protected:
 	void generateMesh(std::vector<glm::vec3>& vertices, std::vector<unsigned short>& indices) override;

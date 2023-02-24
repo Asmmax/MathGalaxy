@@ -40,6 +40,6 @@ void AMesh::draw()
 {
 	gl::BindVertexArray(_vaoHandle);
 
-	auto indicesCount = getIndicesCount();
+	const int indicesCount = getIndicesCount();
 	gl::DrawElements(gl::TRIANGLES, indicesCount, gl::UNSIGNED_SHORT, 0);
 }
