@@ -1,5 +1,6 @@
 #include "View.hpp"
 #include "IDrawable.hpp"
+#include "DrawContext.hpp"
 #include "Transform.hpp"
 #include "gl/gl_core_4_3.hpp"
 #include "glm/glm.hpp"
@@ -51,8 +52,13 @@ void View::render(IDrawable* drawable)
 	gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
 	DrawContext context;
-	context.viewMatrix = glm::inverse(_target->getGlobalMatrix());
-	context.projectionMatrix = glm::perspective(45.0f, _width / (float)_height, 0.01f, 1000.0f);
+
+	if (drawable) {
+		drawable->predraw(context);
+	}
+
+	context.add("ViewMatrix", glm::inverse(_target->getGlobalMatrix()));
+	context.add("ProjectionMatrix", glm::perspective(45.0f, _width / (float)_height, 0.01f, 1000.0f));
 
 	if (drawable) {
 		drawable->draw(context);

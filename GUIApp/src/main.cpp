@@ -16,9 +16,14 @@
 #include "gui/menu/MenuItemEnabler.hpp"
 #include "impl/GLFWApplicationImpl.hpp"
 #include "Material.hpp"
+#include "Shader.hpp"
+#include "Path.hpp"
+#include "drawables/Light.hpp"
 
 int main(int argc, char* argv[])
 {
+	Path path("settings.dat");
+
 	Application& app = Application::getInstance();
 	app.setImpl<GLFWApplicationImpl>();
 	Window* window = app.getWindow(1280, 720, "Dear imGui Demo");
@@ -28,24 +33,35 @@ int main(int argc, char* argv[])
 	//construct drawable tree
 	auto root = std::make_shared<Group>();
 
+	auto planetShader = std::make_shared<Shader>();
+	planetShader->loadVertexShader(path.find("shaders/planet.vert"));
+	planetShader->loadFragmentShader(path.find("shaders/planet.frag"));
+
 	auto sphereMesh = std::make_shared<Sphere>(1.0f, 10);
 
+	auto solarGroup = std::make_shared<Group>();
+	solarGroup->getTransform()->setPosition(glm::vec3(0, 0, 0));
 	auto solar = std::make_shared<MeshNode>();
 	solar->setMesh(sphereMesh);
 	auto solarMaterial = std::make_shared<Material>();
 	solarMaterial->setMainColor(glm::vec3(1.0f, 0.5f, 0.0f));
 	solar->setMaterial(solarMaterial);
-	solar->getTransform()->setPosition(glm::vec3(0, 0, 0));
-	root->addChild(solar);
+	solarGroup->addChild(solar);
+	auto solarLight = std::make_shared<Light>();
+	solarGroup->addChild(solarLight);
+	root->addChild(solarGroup);
 
+	auto earthGroup = std::make_shared<Group>();
+	earthGroup->getTransform()->setPosition(glm::vec3(2, 0, -5));
+	earthGroup->getTransform()->setScale(glm::vec3(0.5f));
 	auto earth = std::make_shared<MeshNode>();
 	earth->setMesh(sphereMesh);
 	auto earthMaterial = std::make_shared<Material>();
 	earthMaterial->setMainColor(glm::vec3(0.0f, 0.5f, 1.0f));
+	earthMaterial->setShader(planetShader);
 	earth->setMaterial(earthMaterial);
-	earth->getTransform()->setPosition(glm::vec3(2, 0, -5));
-	earth->getTransform()->setScale(glm::vec3(0.5f));
-	root->addChild(earth);
+	earthGroup->addChild(earth);
+	root->addChild(earthGroup);
 
 	auto cameraTarget = std::make_shared<Group>();
 	auto cameraEye = std::make_shared<Group>();

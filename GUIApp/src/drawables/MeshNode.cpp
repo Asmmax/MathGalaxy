@@ -2,7 +2,7 @@
 #include "Material.hpp"
 #include "Transform.hpp"
 #include "AMesh.hpp"
-#include "gl/gl_core_4_3.hpp"
+#include "DrawContext.hpp"
 
 void MeshNode::setMesh(const std::shared_ptr<AMesh>& mesh)
 {
@@ -21,15 +21,22 @@ void MeshNode::init()
 	}
 }
 
-void MeshNode::draw(const DrawContext& context)
+void MeshNode::predraw(DrawContext& /*context*/)
 {
-	gl::UseProgram(0);
+}
 
+void MeshNode::draw(DrawContext& context)
+{
 	if (_material) {
-		_material->apply(context, getTransform()->getGlobalMatrix());
+		context.add("ModelMatrix", getTransform()->getGlobalMatrix());
+		_material->apply(context);
 	}
 
 	if (_mesh) {
 		_mesh->draw();
+	}
+
+	if (_material) {
+		_material->clear();
 	}
 }

@@ -1,16 +1,12 @@
 #pragma once
-#include "glm/glm.hpp"
 
-struct DrawContext
-{
-	glm::mat4x4 viewMatrix;
-	glm::mat4x4 projectionMatrix;
-};
+class DrawContext;
 
 class IDrawable
 {
 public:
 	virtual ~IDrawable() {}
 	virtual void init() = 0;
-	virtual void draw(const DrawContext& context) = 0;
+	virtual void predraw(DrawContext& context) = 0;
+	virtual void draw(DrawContext& context) = 0;
 };

@@ -1,5 +1,6 @@
 #include "meshes/Sphere.hpp"
 #include "gl/gl_core_4_3.hpp"
+#include "glm/gtx/normal.hpp"
 
 const float pi = 3.1415926536f;
 
@@ -17,9 +18,27 @@ int Sphere::getIndicesCount()
 	return indicesCount;
 }
 
-void Sphere::generateMesh(std::vector<glm::vec3>& vertices, std::vector<unsigned short>& indices)
+void Sphere::generateMesh(std::vector<glm::vec3>& vertices, std::vector<glm::vec3>& normals, std::vector<unsigned short>& indices)
 {
 	createGeosphere(-pi / 2, pi / 2, _segCount, _radius, vertices, indices);
+
+	normals.resize(vertices.size());
+
+	for (size_t i = 0; i < indices.size(); i+=3) {
+		const glm::vec3& p1 = vertices[indices[i + 0]];
+		const glm::vec3& p2 = vertices[indices[i + 1]];
+		const glm::vec3& p3 = vertices[indices[i + 2]];
+
+		glm::vec3 normal = glm::triangleNormal(p1, p2, p3);
+		normals[indices[i + 0]] += normal;
+		normals[indices[i + 1]] += normal;
+		normals[indices[i + 2]] += normal;
+	}
+
+	for (auto& normal: normals) {
+		normal = glm::normalize(normal);
+	}
+
 }
 
 void Sphere::createGeosphere(float fStart, float fEnd, int nSegs, float radius, std::vector<glm::vec3>& vertices, std::vector<unsigned short>& indices)

@@ -1,6 +1,7 @@
 #include "Shader.hpp"
 #include "gl/gl_core_4_3.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include <fstream>
 
 std::shared_ptr<Shader> Shader::defaultShader = std::make_shared<Shader>(
 	"#version 430\n"
@@ -40,12 +41,46 @@ Shader::Shader(const std::string& vertexShader, const std::string& fragmentShade
 
 void Shader::loadVertexShader(const std::string& fileName)
 {
+	std::ifstream file;
+	file.open(fileName);
 
+	if (!file.is_open()) {
+		fprintf(stderr, "Vertex shader file could not be open!\n");
+		return;
+	}
+
+	_vertexShader.clear();
+	_vertexShader.reserve(100);
+
+	char c;
+	while (!file.eof()) {
+		file.get(c);
+		_vertexShader.push_back(c);
+	}
+
+	file.close();
 }
 
 void Shader::loadFragmentShader(const std::string& fileName)
 {
+	std::ifstream file;
+	file.open(fileName);
 
+	if (!file.is_open()) {
+		fprintf(stderr, "Fragment shader file could not be open!");
+		return;
+	}
+
+	_fragmentShader.clear();
+	_fragmentShader.reserve(100);
+
+	char c;
+	while (!file.eof()) {
+		file.get(c);
+		_fragmentShader.push_back(c);
+	}
+
+	file.close();
 }
 
 void Shader::use()
@@ -65,11 +100,35 @@ void Shader::setUniform(const std::string& name, const glm::mat4& matrix)
 	}
 }
 
+void Shader::setUniform(const std::string& name, const glm::mat3& matrix)
+{
+	GLuint location = gl::GetUniformLocation(_programHandle, name.c_str());
+	if (location >= 0) {
+		gl::UniformMatrix3fv(location, 1, gl::FALSE_, glm::value_ptr(matrix));
+	}
+}
+
+void Shader::setUniform(const std::string& name, const glm::vec4& vector)
+{
+	GLuint location = gl::GetUniformLocation(_programHandle, name.c_str());
+	if (location >= 0) {
+		gl::Uniform4fv(location, 1, glm::value_ptr(vector));
+	}
+}
+
 void Shader::setUniform(const std::string& name, const glm::vec3& vector)
 {
 	GLuint location = gl::GetUniformLocation(_programHandle, name.c_str());
 	if (location >= 0) {
 		gl::Uniform3fv(location, 1, glm::value_ptr(vector));
+	}
+}
+
+void Shader::setUniform(const std::string& name, int value)
+{
+	GLuint location = gl::GetUniformLocation(_programHandle, name.c_str());
+	if (location >= 0) {
+		gl::Uniform1iv(location, 1, &value);
 	}
 }
 

@@ -16,5 +16,6 @@ public:
 	void setMaterial(const std::shared_ptr<Material>& material);
 
 	void init() override;
-	void draw(const DrawContext& context) override;
+	void predraw(DrawContext& context) override;
+	void draw(DrawContext& context) override;
 };

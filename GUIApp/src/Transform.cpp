@@ -37,6 +37,11 @@ void Transform::setScale(const glm::vec3& localScale)
 	_dirtyLocalMatrix = true;
 }
 
+glm::vec3 Transform::getGlobalPosition() const
+{
+	return getGlobalMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
 void Transform::addChild(const std::shared_ptr<Transform>& child)
 {
 	_children.emplace_back(child);

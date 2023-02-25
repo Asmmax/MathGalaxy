@@ -1,5 +1,6 @@
 #pragma once
 #include "IDrawable.hpp"
+#include "glm/vec3.hpp"
 #include <memory>
 
 class Shader;
@@ -16,5 +17,6 @@ public:
 	void setShader(const std::shared_ptr<Shader>& shader);
 	void setMainColor(const glm::vec3& color);
 
-	void apply(const DrawContext& context, const glm::mat4& modelMatrix);
+	void apply(const DrawContext& context);
+	void clear();
 };

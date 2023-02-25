@@ -30,7 +30,7 @@ IWindowImpl* GLFWApplicationImpl::createWindow(int width, int height, const std:
 	assert(didLoad);
 	if (!didLoad) {
 		glfwDestroyWindow(window);
-		printf("OpenGl functions isn't available!\n");
+		fprintf(stderr, "OpenGl functions isn't available!\n");
 		return nullptr;
 	}
 

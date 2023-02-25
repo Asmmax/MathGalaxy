@@ -13,7 +13,7 @@ public:
 	int getIndicesCount() override;
 
 protected:
-	void generateMesh(std::vector<glm::vec3>& vertices, std::vector<unsigned short>& indices) override;
+	void generateMesh(std::vector<glm::vec3>& vertices, std::vector<glm::vec3>& normals, std::vector<unsigned short>& indices) override;
 
 private:
 	static void createGeosphere(float fStart, float fEnd, int nSegs, float radius, std::vector<glm::vec3>& vertices, std::vector<unsigned short>& indexes);

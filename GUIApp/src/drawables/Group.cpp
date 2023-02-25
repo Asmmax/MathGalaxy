@@ -1,5 +1,6 @@
 #include "drawables/Group.hpp"
 #include "Transform.hpp"
+#include "DrawContext.hpp"
 
 void Group::addChild(const std::shared_ptr<Node>& child)
 {
@@ -24,10 +25,30 @@ void Group::init()
 	}
 }
 
-void Group::draw(const DrawContext& context)
+void Group::predraw(DrawContext& context)
 {
 	for (auto child : _children)
 	{
-		child->draw(context);
+		child->predraw(context);
+	}
+}
+
+void Group::draw(DrawContext& context)
+{
+	if (_children.empty()) {
+		return;
+	}
+
+	if (_children.size() == 1) {
+		_children.front()->draw(context);
+		return;
+	}
+
+	DrawContext origin(context);
+	for (auto it = _children.begin(); it != _children.end(); it++) {
+		if (it != _children.begin()) {
+			context = origin;
+		}
+		(*it)->draw(context);
 	}
 }

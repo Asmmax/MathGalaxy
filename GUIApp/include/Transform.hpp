@@ -22,14 +22,16 @@ public:
 	void setRotation(const glm::vec3& localRotation);
 	void setScale(const glm::vec3& localScale);
 
-	inline const glm::vec3& getLocalPosition() const { return _localPosition; }
-	inline const glm::vec3& getLocalRotation() const { return _localRotation; }
-	inline const glm::vec3& getLocalScale() const { return _localScale; }
+	const glm::vec3& getLocalPosition() const { return _localPosition; }
+	const glm::vec3& getLocalRotation() const { return _localRotation; }
+	const glm::vec3& getLocalScale() const { return _localScale; }
+
+	glm::vec3 getGlobalPosition() const;
 
 	void addChild(const std::shared_ptr<Transform>& child);
 
 	const glm::mat4& getLocalMatrix() const;
-	inline const glm::mat4& getGlobalMatrix() const { return _globalMatrix; }
+	const glm::mat4& getGlobalMatrix() const { return _globalMatrix; }
 	void computeGlobalMatrices(const glm::mat4& matrix = glm::mat4(1.0f));
 protected:
 	void computeLocalMatrix() const;

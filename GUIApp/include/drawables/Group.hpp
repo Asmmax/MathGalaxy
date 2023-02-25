@@ -13,5 +13,6 @@ public:
 	std::shared_ptr<Node> getChild(unsigned int id) const;
 
 	void init() override;
-	void draw(const DrawContext& context) override;
+	void predraw(DrawContext& context) override;
+	void draw(DrawContext& context) override;
 };
