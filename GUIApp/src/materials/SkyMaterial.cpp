@@ -12,6 +12,11 @@ void SkyMaterial::setBaseColor(const glm::vec3& color)
 	_baseColor = color;
 }
 
+void SkyMaterial::setBaseTexture(const std::shared_ptr<Texture>& texture)
+{
+	addTexture("skyMap", texture);
+}
+
 void SkyMaterial::applyImpl()
 {
 	getShader()->setUniform("BaseColor", _baseColor);

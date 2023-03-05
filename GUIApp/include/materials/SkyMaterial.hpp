@@ -10,6 +10,7 @@ public:
 	SkyMaterial(const std::shared_ptr<Shader>& shader);
 
 	void setBaseColor(const glm::vec3& color);
+	void setBaseTexture(const std::shared_ptr<Texture>& texture);
 
 protected:
 	void applyImpl() override;

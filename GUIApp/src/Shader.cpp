@@ -69,6 +69,7 @@ void Shader::use()
 {
 	if (!_isInited) {
 		init();
+		_isInited = true;
 	}
 
 	gl::UseProgram(_programHandle);
@@ -110,7 +111,7 @@ void Shader::setUniform(const std::string& name, float value)
 {
 	GLuint location = gl::GetUniformLocation(_programHandle, name.c_str());
 	if (location >= 0) {
-		gl::Uniform1fv(location, 1, &value);
+		gl::Uniform1f(location, value);
 	}
 }
 
@@ -118,7 +119,7 @@ void Shader::setUniform(const std::string& name, int value)
 {
 	GLuint location = gl::GetUniformLocation(_programHandle, name.c_str());
 	if (location >= 0) {
-		gl::Uniform1iv(location, 1, &value);
+		gl::Uniform1i(location, value);
 	}
 }
 
@@ -127,7 +128,6 @@ void Shader::init()
 	compileVertexShader();
 	compileFragmentShader();
 	link();
-	_isInited = true;
 }
 
 void Shader::compileVertexShader()

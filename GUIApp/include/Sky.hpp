@@ -6,6 +6,7 @@ class AMesh;
 class DrawContext;
 class SkyMaterial;
 class Shader;
+class Texture;
 
 class Sky
 {
@@ -19,6 +20,7 @@ public:
 	Sky(const std::shared_ptr<AMesh>& mesh, const std::shared_ptr<Shader>& shader);
 
 	void setBaseColor(const glm::vec3& color);
+	void setBaseTexture(const std::shared_ptr<Texture>& texture);
 	void setAmbientColor(const glm::vec3& color);
 	void setMesh(const std::shared_ptr<AMesh>& mesh);
 

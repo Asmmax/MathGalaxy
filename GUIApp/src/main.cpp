@@ -22,6 +22,7 @@
 #include "drawables/Light.hpp"
 #include "Sky.hpp"
 #include "materials/SkyMaterial.hpp"
+#include "Texture.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -47,6 +48,8 @@ int main(int argc, char* argv[])
 	auto skyShader = std::make_shared<Shader>();
 	skyShader->loadVertexShader(path.find("shaders/sky.vert"));
 	skyShader->loadFragmentShader(path.find("shaders/sky.frag"));
+
+	auto skyTexture = std::make_shared<Texture>(path.find("textures/sky.png"));
 
 	auto sphereMesh = std::make_shared<Sphere>(1.0f, 24);
 
@@ -88,6 +91,7 @@ int main(int argc, char* argv[])
 	auto cameraShared = camera.lock();
 	auto sky = std::make_shared<Sky>(sphereMesh, skyShader);
 	sky->setAmbientColor(glm::vec3(0.2f, 0.1f, 0.1f));
+	sky->setBaseTexture(skyTexture);
 	cameraShared->setSky(sky);
 
 	//construct widgets
