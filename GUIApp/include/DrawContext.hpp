@@ -15,6 +15,7 @@ private:
 	std::map<std::string, glm::mat3> _3x3matrices;
 	std::map<std::string, glm::vec4> _4vectors;
 	std::map<std::string, glm::vec3> _3vectors;
+	std::map<std::string, float> _floatValues;
 	std::map<std::string, int> _intValues;
 
 public:
@@ -22,6 +23,7 @@ public:
 	void add(const std::string& name, const glm::mat3& matrix);
 	void add(const std::string& name, const glm::vec4& vector);
 	void add(const std::string& name, const glm::vec3& vector);
+	void add(const std::string& name, float value);
 	void add(const std::string& name, int value);
 
 	void remove(const std::string& name);
@@ -32,6 +34,7 @@ public:
 	const glm::mat3& getMat3x3(const std::string& name) const;
 	const glm::vec4& getVector4(const std::string& name) const;
 	const glm::vec3& getVector3(const std::string& name) const;
+	float getFloat(const std::string& name) const;
 	int getInt(const std::string& name) const;
 
 	void apply(Shader& shader) const;

@@ -46,6 +46,17 @@ void DrawContext::add(const std::string& name, const glm::vec3& vector)
 	_names.emplace(name);
 }
 
+void DrawContext::add(const std::string& name, float value)
+{
+	if (has(name)) {
+		assert(false);
+		return;
+	}
+
+	_floatValues[name] = value;
+	_names.emplace(name);
+}
+
 void DrawContext::add(const std::string& name, int value)
 {
 	if (has(name)) {
@@ -100,6 +111,12 @@ const glm::vec4& DrawContext::getVector4(const std::string& name) const
 	return _4vectors.at(name);
 }
 
+float DrawContext::getFloat(const std::string& name) const
+{
+	assert(has(name));
+	return _floatValues.at(name);
+}
+
 int DrawContext::getInt(const std::string& name) const
 {
 	assert(has(name));
@@ -121,6 +138,10 @@ void DrawContext::apply(Shader& shader) const
 	}
 
 	for (auto& value : _3vectors) {
+		shader.setUniform(value.first, value.second);
+	}
+
+	for (auto& value : _floatValues) {
 		shader.setUniform(value.first, value.second);
 	}
 

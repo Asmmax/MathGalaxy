@@ -22,21 +22,11 @@ void Sphere::generateMesh(std::vector<glm::vec3>& vertices, std::vector<glm::vec
 {
 	createGeosphere(-pi / 2, pi / 2, _segCount, _radius, vertices, indices);
 
-	normals.resize(vertices.size());
+	normals.clear();
+	normals.reserve(vertices.size());
 
-	for (size_t i = 0; i < indices.size(); i+=3) {
-		const glm::vec3& p1 = vertices[indices[i + 0]];
-		const glm::vec3& p2 = vertices[indices[i + 1]];
-		const glm::vec3& p3 = vertices[indices[i + 2]];
-
-		glm::vec3 normal = glm::triangleNormal(p1, p2, p3);
-		normals[indices[i + 0]] += normal;
-		normals[indices[i + 1]] += normal;
-		normals[indices[i + 2]] += normal;
-	}
-
-	for (auto& normal: normals) {
-		normal = glm::normalize(normal);
+	for (auto& vertex: vertices) {
+		normals.push_back(glm::normalize(vertex));
 	}
 
 }

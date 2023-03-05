@@ -1,5 +1,5 @@
 #include "drawables/MeshNode.hpp"
-#include "Material.hpp"
+#include "AMaterial.hpp"
 #include "Transform.hpp"
 #include "AMesh.hpp"
 #include "DrawContext.hpp"
@@ -9,7 +9,7 @@ void MeshNode::setMesh(const std::shared_ptr<AMesh>& mesh)
 	_mesh = mesh;
 }
 
-void MeshNode::setMaterial(const std::shared_ptr<Material>& material)
+void MeshNode::setMaterial(const std::shared_ptr<AMaterial>& material)
 {
 	_material = material;
 }

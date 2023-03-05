@@ -3,24 +3,6 @@
 #include "glm/gtc/type_ptr.hpp"
 #include <fstream>
 
-std::shared_ptr<Shader> Shader::defaultShader = std::make_shared<Shader>(
-	"#version 430\n"
-	"layout (location = 0) in vec3 Position;\n"
-	"uniform mat4 MVP;\n"
-	"void main()\n"
-	"{\n"
-	"    gl_Position = MVP * vec4(Position, 1.0f);\n"
-	"}\n"
-	,
-	"#version 430\n"
-	"out vec4 FragColor;\n"
-	"uniform vec3 MainColor;\n"
-	"void main()\n"
-	"{\n"
-	"    FragColor = vec4(MainColor,1.0);\n"
-	"}\n"
-);
-
 Shader::Shader():
 	_vertexShaderHandle(0),
 	_fragmentShaderHandle(0),
@@ -121,6 +103,14 @@ void Shader::setUniform(const std::string& name, const glm::vec3& vector)
 	GLuint location = gl::GetUniformLocation(_programHandle, name.c_str());
 	if (location >= 0) {
 		gl::Uniform3fv(location, 1, glm::value_ptr(vector));
+	}
+}
+
+void Shader::setUniform(const std::string& name, float value)
+{
+	GLuint location = gl::GetUniformLocation(_programHandle, name.c_str());
+	if (location >= 0) {
+		gl::Uniform1fv(location, 1, &value);
 	}
 }
 

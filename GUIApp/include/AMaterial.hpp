@@ -5,18 +5,22 @@
 
 class Shader;
 
-class Material
+class AMaterial
 {
 private:
 	std::shared_ptr<Shader> _shader;
-	glm::vec3 _mainColor;
 
 public:
-	Material();
+	AMaterial(const std::shared_ptr<Shader>& shader);
+	virtual ~AMaterial() {}
 
 	void setShader(const std::shared_ptr<Shader>& shader);
-	void setMainColor(const glm::vec3& color);
 
 	void apply(const DrawContext& context);
 	void clear();
+
+protected:
+	virtual void applyImpl() = 0;
+
+	const std::shared_ptr<Shader>& getShader() const { return _shader; }
 };

@@ -34,6 +34,7 @@ void AMesh::init()
 	gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, elemBufHandle);
 
 	gl::EnableVertexAttribArray(0);
+	gl::EnableVertexAttribArray(1);
 
 	gl::BindBuffer(gl::ARRAY_BUFFER, posBufHandle);
 	gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE_, 0, NULL);

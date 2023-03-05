@@ -1,25 +1,19 @@
-#include "Material.hpp"
+#include "AMaterial.hpp"
 #include "Shader.hpp"
 #include "DrawContext.hpp"
 #include "gl/gl_core_4_3.hpp"
 
-Material::Material():
-	_shader(Shader::defaultShader),
-	_mainColor(1.0f, 1.0f, 1.0f)
+AMaterial::AMaterial(const std::shared_ptr<Shader>& shader):
+	_shader(shader)
 {
 }
 
-void Material::setShader(const std::shared_ptr<Shader>& shader)
+void AMaterial::setShader(const std::shared_ptr<Shader>& shader)
 {
 	_shader = shader;
 }
 
-void Material::setMainColor(const glm::vec3& color)
-{
-	_mainColor = color;
-}
-
-void Material::apply(const DrawContext& context)
+void AMaterial::apply(const DrawContext& context)
 {
 	if (!_shader) {
 		return;
@@ -40,10 +34,10 @@ void Material::apply(const DrawContext& context)
 	_shader->setUniform("MVP", projMatrix * modelViewMatrix);
 	_shader->setUniform("NormalMatrix", normalMatrix);
 
-	_shader->setUniform("MainColor", _mainColor);
+	applyImpl();
 }
 
-void Material::clear()
+void AMaterial::clear()
 {
 	gl::UseProgram(0);
 }

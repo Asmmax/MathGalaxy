@@ -15,7 +15,8 @@
 #include "gui/menu/MenuList.hpp"
 #include "gui/menu/MenuItemEnabler.hpp"
 #include "impl/GLFWApplicationImpl.hpp"
-#include "Material.hpp"
+#include "materials/DiffusedMaterial.hpp"
+#include "materials/StarMaterial.hpp"
 #include "Shader.hpp"
 #include "Path.hpp"
 #include "drawables/Light.hpp"
@@ -37,14 +38,19 @@ int main(int argc, char* argv[])
 	planetShader->loadVertexShader(path.find("shaders/planet.vert"));
 	planetShader->loadFragmentShader(path.find("shaders/planet.frag"));
 
-	auto sphereMesh = std::make_shared<Sphere>(1.0f, 10);
+	auto starShader = std::make_shared<Shader>();
+	starShader->loadVertexShader(path.find("shaders/star.vert"));
+	starShader->loadFragmentShader(path.find("shaders/star.frag"));
+
+	auto sphereMesh = std::make_shared<Sphere>(1.0f, 24);
 
 	auto solarGroup = std::make_shared<Group>();
 	solarGroup->getTransform()->setPosition(glm::vec3(0, 0, 0));
 	auto solar = std::make_shared<MeshNode>();
 	solar->setMesh(sphereMesh);
-	auto solarMaterial = std::make_shared<Material>();
-	solarMaterial->setMainColor(glm::vec3(1.0f, 0.5f, 0.0f));
+	auto solarMaterial = std::make_shared<StarMaterial>(starShader);
+	solarMaterial->setBaseColor(glm::vec3(1.0f, 0.5f, 0.0f));
+	solarMaterial->setBoundColor(glm::vec3(1.0f, 0.0f, 0.0f));
 	solar->setMaterial(solarMaterial);
 	solarGroup->addChild(solar);
 	auto solarLight = std::make_shared<Light>();
@@ -56,9 +62,8 @@ int main(int argc, char* argv[])
 	earthGroup->getTransform()->setScale(glm::vec3(0.5f));
 	auto earth = std::make_shared<MeshNode>();
 	earth->setMesh(sphereMesh);
-	auto earthMaterial = std::make_shared<Material>();
-	earthMaterial->setMainColor(glm::vec3(0.0f, 0.5f, 1.0f));
-	earthMaterial->setShader(planetShader);
+	auto earthMaterial = std::make_shared<DiffusedMaterial>(planetShader);
+	earthMaterial->setDiffuseColor(glm::vec3(0.0f, 0.5f, 1.0f));
 	earth->setMaterial(earthMaterial);
 	earthGroup->addChild(earth);
 	root->addChild(earthGroup);

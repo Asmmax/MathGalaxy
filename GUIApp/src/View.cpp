@@ -9,7 +9,7 @@
 View::View(int width, int height, const std::shared_ptr<Transform>& target):
 	_width(width),
 	_height(height),
-	_background{ 0.5f, 0.5f, 0.5f, 1.0f },
+	_background(0.0f, 0.0f, 0.0f),
 	_target(target),
 	_fboTextureId(0),
 	_fboId(0),
@@ -48,17 +48,17 @@ void View::render(IDrawable* drawable)
 	gl::BindFramebuffer(gl::FRAMEBUFFER, _fboId);
 	gl::Viewport(0, 0, _width, _height);
 
-	gl::ClearColor(_background.r * _background.a, _background.g * _background.a, _background.b * _background.a, _background.a);
+	gl::ClearColor(_background.r, _background.g, _background.b, 1.0f);
 	gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
 	DrawContext context;
 
+	context.add("ViewMatrix", glm::inverse(_target->getGlobalMatrix()));
+	context.add("ProjectionMatrix", glm::perspective(45.0f, _width / (float)_height, 0.01f, 1000.0f));
+
 	if (drawable) {
 		drawable->predraw(context);
 	}
-
-	context.add("ViewMatrix", glm::inverse(_target->getGlobalMatrix()));
-	context.add("ProjectionMatrix", glm::perspective(45.0f, _width / (float)_height, 0.01f, 1000.0f));
 
 	if (drawable) {
 		drawable->draw(context);
