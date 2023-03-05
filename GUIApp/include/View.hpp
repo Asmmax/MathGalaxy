@@ -6,6 +6,7 @@
 
 class IDrawable;
 class Transform;
+class Sky;
 
 class View
 {
@@ -17,6 +18,7 @@ private:
 	int _height;
 	glm::vec3 _background;
 	std::shared_ptr<Transform> _target;
+	std::shared_ptr<Sky> _sky;
 
 	unsigned int _fboTextureId;
 	unsigned int _fboId;
@@ -30,6 +32,7 @@ public:
 	void init();
 	void render(IDrawable* drawable);
 	void setSize(int width, int height);
+	void setSky(const std::shared_ptr<Sky>& sky);
 
 	void setTarget(const std::shared_ptr<Transform>& target) { _target = target; }
 	TextureIdType getFBOTextureId() const { return static_cast<TextureIdType>(_fboTextureId); }

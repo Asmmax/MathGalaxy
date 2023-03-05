@@ -20,6 +20,8 @@
 #include "Shader.hpp"
 #include "Path.hpp"
 #include "drawables/Light.hpp"
+#include "Sky.hpp"
+#include "materials/SkyMaterial.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -41,6 +43,10 @@ int main(int argc, char* argv[])
 	auto starShader = std::make_shared<Shader>();
 	starShader->loadVertexShader(path.find("shaders/star.vert"));
 	starShader->loadFragmentShader(path.find("shaders/star.frag"));
+
+	auto skyShader = std::make_shared<Shader>();
+	skyShader->loadVertexShader(path.find("shaders/sky.vert"));
+	skyShader->loadFragmentShader(path.find("shaders/sky.frag"));
 
 	auto sphereMesh = std::make_shared<Sphere>(1.0f, 24);
 
@@ -78,6 +84,11 @@ int main(int argc, char* argv[])
 	window->setTransformRoot(root->getTransform());
 
 	auto camera = window->creteView(512, 512, cameraEye->getTransform());
+
+	auto cameraShared = camera.lock();
+	auto sky = std::make_shared<Sky>(sphereMesh, skyShader);
+	sky->setAmbientColor(glm::vec3(0.2f, 0.1f, 0.1f));
+	cameraShared->setSky(sky);
 
 	//construct widgets
 	auto viewportWidget = std::make_shared<ViewportWidget>("Main Viewport", 512,512, camera);

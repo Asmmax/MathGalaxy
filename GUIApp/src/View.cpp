@@ -2,6 +2,7 @@
 #include "IDrawable.hpp"
 #include "DrawContext.hpp"
 #include "Transform.hpp"
+#include "Sky.hpp"
 #include "gl/gl_core_4_3.hpp"
 #include "glm/glm.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
@@ -9,7 +10,7 @@
 View::View(int width, int height, const std::shared_ptr<Transform>& target):
 	_width(width),
 	_height(height),
-	_background(0.0f, 0.0f, 0.0f),
+	_background(0.5f, 0.5f, 0.5f),
 	_target(target),
 	_fboTextureId(0),
 	_fboId(0),
@@ -56,6 +57,14 @@ void View::render(IDrawable* drawable)
 	context.add("ViewMatrix", glm::inverse(_target->getGlobalMatrix()));
 	context.add("ProjectionMatrix", glm::perspective(45.0f, _width / (float)_height, 0.01f, 1000.0f));
 
+	if (_sky) {
+		_sky->predraw(context);
+
+		DrawContext origin(context);
+		_sky->draw(context);
+		context = origin;
+	}
+
 	if (drawable) {
 		drawable->predraw(context);
 	}
@@ -74,6 +83,16 @@ void View::setSize(int width, int height)
 		_height = height;
 		_isResized = true;
 	}
+}
+
+void View::setSky(const std::shared_ptr<Sky>& sky)
+{
+	_sky = sky;
+
+	if (_sky) {
+		_sky->init();
+	}
+
 }
 
 void View::resizeBuffer()
