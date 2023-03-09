@@ -2,10 +2,11 @@
 #include "Transform.hpp"
 #include "DrawContext.hpp"
 
-void Group::addChild(const std::shared_ptr<Node>& child)
+void Group::attachChild(const std::shared_ptr<Node>& child)
 {
-	getTransform()->addChild(child->getTransform());
-	_children.emplace_back(child);
+	auto&& thisNode = shared_from_this();
+	auto&& thisGroup = std::static_pointer_cast<Group>(thisNode);
+	child->setParent(thisGroup);
 }
 
 unsigned int Group::getChildCount() const
@@ -51,4 +52,17 @@ void Group::draw(DrawContext& context)
 		}
 		(*it)->draw(context);
 	}
+}
+
+void Group::addChild(const std::shared_ptr<Node>& child)
+{
+	getTransform()->addChild(child->getTransform());
+	_children.emplace_back(child);
+}
+
+void Group::removeChild(const std::shared_ptr<Node>& child)
+{
+	getTransform()->removeChild(child->getTransform());
+	auto lastIt = std::remove(_children.begin(), _children.end(), child);
+	_children.erase(lastIt, _children.end());
 }

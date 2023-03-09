@@ -47,6 +47,12 @@ void Transform::addChild(const std::shared_ptr<Transform>& child)
 	_children.emplace_back(child);
 }
 
+void Transform::removeChild(const std::shared_ptr<Transform>& child)
+{
+	auto lastIt = std::remove(_children.begin(), _children.end(), child);
+	_children.erase(lastIt, _children.end());
+}
+
 const glm::mat4& Transform::getLocalMatrix() const
 {
 	if (_dirtyLocalMatrix) {

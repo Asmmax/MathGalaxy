@@ -8,7 +8,7 @@ Sky::Sky(const std::shared_ptr<AMesh>& mesh, const std::shared_ptr<Shader>& shad
 	_ambientColor(0.0f, 0.0f, 0.0f),
 	_mesh(mesh),
 	_material(std::make_shared<SkyMaterial>(shader)),
-	_size(1000.0f)
+	_size(500.0f)
 {
 }
 

@@ -61,10 +61,10 @@ int main(int argc, char* argv[])
 	solarMaterial->setBaseColor(glm::vec3(1.0f, 0.5f, 0.0f));
 	solarMaterial->setBoundColor(glm::vec3(1.0f, 0.0f, 0.0f));
 	solar->setMaterial(solarMaterial);
-	solarGroup->addChild(solar);
+	solarGroup->attachChild(solar);
 	auto solarLight = std::make_shared<Light>();
-	solarGroup->addChild(solarLight);
-	root->addChild(solarGroup);
+	solarGroup->attachChild(solarLight);
+	root->attachChild(solarGroup);
 
 	auto earthGroup = std::make_shared<Group>();
 	earthGroup->getTransform()->setPosition(glm::vec3(2, 0, -5));
@@ -74,13 +74,13 @@ int main(int argc, char* argv[])
 	auto earthMaterial = std::make_shared<DiffusedMaterial>(planetShader);
 	earthMaterial->setDiffuseColor(glm::vec3(0.0f, 0.5f, 1.0f));
 	earth->setMaterial(earthMaterial);
-	earthGroup->addChild(earth);
-	root->addChild(earthGroup);
+	earthGroup->attachChild(earth);
+	root->attachChild(earthGroup);
 
 	auto cameraTarget = std::make_shared<Group>();
 	auto cameraEye = std::make_shared<Group>();
-	cameraTarget->addChild(cameraEye);
-	root->addChild(cameraTarget);
+	cameraTarget->attachChild(cameraEye);
+	root->attachChild(cameraTarget);
 	cameraEye->getTransform()->setPosition(glm::vec3{ 0, 0, 5 });
 
 	window->setDrawableRoot(root);
@@ -121,6 +121,8 @@ int main(int argc, char* argv[])
 
 	auto controller = std::make_shared<CameraController>(cameraTarget->getTransform(), cameraEye->getTransform());
 	window->setController(controller);
+
+	cameraTarget->setParent(solarGroup);
 
 	return window->run();
 }

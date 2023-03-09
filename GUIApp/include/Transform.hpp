@@ -29,6 +29,7 @@ public:
 	glm::vec3 getGlobalPosition() const;
 
 	void addChild(const std::shared_ptr<Transform>& child);
+	void removeChild(const std::shared_ptr<Transform>& child);
 
 	const glm::mat4& getLocalMatrix() const;
 	const glm::mat4& getGlobalMatrix() const { return _globalMatrix; }
