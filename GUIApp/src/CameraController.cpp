@@ -1,5 +1,5 @@
 #include "CameraController.hpp"
-#include "Transform.hpp"
+#include "drawables/Transform.hpp"
 
 CameraController::CameraController(const std::shared_ptr<Transform>& target, const std::shared_ptr<Transform>& eye, double scrollSpeed):
 	_target(target),

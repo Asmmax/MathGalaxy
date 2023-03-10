@@ -1,5 +1,5 @@
 #include "gui/widgets/TransformWidget.hpp"
-#include "Transform.hpp"
+#include "drawables/Transform.hpp"
 #include "imgui.h"
 
 TransformWidget::TransformWidget(const std::string& name, const std::shared_ptr<Transform>& transform, int width, int height):

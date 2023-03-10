@@ -1,28 +1,28 @@
-#include "Application.hpp"
-#include "Window.hpp"
+#include "infrastruct/Application.hpp"
+#include "infrastruct/Window.hpp"
 #include "gui/DemoGUI.hpp"
-#include "View.hpp"
+#include "infrastruct/View.hpp"
 #include "gui/widgets/ViewportWidget.hpp"
-#include "Transform.hpp"
-#include "drawables/Group.hpp"
+#include "drawables/Transform.hpp"
+#include "drawables/nodes/Group.hpp"
 #include "gui/widgets/TransformWidget.hpp"
 #include "gui/widgets/WidgetGroup.hpp"
 #include "gui/GUI.hpp"
-#include "drawables/MeshNode.hpp"
-#include "meshes/Sphere.hpp"
+#include "drawables/nodes/MeshNode.hpp"
+#include "drawables/meshes/Sphere.hpp"
 #include "CameraController.hpp"
 #include "gui/MenuPanel.hpp"
 #include "gui/menu/MenuList.hpp"
 #include "gui/menu/MenuItemEnabler.hpp"
-#include "impl/GLFWApplicationImpl.hpp"
-#include "materials/DiffusedMaterial.hpp"
-#include "materials/StarMaterial.hpp"
-#include "Shader.hpp"
+#include "infrastruct/impl/GLFWApplicationImpl.hpp"
+#include "drawables/materials/DiffusedMaterial.hpp"
+#include "drawables/materials/StarMaterial.hpp"
+#include "infrastruct/Shader.hpp"
 #include "Path.hpp"
-#include "drawables/Light.hpp"
-#include "Sky.hpp"
-#include "materials/SkyMaterial.hpp"
-#include "Texture.hpp"
+#include "drawables/nodes/Light.hpp"
+#include "drawables/Sky.hpp"
+#include "drawables/materials/SkyMaterial.hpp"
+#include "drawables/Texture.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -84,9 +84,8 @@ int main(int argc, char* argv[])
 	cameraEye->getTransform()->setPosition(glm::vec3{ 0, 0, 5 });
 
 	window->setDrawableRoot(root);
-	window->setTransformRoot(root->getTransform());
 
-	auto camera = window->creteView(512, 512, cameraEye->getTransform());
+	auto camera = window->creteView(512, 512);
 
 	auto cameraShared = camera.lock();
 	auto sky = std::make_shared<Sky>(sphereMesh, skyShader);
@@ -124,5 +123,19 @@ int main(int argc, char* argv[])
 
 	cameraTarget->setParent(solarGroup);
 
-	return window->run();
+
+	auto&& rootTransform = root->getTransform();
+
+	while (!window->isDone()) {
+		window->handle();
+
+		rootTransform->computeGlobalMatrices();
+
+		auto viewMatrix = glm::inverse(cameraEye->getTransform()->getGlobalMatrix());
+		cameraShared->setMatrix(viewMatrix);
+
+		window->render();
+		window->renderGUI();
+	}
+	return 0;
 }

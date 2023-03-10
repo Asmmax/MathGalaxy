@@ -1,5 +1,5 @@
 #pragma once
-#include "IMenuItem.hpp"
+#include "gui/menu/IMenuItem.hpp"
 #include <memory>
 #include <vector>
 #include <string>

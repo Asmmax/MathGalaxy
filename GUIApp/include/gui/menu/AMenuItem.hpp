@@ -1,5 +1,5 @@
 #pragma once
-#include "IMenuItem.hpp"
+#include "gui/menu/IMenuItem.hpp"
 #include <string>
 
 class AMenuItem : public IMenuItem

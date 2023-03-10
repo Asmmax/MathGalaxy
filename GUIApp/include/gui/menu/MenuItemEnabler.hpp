@@ -1,5 +1,5 @@
 #pragma once
-#include "AMenuItem.hpp"
+#include "gui/menu/AMenuItem.hpp"
 #include <memory>
 
 class AWidget;

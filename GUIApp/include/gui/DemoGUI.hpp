@@ -1,9 +1,13 @@
 #pragma once
-#include "gui/IGUI.hpp"
+#include "infrastruct/IGUI.hpp"
+
+class IGraphicsContext;
 
 class DemoGUI : public IGUI
 {
+private:
+	std::weak_ptr<IGraphicsContext> _graphicsContext;
 public:
-	void init() override;
+	void init(const std::weak_ptr<IGraphicsContext>& context) override;
 	void setup() override;
 };

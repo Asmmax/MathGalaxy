@@ -1,6 +1,6 @@
 #include "gui/widgets/ViewportWidget.hpp"
+#include "infrastruct/View.hpp"
 #include "imgui.h"
-#include "View.hpp"
 
 ViewportWidget::ViewportWidget(const std::string& name, int width, int height, const std::weak_ptr<View>& view):
 	AWidget(name, width, height),
