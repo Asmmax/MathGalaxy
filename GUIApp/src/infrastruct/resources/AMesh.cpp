@@ -1,4 +1,4 @@
-#include "drawables/AMesh.hpp"
+#include "infrastruct/resources/AMesh.hpp"
 #include "infrastruct/IGraphicsContext.hpp"
 #include "gl/gl_core_4_3.hpp"
 

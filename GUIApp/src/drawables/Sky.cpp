@@ -1,5 +1,5 @@
 #include "drawables/Sky.hpp"
-#include "drawables/AMesh.hpp"
+#include "infrastruct/resources/AMesh.hpp"
 #include "drawables/materials/SkyMaterial.hpp"
 #include "infrastruct/DrawContext.hpp"
 #include "infrastruct/IGraphicsContext.hpp"

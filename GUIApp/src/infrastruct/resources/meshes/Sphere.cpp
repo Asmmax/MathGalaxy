@@ -1,4 +1,4 @@
-#include "drawables/meshes/Sphere.hpp"
+#include "infrastruct/resources/meshes/Sphere.hpp"
 #include "gl/gl_core_4_3.hpp"
 #include "glm/gtx/normal.hpp"
 

@@ -1,9 +1,8 @@
 #include "drawables/AMaterial.hpp"
-#include "infrastruct/Shader.hpp"
+#include "infrastruct/resources/Shader.hpp"
 #include "infrastruct/DrawContext.hpp"
-#include "drawables/Texture.hpp"
+#include "infrastruct/resources/Texture.hpp"
 #include "infrastruct/IGraphicsContext.hpp"
-#include "gl/gl_core_4_3.hpp"
 #include <assert.h>
 
 AMaterial::AMaterial(const std::shared_ptr<Shader>& shader) :
@@ -100,7 +99,10 @@ void AMaterial::apply(const DrawContext& context)
 
 void AMaterial::clear()
 {
-	gl::UseProgram(0);
+	if (!_shader) {
+		return;
+	}
+	_shader->clear();
 }
 
 void AMaterial::addTexture(const std::string& name, const std::shared_ptr<Texture>& texture)

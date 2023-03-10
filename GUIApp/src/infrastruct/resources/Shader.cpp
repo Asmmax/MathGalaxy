@@ -1,4 +1,4 @@
-#include "infrastruct/Shader.hpp"
+#include "infrastruct/resources/Shader.hpp"
 #include "infrastruct/IGraphicsContext.hpp"
 #include "gl/gl_core_4_3.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -101,6 +101,11 @@ void Shader::loadFragmentShader(const std::string& fileName)
 void Shader::use()
 {
 	gl::UseProgram(_programHandle);
+}
+
+void Shader::clear()
+{
+	gl::UseProgram(0);
 }
 
 void Shader::setUniform(const std::string& name, const glm::mat4& matrix)

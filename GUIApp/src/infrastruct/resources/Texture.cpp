@@ -1,4 +1,4 @@
-#include "drawables/Texture.hpp"
+#include "infrastruct/resources/Texture.hpp"
 #include "infrastruct/IGraphicsContext.hpp"
 #include "gl/gl_core_4_3.hpp"
 #include <iostream>

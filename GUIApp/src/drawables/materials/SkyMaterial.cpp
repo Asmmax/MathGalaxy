@@ -1,5 +1,5 @@
 #include "drawables/materials/SkyMaterial.hpp"
-#include "infrastruct/Shader.hpp"
+#include "infrastruct/resources/Shader.hpp"
 
 SkyMaterial::SkyMaterial(const std::shared_ptr<Shader>& shader) :
 	AMaterial(shader),

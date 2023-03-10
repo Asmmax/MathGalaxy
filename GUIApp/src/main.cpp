@@ -9,7 +9,7 @@
 #include "gui/widgets/WidgetGroup.hpp"
 #include "gui/GUI.hpp"
 #include "drawables/nodes/MeshNode.hpp"
-#include "drawables/meshes/Sphere.hpp"
+#include "infrastruct/resources/meshes/Sphere.hpp"
 #include "CameraController.hpp"
 #include "gui/MenuPanel.hpp"
 #include "gui/menu/MenuList.hpp"
@@ -17,12 +17,12 @@
 #include "infrastruct/impl/GLFWApplicationImpl.hpp"
 #include "drawables/materials/DiffusedMaterial.hpp"
 #include "drawables/materials/StarMaterial.hpp"
-#include "infrastruct/Shader.hpp"
+#include "infrastruct/resources/Shader.hpp"
 #include "Path.hpp"
 #include "drawables/nodes/Light.hpp"
 #include "drawables/Sky.hpp"
 #include "drawables/materials/SkyMaterial.hpp"
-#include "drawables/Texture.hpp"
+#include "infrastruct/resources/Texture.hpp"
 
 int main(int argc, char* argv[])
 {

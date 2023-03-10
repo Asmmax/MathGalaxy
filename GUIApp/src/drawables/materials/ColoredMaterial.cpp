@@ -1,5 +1,5 @@
 #include "drawables/materials/ColoredMaterial.hpp"
-#include "infrastruct/Shader.hpp"
+#include "infrastruct/resources/Shader.hpp"
 
 std::shared_ptr<Shader> ColoredMaterial::defaultShader = std::make_shared<Shader>(
 	"#version 430\n"

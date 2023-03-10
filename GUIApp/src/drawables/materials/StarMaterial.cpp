@@ -1,5 +1,5 @@
 #include "drawables/materials/StarMaterial.hpp"
-#include "infrastruct/Shader.hpp"
+#include "infrastruct/resources/Shader.hpp"
 
 StarMaterial::StarMaterial(const std::shared_ptr<Shader>& shader):
 	AMaterial(shader),

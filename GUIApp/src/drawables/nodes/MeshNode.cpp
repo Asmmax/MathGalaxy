@@ -1,7 +1,7 @@
 #include "drawables/nodes/MeshNode.hpp"
 #include "drawables/AMaterial.hpp"
 #include "drawables/Transform.hpp"
-#include "drawables/AMesh.hpp"
+#include "infrastruct/resources/AMesh.hpp"
 #include "infrastruct/DrawContext.hpp"
 #include "infrastruct/IGraphicsContext.hpp"
 

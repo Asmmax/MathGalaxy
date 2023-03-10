@@ -1,5 +1,5 @@
 #pragma once
-#include "drawables/AMesh.hpp"
+#include "infrastruct/resources/AMesh.hpp"
 
 class Sphere : public AMesh
 {

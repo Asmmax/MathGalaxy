@@ -29,6 +29,7 @@ public:
 	void setFragmentShader(const std::string& text) { _fragmentShader = text; }
 
 	void use();
+	void clear();
 
 	void setUniform(const std::string& name, const glm::mat4& matrix);
 	void setUniform(const std::string& name, const glm::mat3& matrix);

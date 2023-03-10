@@ -1,5 +1,5 @@
 #include "drawables/materials/DiffusedMaterial.hpp"
-#include "infrastruct/Shader.hpp"
+#include "infrastruct/resources/Shader.hpp"
 
 DiffusedMaterial::DiffusedMaterial(const std::shared_ptr<Shader>& shader):
 	AMaterial(shader),

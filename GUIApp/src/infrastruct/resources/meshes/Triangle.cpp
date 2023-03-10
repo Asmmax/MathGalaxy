@@ -1,4 +1,4 @@
-#include "drawables/meshes/Triangle.hpp"
+#include "infrastruct/resources/meshes/Triangle.hpp"
 #include "gl/gl_core_4_3.hpp"
 
 Triangle::Triangle(float size):

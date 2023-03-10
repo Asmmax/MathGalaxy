@@ -1,5 +1,5 @@
 #include "infrastruct/DrawContext.hpp"
-#include "infrastruct/Shader.hpp"
+#include "infrastruct/resources/Shader.hpp"
 #include <assert.h>
 
 void DrawContext::add(const std::string& name, const glm::mat4& matrix)
