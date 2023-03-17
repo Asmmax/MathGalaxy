@@ -2,7 +2,7 @@
 #include "infrastruct/View.hpp"
 #include "imgui.h"
 
-ViewportWidget::ViewportWidget(const std::string& name, int width, int height, const std::weak_ptr<View>& view):
+ViewportWidget::ViewportWidget(const std::string& name, int width, int height, View* view):
 	AWidget(name, width, height),
 	_view(view)
 {
@@ -10,8 +10,7 @@ ViewportWidget::ViewportWidget(const std::string& name, int width, int height, c
 
 void ViewportWidget::setupContent()
 {
-	auto viewStrong = _view.lock();
-	if (!viewStrong) {
+	if (!_view) {
 		return;
 	}
 
@@ -19,8 +18,8 @@ void ViewportWidget::setupContent()
 	ImVec2 pos = ImGui::GetCursorScreenPos();
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-	viewStrong->setSize(static_cast<int>(size.x), static_cast<int>(size.y));
-	auto fboTexture64 = viewStrong->getFBOTextureId();
+	_view->setSize(static_cast<int>(size.x), static_cast<int>(size.y));
+	auto fboTexture64 = _view->getFBOTextureId();
 	drawList->AddImage((void*)fboTexture64,
 		pos,
 		ImVec2(pos.x + size.x, pos.y + size.y),

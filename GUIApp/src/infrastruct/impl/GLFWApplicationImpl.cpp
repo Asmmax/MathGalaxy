@@ -11,9 +11,6 @@ bool GLFWApplicationImpl::init()
 
 void GLFWApplicationImpl::terminate()
 {
-	for (auto& window : _windows) {
-		window->terminate();
-	}
 	glfwTerminate();
 }
 
@@ -38,8 +35,5 @@ IWindowImpl* GLFWApplicationImpl::createWindow(int width, int height, const std:
 
 	printf("Number of functions that failed to load: %i.\n", didLoad.GetNumMissing());
 
-	auto windowShell = std::make_shared<GLFWWindowImpl>(window);
-	windowShell->init();
-	_windows.push_back(windowShell);
-	return _windows.back().get();
+	return new GLFWWindowImpl(window);
 }

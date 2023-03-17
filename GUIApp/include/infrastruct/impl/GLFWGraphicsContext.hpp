@@ -1,5 +1,7 @@
 #pragma once
 #include "infrastruct/IGraphicsContext.hpp"
+#include "infrastruct/impl/GLLoaderImpl.hpp"
+#include <vector>
 
 struct GLFWwindow;
 struct ImGuiContext;
@@ -20,4 +22,6 @@ public:
 	void swapBuffers() override;
 	void setupImgui() override;
 	void renderImgui() override;
+
+	ILoaderImpl* createLoader() override;
 };

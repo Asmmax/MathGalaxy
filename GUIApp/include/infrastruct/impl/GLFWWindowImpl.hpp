@@ -1,6 +1,8 @@
 #pragma once
 #include "infrastruct/IWindowImpl.hpp"
-#include <memory>
+#include "infrastruct/impl/GLFWGraphicsContext.hpp"
+#include "infrastruct/impl/GLFWInputHandler.hpp"
+#include "infrastruct/impl/GLViewImpl.hpp"
 #include <vector>
 
 struct GLFWwindow;
@@ -9,8 +11,8 @@ class GLFWWindowImpl : public IWindowImpl
 {
 private:
 	GLFWwindow* _window;
-	std::shared_ptr<IGraphicsContext> _graphicsContext;
-	std::shared_ptr<IInputHandler> _inputHandler;
+	GLFWGraphicsContext _graphicsContext;
+	GLFWInputHandler _inputHandler;
 
 public:
 	GLFWWindowImpl(GLFWwindow* window);
@@ -19,6 +21,8 @@ public:
 	void terminate() override;
 	bool isDone() override;
 	void handle() override;
-	std::weak_ptr<IGraphicsContext> getGraphicsContext() override;
-	std::weak_ptr<IInputHandler> getInputHandler() override;
+	IGraphicsContext* getGraphicsContext() override;
+	IInputHandler* getInputHandler() override;
+
+	IViewImpl* createView() override;
 };

@@ -1,13 +1,9 @@
 #pragma once
 #include "infrastruct/IApplicationImpl.hpp"
-#include <memory>
 #include <vector>
 
 class GLFWApplicationImpl : public IApplicationImpl
 {
-private:
-	std::vector<std::shared_ptr<IWindowImpl>> _windows;
-
 public:
 	bool init() override;
 	void terminate() override;

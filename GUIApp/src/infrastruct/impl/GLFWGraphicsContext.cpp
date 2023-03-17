@@ -71,6 +71,9 @@ void GLFWGraphicsContext::renderImgui()
 	gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
 
-	swapBuffers();
+ILoaderImpl* GLFWGraphicsContext::createLoader()
+{
+	return new GLLoaderImpl();
 }

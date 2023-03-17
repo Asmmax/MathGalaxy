@@ -1,17 +1,19 @@
 #include "infrastruct/Window.hpp"
 #include "infrastruct/IGUI.hpp"
-#include "infrastruct/IDrawable.hpp"
 #include "infrastruct/IController.hpp"
 #include "infrastruct/IWindowImpl.hpp"
 #include "infrastruct/IInputHandler.hpp"
 #include "infrastruct/IGraphicsContext.hpp"
-#include "infrastruct/View.hpp"
+#include "infrastruct/IViewImpl.hpp"
+#include "infrastruct/Loader.hpp"
 #include "imgui.h"
 
 Window::Window(IWindowImpl* impl):
 	_impl(impl)
 {
-	if (auto inputHandler = _impl->getInputHandler().lock()) {
+	_impl->init();
+
+	if (auto inputHandler = _impl->getInputHandler()) {
 		inputHandler->setMouseRightButtonDownCallback([this](double x, double y) {
 			mouseButtonCallback(x, y);
 			});
@@ -24,31 +26,32 @@ Window::Window(IWindowImpl* impl):
 	}
 }
 
+Window::~Window()
+{
+	for (auto& viewPtr : _views) {
+		delete viewPtr;
+	}
+
+	_loader.reset();
+
+	_impl->terminate();
+
+	delete _impl;
+}
+
 void Window::setGUI(const std::shared_ptr<IGUI>& gui)
 {
 	_gui = gui;
 
 	auto graphicsContext = _impl->getGraphicsContext();
-	if (graphicsContext.expired()) {
+	if (!graphicsContext) {
 		return;
 	}
+
+	graphicsContext->makeCurrent();
 
 	if (_gui) {
-		_gui->init(graphicsContext);
-	}
-}
-
-void Window::setDrawableRoot(const std::shared_ptr<IDrawable>& drawableRoot)
-{ 
-	_drawableRoot = drawableRoot;
-
-	auto graphicsContext = _impl->getGraphicsContext();
-	if (graphicsContext.expired()) {
-		return;
-	}
-
-	if (_drawableRoot) {
-		_drawableRoot->init(graphicsContext);
+		_gui->init();
 	}
 }
 
@@ -69,24 +72,7 @@ void Window::handle()
 
 void Window::render()
 {
-	if (!_drawableRoot) {
-		return;
-	}
-
-	auto graphicsContext = _impl->getGraphicsContext().lock();
-	if (!graphicsContext) {
-		return;
-	}
-	graphicsContext->makeCurrent();
-
-	for (auto& view : _views) {
-		view->render(_drawableRoot.get());
-	}
-}
-
-void Window::renderGUI()
-{
-	auto graphicsContext = _impl->getGraphicsContext().lock();
+	auto graphicsContext = _impl->getGraphicsContext();
 	if (!graphicsContext) {
 		return;
 	}
@@ -101,20 +87,44 @@ void Window::renderGUI()
 
 	ImGui::Render();
 	graphicsContext->renderImgui();
+	graphicsContext->swapBuffers();
 }
 
-std::weak_ptr<View> Window::creteView(int width, int height)
+View* Window::creteView(int width, int height)
 {
 	auto graphicsContext = _impl->getGraphicsContext();
-	if (graphicsContext.expired()) {
-		return std::weak_ptr<View>();
+	if (!graphicsContext) {
+		return nullptr;
 	}
 
-	auto view = std::make_shared<View>(width, height);
-	view->init(graphicsContext);
+	IViewImpl* viewImpl = _impl->createView();
+	if (!viewImpl) {
+		return nullptr;
+	}
 
-	_views.push_back(view);
-	return _views.back();
+	View* newView = new View(viewImpl, width, height);
+	newView->init(graphicsContext);
+	_views.push_back(newView);
+	return newView;
+}
+
+Loader* Window::getLoader()
+{
+	if (!_loader) {
+		auto graphicsContext = _impl->getGraphicsContext();
+		if (!graphicsContext) {
+			return nullptr;
+		}
+
+		auto loaderImpl = graphicsContext->createLoader();
+		if (!loaderImpl) {
+			return nullptr;
+		}
+
+		_loader = std::make_unique<Loader>(loaderImpl);
+		_loader->init(graphicsContext);
+	}
+	return _loader.get();
 }
 
 void Window::mouseButtonCallback(double posX, double posY)
@@ -132,7 +142,7 @@ void Window::mousePositionCallback(double x, double y)
 		return;
 	}
 
-	auto inputHandler = _impl->getInputHandler().lock();
+	auto inputHandler = _impl->getInputHandler();
 	if (!inputHandler) {
 		return;
 	}

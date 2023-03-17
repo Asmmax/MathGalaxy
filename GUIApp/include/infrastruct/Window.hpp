@@ -1,13 +1,12 @@
 #pragma once
-#include <string>
+#include "infrastruct/View.hpp"
+#include "infrastruct/Loader.hpp"
 #include <memory>
 #include <vector>
 
 class IGUI;
-class IDrawable;
 class IController;
 class IWindowImpl;
-class View;
 
 class Window
 {
@@ -16,20 +15,21 @@ class Window
 private:
 	IWindowImpl* _impl;
 	std::shared_ptr<IGUI> _gui;
-	std::shared_ptr<IDrawable> _drawableRoot;
 	std::shared_ptr<IController> _controller;
-	std::vector<std::shared_ptr<View>> _views;
+	std::vector<View*> _views;
+	std::unique_ptr<Loader> _loader;
 
 public:
+	~Window();
+
 	void setGUI(const std::shared_ptr<IGUI>& gui);
-	void setDrawableRoot(const std::shared_ptr<IDrawable>& drawableRoot);
 	void setController(const std::shared_ptr<IController>& controller);
 
 	bool isDone();
 	void handle();
 	void render();
-	void renderGUI();
-	std::weak_ptr<View> creteView(int width, int height);
+	View* creteView(int width, int height);
+	Loader* getLoader();
 
 private:
 	Window(IWindowImpl* impl);

@@ -3,6 +3,7 @@
 
 class IGraphicsContext;
 class IInputHandler;
+class IViewImpl;
 
 class IWindowImpl
 {
@@ -13,6 +14,8 @@ public:
 	virtual void terminate() = 0;
 	virtual bool isDone() = 0;
 	virtual void handle() = 0;
-	virtual std::weak_ptr<IGraphicsContext> getGraphicsContext() = 0;
-	virtual std::weak_ptr<IInputHandler> getInputHandler() = 0;
+	virtual IGraphicsContext* getGraphicsContext() = 0;
+	virtual IInputHandler* getInputHandler() = 0;
+
+	virtual IViewImpl* createView() = 0;
 };

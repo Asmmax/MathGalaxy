@@ -1,6 +1,8 @@
 #pragma once
 #include <utility>
 
+class ILoaderImpl;
+
 class IGraphicsContext
 {
 public:
@@ -19,4 +21,6 @@ public:
 	virtual void swapBuffers() = 0;
 	virtual void setupImgui() = 0;
 	virtual void renderImgui() = 0;
+
+	virtual ILoaderImpl* createLoader() = 0;
 };

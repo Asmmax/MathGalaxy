@@ -1,25 +1,24 @@
 #pragma once
-#include <string>
-#include <memory>
 
-class IGraphicsContext;
+class ITextureImpl;
+struct TextureData;
 
 class Texture
 {
 private:
-	std::string _fileName;
-	unsigned int _textureHandle;
+	ITextureImpl* _impl;
 	int _textureUnit;
-	std::weak_ptr<IGraphicsContext> _graphicsContext;
+	int _width;
+	int _height;
 
 public:
-	Texture(const std::string& fileName);
+	Texture(ITextureImpl* textureImpl);
+	~Texture();
 
-	void init(const std::weak_ptr<IGraphicsContext>& context);
-	void deinit();
+	void init(const TextureData& data);
 	void apply(int textureUnit);
 	void clear();
 
-private:
-	static unsigned char* loadPixels(const std::string& fName, int& width, int& height);
+	void updateData(const TextureData& data);
+	void resize(int width, int height);
 };
