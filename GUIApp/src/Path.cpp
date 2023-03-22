@@ -27,7 +27,9 @@ void Path::loadSettings(const std::string& settings)
 	file.open(settings);
 
 	if (!file.is_open()) {
-		fprintf(stderr, "Settings file could not be open!");
+		std::string settingsPath = std::filesystem::current_path().string() + "/settings.dat";
+		std::string errorMessage = "Settings file: " + settingsPath + " could not be open!\n";
+		fprintf(stderr, errorMessage.c_str());
 		return;
 	}
 

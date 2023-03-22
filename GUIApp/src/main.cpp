@@ -25,6 +25,8 @@
 #include "infrastruct/resources/TextureData.hpp"
 
 #include <glm/gtx/transform.hpp>
+#include <random>
+
 
 int main(int argc, char* argv[])
 {
@@ -75,20 +77,31 @@ int main(int argc, char* argv[])
 
 	root->addChild(solarTransform);
 
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<> dis(-10.0, 10.0);
+	std::uniform_real_distribution<> disColor(0.0, 1.0);
 
-	auto earth = model.createObject();
-	auto earthTransform = std::make_shared<Transform>();
-	earthTransform->setPosition(glm::vec3(2, 0, -5));
-	earthTransform->setScale(glm::vec3(0.5f));
-	earth->setShader(planetShader);
-	earth->setMesh(sphereMesh);
-	auto& earthMaterial = earth->getState();
-	earthMaterial.add("Material.DiffuseColor", glm::vec3(0.0f, 0.5f, 1.0f));
-	earthMaterial.add("Material.AmbientFactor", 0.2f);
-	earthMaterial.add("Material.DiffuseFactor", 0.8f);
+	std::vector<Object*> bodies;
+	std::vector<std::shared_ptr<Transform>> bodyTransforms;
+	for (int i = 0; i < 1000; i++) {
 
-	root->addChild(earthTransform);
+		auto earth = model.createObject();
+		bodies.push_back(earth);
+		auto earthTransform = std::make_shared<Transform>();
+		bodyTransforms.push_back(earthTransform);
+		earthTransform->setPosition(glm::vec3(dis(gen), dis(gen), dis(gen)));
+		earthTransform->setScale(glm::vec3(0.5f));
+		earth->setShader(planetShader);
+		earth->setMesh(sphereMesh);
+		auto& earthMaterial = earth->getState();
+		earthMaterial.add("Material.DiffuseColor", glm::vec3(disColor(gen), disColor(gen), disColor(gen)));
+		earthMaterial.add("Material.AmbientFactor", 0.2f);
+		earthMaterial.add("Material.DiffuseFactor", 0.8f);
 
+		root->addChild(earthTransform);
+
+	}
 
 	auto sky = model.createObject();
 	sky->setShader(skyShader);
@@ -144,7 +157,11 @@ int main(int argc, char* argv[])
 
 		solar->setMatrix(solarTransform->getGlobalMatrix());
 		solarLight->setPosition(solarTransform->getGlobalPosition());
-		earth->setMatrix(earthTransform->getGlobalMatrix());
+
+		for (size_t i = 0; i < bodies.size(); i++) {
+			bodies[i]->setMatrix(bodyTransforms[i]->getGlobalMatrix());
+		}
+
 		sky->setMatrix(cameraEye->getGlobalMatrix() * glm::scale(glm::vec3(500.0f)));
 		skyMaterial.set("Origin", cameraEye->getGlobalMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
