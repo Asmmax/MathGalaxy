@@ -1,6 +1,9 @@
 #include "infrastruct/impl/GLShaderImpl.hpp"
+#include "infrastruct/DrawState.hpp"
 #include "gl/gl_core_4_3.hpp"
 #include "glm/gtc/type_ptr.hpp"
+
+#undef DrawState
 
 GLShaderImpl::GLShaderImpl():
 	_vertexShaderHandle(0),
@@ -147,7 +150,7 @@ void GLShaderImpl::clear()
 	gl::UseProgram(0);
 }
 
-void GLShaderImpl::setUniform(const std::string& name, const glm::mat4& matrix)
+void GLShaderImpl::setUniform(const StringId& name, const glm::mat4& matrix)
 {
 	auto location = getLocation(name);
 	if (location == -1) {
@@ -156,7 +159,7 @@ void GLShaderImpl::setUniform(const std::string& name, const glm::mat4& matrix)
 	gl::UniformMatrix4fv(location, 1, gl::FALSE_, glm::value_ptr(matrix));
 }
 
-void GLShaderImpl::setUniform(const std::string& name, const glm::mat3& matrix)
+void GLShaderImpl::setUniform(const StringId& name, const glm::mat3& matrix)
 {
 	auto location = getLocation(name);
 	if (location == -1) {
@@ -165,7 +168,7 @@ void GLShaderImpl::setUniform(const std::string& name, const glm::mat3& matrix)
 	gl::UniformMatrix3fv(location, 1, gl::FALSE_, glm::value_ptr(matrix));
 }
 
-void GLShaderImpl::setUniform(const std::string& name, const glm::vec4& vector)
+void GLShaderImpl::setUniform(const StringId& name, const glm::vec4& vector)
 {
 	auto location = getLocation(name);
 	if (location == -1) {
@@ -174,7 +177,7 @@ void GLShaderImpl::setUniform(const std::string& name, const glm::vec4& vector)
 	gl::Uniform4fv(location, 1, glm::value_ptr(vector));
 }
 
-void GLShaderImpl::setUniform(const std::string& name, const glm::vec3& vector)
+void GLShaderImpl::setUniform(const StringId& name, const glm::vec3& vector)
 {
 	auto location = getLocation(name);
 	if (location == -1) {
@@ -183,7 +186,7 @@ void GLShaderImpl::setUniform(const std::string& name, const glm::vec3& vector)
 	gl::Uniform3fv(location, 1, glm::value_ptr(vector));
 }
 
-void GLShaderImpl::setUniform(const std::string& name, float value)
+void GLShaderImpl::setUniform(const StringId& name, float value)
 {
 	auto location = getLocation(name);
 	if (location == -1) {
@@ -192,7 +195,7 @@ void GLShaderImpl::setUniform(const std::string& name, float value)
 	gl::Uniform1f(location, value);
 }
 
-void GLShaderImpl::setUniform(const std::string& name, int value)
+void GLShaderImpl::setUniform(const StringId& name, int value)
 {
 	auto location = getLocation(name);
 	if (location == -1) {
@@ -201,7 +204,7 @@ void GLShaderImpl::setUniform(const std::string& name, int value)
 	gl::Uniform1i(location, value);
 }
 
-unsigned int GLShaderImpl::getLocation(const std::string& name) const
+unsigned int GLShaderImpl::getLocation(const StringId& name) const
 {
 	auto foundIt = std::find(_names.begin(), _names.end(), name);
 	if (foundIt != _names.end()) {
@@ -209,7 +212,7 @@ unsigned int GLShaderImpl::getLocation(const std::string& name) const
 		return _locations[id];
 	}
 
-	GLuint location = gl::GetUniformLocation(_programHandle, name.c_str());
+	GLuint location = gl::GetUniformLocation(_programHandle, name.getChars());
 	_names.push_back(name);
 	_locations.push_back(location);
 	return location;

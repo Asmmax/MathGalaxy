@@ -51,8 +51,10 @@ void View::render(Model* model)
 	_statePool.push();
 
 	auto& state = _statePool.get();
-	state.add("ViewMatrix", _matrix);
-	state.add("ProjectionMatrix", glm::perspective(45.0f, _width / (float)_height, 0.01f, 1000.0f));
+	static StringId viewMatrixName = StringId("ViewMatrix");
+	state.add(viewMatrixName, _matrix);
+	static StringId projMatrixName = StringId("ProjectionMatrix");
+	state.add(projMatrixName, glm::perspective(45.0f, _width / (float)_height, 0.01f, 1000.0f));
 
 	if (model) {
 		model->predraw(_statePool);

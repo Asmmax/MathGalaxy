@@ -29,32 +29,32 @@ void Shader::clear()
 	_impl->clear();
 }
 
-void Shader::setUniform(const std::string& name, const glm::mat4& matrix)
+void Shader::setUniform(const StringId& name, const glm::mat4& matrix)
 {
 	_impl->setUniform(name, matrix);
 }
 
-void Shader::setUniform(const std::string& name, const glm::mat3& matrix)
+void Shader::setUniform(const StringId& name, const glm::mat3& matrix)
 {
 	_impl->setUniform(name, matrix);
 }
 
-void Shader::setUniform(const std::string& name, const glm::vec4& vector)
+void Shader::setUniform(const StringId& name, const glm::vec4& vector)
 {
 	_impl->setUniform(name, vector);
 }
 
-void Shader::setUniform(const std::string& name, const glm::vec3& vector)
+void Shader::setUniform(const StringId& name, const glm::vec3& vector)
 {
 	_impl->setUniform(name, vector);
 }
 
-void Shader::setUniform(const std::string& name, float value)
+void Shader::setUniform(const StringId& name, float value)
 {
 	_impl->setUniform(name, value);
 }
 
-void Shader::setUniform(const std::string& name, int value)
+void Shader::setUniform(const StringId& name, int value)
 {
 	_impl->setUniform(name, value);
 }

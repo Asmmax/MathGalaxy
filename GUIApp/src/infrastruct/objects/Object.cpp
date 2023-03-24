@@ -21,7 +21,7 @@ void Object::setShader(Shader* shader)
 	_shader = shader;
 }
 
-bool Object::hasTexture(const std::string& name) const
+bool Object::hasTexture(const StringId& name) const
 {
 	auto&& it = std::find_if(_textures.begin(), _textures.end(), [name](auto& texturePair) {
 		return texturePair.first == name;
@@ -30,7 +30,7 @@ bool Object::hasTexture(const std::string& name) const
 	return it != _textures.end();
 }
 
-void Object::addTexture(const std::string& name, Texture* texture)
+void Object::addTexture(const StringId& name, Texture* texture)
 {
 	if (!texture) {
 		return;
@@ -41,7 +41,7 @@ void Object::addTexture(const std::string& name, Texture* texture)
 	_textures.emplace_back(name, texture);
 }
 
-void Object::setTexture(const std::string& name, Texture* texture)
+void Object::setTexture(const StringId& name, Texture* texture)
 {
 	if (!texture) {
 		return;
@@ -55,7 +55,7 @@ void Object::setTexture(const std::string& name, Texture* texture)
 	it->second = texture;
 }
 
-void Object::removeTexture(const std::string& name)
+void Object::removeTexture(const StringId& name)
 {
 	assert(hasTexture(name));
 	auto&& it = std::find_if(_textures.begin(), _textures.end(), [name](auto& texturePair) {

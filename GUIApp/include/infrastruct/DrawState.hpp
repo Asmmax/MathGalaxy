@@ -1,4 +1,5 @@
 #pragma once
+#include "infrastruct/StringId.hpp"
 #include "glm/glm.hpp"
 #include <map>
 #include <set>
@@ -11,14 +12,12 @@ class Shader;
 class DrawState
 {
 private:
-	std::vector<std::string> _names;
-
-	std::vector<size_t> _4x4matrixNames;
-	std::vector<size_t> _3x3matrixNames;
-	std::vector<size_t> _4vectorNames;
-	std::vector<size_t> _3vectorNames;
-	std::vector<size_t> _floatNames;
-	std::vector<size_t> _intNames;
+	std::vector<StringId> _4x4matrixNames;
+	std::vector<StringId> _3x3matrixNames;
+	std::vector<StringId> _4vectorNames;
+	std::vector<StringId> _3vectorNames;
+	std::vector<StringId> _floatNames;
+	std::vector<StringId> _intNames;
 
 	std::vector<glm::mat4> _4x4matrices;
 	std::vector<glm::mat3> _3x3matrices;
@@ -28,39 +27,46 @@ private:
 	std::vector<int> _intValues;
 
 public:
-	void add(const std::string& name, const glm::mat4& matrix);
-	void add(const std::string& name, const glm::mat3& matrix);
-	void add(const std::string& name, const glm::vec4& vector);
-	void add(const std::string& name, const glm::vec3& vector);
-	void add(const std::string& name, float value);
-	void add(const std::string& name, int value);
+	void add(const StringId& name, const glm::mat4& matrix);
+	void add(const StringId& name, const glm::mat3& matrix);
+	void add(const StringId& name, const glm::vec4& vector);
+	void add(const StringId& name, const glm::vec3& vector);
+	void add(const StringId& name, float value);
+	void add(const StringId& name, int value);
 
-	void set(const std::string& name, const glm::mat4& matrix);
-	void set(const std::string& name, const glm::mat3& matrix);
-	void set(const std::string& name, const glm::vec4& vector);
-	void set(const std::string& name, const glm::vec3& vector);
-	void set(const std::string& name, float value);
-	void set(const std::string& name, int value);
+	void addOrSet(const StringId& name, const glm::mat4& matrix);
+	void addOrSet(const StringId& name, const glm::mat3& matrix);
+	void addOrSet(const StringId& name, const glm::vec4& vector);
+	void addOrSet(const StringId& name, const glm::vec3& vector);
+	void addOrSet(const StringId& name, float value);
+	void addOrSet(const StringId& name, int value);
 
-	void remove(const std::string& name);
+	void set(const StringId& name, const glm::mat4& matrix);
+	void set(const StringId& name, const glm::mat3& matrix);
+	void set(const StringId& name, const glm::vec4& vector);
+	void set(const StringId& name, const glm::vec3& vector);
+	void set(const StringId& name, float value);
+	void set(const StringId& name, int value);
 
-	bool has(const std::string& name) const;
+	void remove(const StringId& name);
 
-	const glm::mat4& getMat4x4(const std::string& name) const;
-	const glm::mat3& getMat3x3(const std::string& name) const;
-	const glm::vec4& getVector4(const std::string& name) const;
-	const glm::vec3& getVector3(const std::string& name) const;
-	float getFloat(const std::string& name) const;
-	int getInt(const std::string& name) const;
+	bool has(const StringId& name) const;
+
+	const glm::mat4& getMat4x4(const StringId& name) const;
+	const glm::mat3& getMat3x3(const StringId& name) const;
+	const glm::vec4& getVector4(const StringId& name) const;
+	const glm::vec3& getVector3(const StringId& name) const;
+	float getFloat(const StringId& name) const;
+	int getInt(const StringId& name) const;
 
 	void apply(Shader& shader) const;
 	void apply(DrawState& otherState) const;
 
 private:
 	template<typename Type>
-	bool remove(size_t nameIndex, std::vector<size_t>& names, std::vector<Type>& values)
+	bool remove(const StringId& name, std::vector<StringId>& names, std::vector<Type>& values)
 	{
-		auto nameIt = std::find(names.begin(), names.end(), nameIndex);
+		auto nameIt = std::find(names.begin(), names.end(), name);
 		if (nameIt == names.end()) {
 			return false;
 		}
@@ -76,48 +82,43 @@ private:
 	}
 
 	template<typename Type>
-	const Type& getValue(const std::string& name, const std::vector<size_t>& names, const std::vector<Type>& values, const Type& defaultValue) const
+	const Type& getValue(const StringId& name, const std::vector<StringId>& names, const std::vector<Type>& values, const Type& defaultValue) const
 	{
 		assert(has(name));
 
-		auto foundIt = std::find(_names.begin(), _names.end(), name);
-		if (foundIt == _names.end()) {
+		auto foundIt = std::find(names.begin(), names.end(), name);
+		if (foundIt == names.end()) {
 			return defaultValue;
 		}
 
-		size_t nameIndex = std::distance(_names.begin(), foundIt);
-
-		auto nameIt = std::find(names.begin(), names.end(), nameIndex);
-		if (nameIt == names.end()) {
-			assert(false);
-			return defaultValue;
-		}
-
-		size_t index = std::distance(names.begin(), nameIt);
-
+		size_t index = std::distance(names.begin(), foundIt);
 		return values[index];
 	}
 
 	template<typename Type>
-	void set(const std::string& name, const std::vector<size_t>& names, std::vector<Type>& values, const Type& newValue)
+	void addOrSet(const StringId& name, const std::vector<StringId>& names, std::vector<Type>& values, const Type& newValue)
+	{
+		auto foundIt = std::find(names.begin(), names.end(), name);
+		if (foundIt == names.end()) {
+			add(name, newValue);
+			return;
+		}
+
+		size_t index = std::distance(names.begin(), foundIt);
+		values[index] = newValue;
+	}
+
+	template<typename Type>
+	void set(const StringId& name, const std::vector<StringId>& names, std::vector<Type>& values, const Type& newValue)
 	{
 		assert(has(name));
 
-		auto foundIt = std::find(_names.begin(), _names.end(), name);
-		if (foundIt == _names.end()) {
+		auto foundIt = std::find(names.begin(), names.end(), name);
+		if (foundIt == names.end()) {
 			return;
 		}
 
-		size_t nameIndex = std::distance(_names.begin(), foundIt);
-
-		auto nameIt = std::find(names.begin(), names.end(), nameIndex);
-		if (nameIt == names.end()) {
-			assert(false);
-			return;
-		}
-
-		size_t index = std::distance(names.begin(), nameIt);
-
+		size_t index = std::distance(names.begin(), foundIt);
 		values[index] = newValue;
 	}
 };

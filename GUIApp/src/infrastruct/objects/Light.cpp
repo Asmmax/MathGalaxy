@@ -5,6 +5,7 @@
 int Light::MAX_LIGHT_COUNT = 10;
 
 Light::Light():
+	_position(),
 	_color(1.0f, 1.0f, 1.0f),
 	_intensity(1.0f),
 	_radius(100.0f),
@@ -41,9 +42,10 @@ void Light::predraw(DrawStatePool& statePool)
 {
 	auto& state = statePool.get();
 
-	std::string nameTemplate = "PointLights";
+	static std::string nameTemplate = "PointLights";
 
-	auto viewMatrix = state.getMat4x4("ViewMatrix");
+	static StringId viewMatrixName = StringId("ViewMatrix");
+	auto& viewMatrix = state.getMat4x4(viewMatrixName);
 	glm::vec4 viewPosition = viewMatrix * glm::vec4(_position, 1.0f);
 
 	int i = 0;
@@ -51,16 +53,16 @@ void Light::predraw(DrawStatePool& statePool)
 		std::string name(nameTemplate);
 		name += "[" + std::to_string(i) + "]";
 
-		if (!state.has(name + ".Position")) {
-			state.add(name + ".Position", viewPosition);
-			state.add(name + ".Color", _color);
-			state.add(name + ".Intensity", _intensity);
-			state.add(name + ".Radius", _radius);
-			state.add(name + ".FadingArea", _fadingArea);
+		if (!state.has((name + ".Position").c_str())) {
+			state.add((name + ".Position").c_str(), viewPosition);
+			state.add((name + ".Color").c_str(), _color);
+			state.add((name + ".Intensity").c_str(), _intensity);
+			state.add((name + ".Radius").c_str(), _radius);
+			state.add((name + ".FadingArea").c_str(), _fadingArea);
 			break;
 		}
 	}
 
-	state.remove("PointLightCount");
-	state.add("PointLightCount", i + 1);
+	static StringId pointLightCountName = StringId("PointLightCount");
+	state.addOrSet(pointLightCountName, i + 1);
 }

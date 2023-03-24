@@ -16,7 +16,7 @@ private:
 	DrawState _state;
 	Shader* _shader;
 	Mesh* _mesh;
-	std::vector<std::pair<std::string, Texture*>> _textures;
+	std::vector<std::pair<StringId, Texture*>> _textures;
 
 public:
 	Object();
@@ -27,10 +27,10 @@ public:
 	void setMesh(Mesh* mesh);
 	void setShader(Shader* shader);
 
-	bool hasTexture(const std::string& name) const;
-	void addTexture(const std::string& name, Texture* texture);
-	void setTexture(const std::string& name, Texture* texture);
-	void removeTexture(const std::string& name);
+	bool hasTexture(const StringId& name) const;
+	void addTexture(const StringId& name, Texture* texture);
+	void setTexture(const StringId& name, Texture* texture);
+	void removeTexture(const StringId& name);
 
 	void setMatrix(const glm::mat4& matrix);
 	const glm::mat4& getMatrix() const { return _matrix; }

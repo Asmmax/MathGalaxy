@@ -79,12 +79,12 @@ int main(int argc, char* argv[])
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<> dis(-10.0, 10.0);
+	std::uniform_real_distribution<> dis(-100.0, 100.0);
 	std::uniform_real_distribution<> disColor(0.0, 1.0);
 
 	std::vector<Object*> bodies;
 	std::vector<std::shared_ptr<Transform>> bodyTransforms;
-	for (int i = 0; i < 1000; i++) {
+	for (int i = 0; i < 10000; i++) {
 
 		auto earth = model.createObject();
 		bodies.push_back(earth);
@@ -109,7 +109,8 @@ int main(int argc, char* argv[])
 	sky->addTexture("skyMap", skyTexture);
 	auto& skyMaterial = sky->getState();
 	skyMaterial.add("BaseColor", glm::vec3(1.0f, 1.0f, 1.0f));
-	skyMaterial.add("Origin", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	static StringId originName = StringId("Origin");
+	skyMaterial.add(originName, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	auto cameraTarget = std::make_shared<Transform>();
 	auto cameraEye = std::make_shared<Transform>();
@@ -163,7 +164,7 @@ int main(int argc, char* argv[])
 		}
 
 		sky->setMatrix(cameraEye->getGlobalMatrix() * glm::scale(glm::vec3(500.0f)));
-		skyMaterial.set("Origin", cameraEye->getGlobalMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		skyMaterial.set(originName, cameraEye->getGlobalMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
 		auto viewMatrix = glm::inverse(cameraEye->getGlobalMatrix());
 		camera->setMatrix(viewMatrix);

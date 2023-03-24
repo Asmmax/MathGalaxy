@@ -25,8 +25,11 @@ void Model::draw(DrawStatePool& statePool)
 {
 	auto& currentState = statePool.get();
 
-	auto& viewMatrix = currentState.getMat4x4("ViewMatrix");
-	auto& projMatrix = currentState.getMat4x4("ProjectionMatrix");
+	static StringId viewMatrixName = StringId("ViewMatrix");
+	auto& viewMatrix = currentState.getMat4x4(viewMatrixName);
+
+	static StringId projMatrixName = StringId("ProjectionMatrix");
+	auto& projMatrix = currentState.getMat4x4(projMatrixName);
 
 	for (auto& object : _objects) 
 	{
@@ -35,15 +38,21 @@ void Model::draw(DrawStatePool& statePool)
 
 		auto&& modelMatrix = object->getMatrix();
 
-		nextState.add("ModelMatrix", modelMatrix);
+		static StringId modelMatrixName = StringId("ModelMatrix");
+		nextState.add(modelMatrixName, modelMatrix);
 
 		auto modelViewMatrix = viewMatrix * modelMatrix;
 		auto normalMatrix4x4 = glm::transpose(glm::inverse(modelViewMatrix));
 		glm::mat3 normalMatrix(normalMatrix4x4);
 
-		nextState.add("ModelViewMatrix", modelViewMatrix);
-		nextState.add("MVP", projMatrix * modelViewMatrix);
-		nextState.add("NormalMatrix", normalMatrix);
+		static StringId modelViewMatrixName = StringId("ModelViewMatrix");
+		nextState.add(modelViewMatrixName, modelViewMatrix);
+
+		static StringId mvpMatrixName = StringId("MVP");
+		nextState.add(mvpMatrixName, projMatrix * modelViewMatrix);
+
+		static StringId normalMatrixName = StringId("NormalMatrix");
+		nextState.add(normalMatrixName, normalMatrix);
 
 		object->draw(statePool);
 
