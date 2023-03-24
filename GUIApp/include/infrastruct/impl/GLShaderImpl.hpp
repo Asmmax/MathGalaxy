@@ -1,8 +1,6 @@
 #pragma once
 #include "infrastruct/resources/IShaderImpl.hpp"
-#include <string>
-#include <vector>
-#include <unordered_map>
+#include "infrastruct/UnorderedMap.hpp"
 
 class GLShaderImpl : public IShaderImpl
 {
@@ -11,8 +9,7 @@ private:
 	unsigned int _fragmentShaderHandle;
 	unsigned int _programHandle;
 
-	mutable std::vector<StringId> _names;
-	mutable std::vector<unsigned int> _locations;
+	mutable UnorderedMap<StringId, unsigned int> _locations;
 
 public:
 	GLShaderImpl();

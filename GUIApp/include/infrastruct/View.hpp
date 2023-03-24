@@ -22,7 +22,7 @@ private:
 	int _height;
 	glm::vec3 _background;
 	glm::mat4 _matrix;
-	DrawStatePool _statePool;
+	DrawStatePoolDef _statePool;
 
 	bool _isResized;
 

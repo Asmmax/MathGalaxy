@@ -13,7 +13,7 @@ class Object
 {
 private:
 	glm::mat4 _matrix;
-	DrawState _state;
+	DrawStateDef _state;
 	Shader* _shader;
 	Mesh* _mesh;
 	std::vector<std::pair<StringId, Texture*>> _textures;
@@ -21,8 +21,8 @@ private:
 public:
 	Object();
 
-	DrawState& getState() { return _state; }
-	const DrawState& getState() const { return _state; }
+	DrawStateDef& getState() { return _state; }
+	const DrawStateDef& getState() const { return _state; }
 
 	void setMesh(Mesh* mesh);
 	void setShader(Shader* shader);
@@ -35,5 +35,5 @@ public:
 	void setMatrix(const glm::mat4& matrix);
 	const glm::mat4& getMatrix() const { return _matrix; }
 
-	void draw(DrawStatePool& statePool);
+	void draw(DrawStatePoolDef& statePool);
 };

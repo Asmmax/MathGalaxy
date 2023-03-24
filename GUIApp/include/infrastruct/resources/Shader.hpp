@@ -7,7 +7,6 @@
 #include <string>
 
 class IShaderImpl;
-class DrawState;
 
 class Shader
 {

@@ -1,138 +1,421 @@
 #pragma once
+#include "infrastruct/UnorderedMap.hpp"
 #include "infrastruct/StringId.hpp"
+#include "infrastruct/resources/Shader.hpp"
 #include "glm/glm.hpp"
-#include <map>
-#include <set>
-#include <vector>
-#include <string>
-#include <memory>
+#include <tuple>
+#include <utility>
+#include <assert.h>
 
-class Shader;
-
+template<typename... Types>
 class DrawState
 {
 private:
-	std::vector<StringId> _4x4matrixNames;
-	std::vector<StringId> _3x3matrixNames;
-	std::vector<StringId> _4vectorNames;
-	std::vector<StringId> _3vectorNames;
-	std::vector<StringId> _floatNames;
-	std::vector<StringId> _intNames;
-
-	std::vector<glm::mat4> _4x4matrices;
-	std::vector<glm::mat3> _3x3matrices;
-	std::vector<glm::vec4> _4vectors;
-	std::vector<glm::vec3> _3vectors;
-	std::vector<float> _floatValues;
-	std::vector<int> _intValues;
+	std::tuple<UnorderedMap<StringId,Types>...> _maps;
 
 public:
-	void add(const StringId& name, const glm::mat4& matrix);
-	void add(const StringId& name, const glm::mat3& matrix);
-	void add(const StringId& name, const glm::vec4& vector);
-	void add(const StringId& name, const glm::vec3& vector);
-	void add(const StringId& name, float value);
-	void add(const StringId& name, int value);
+	template <typename Type>
+	void add(const StringId& name, const Type& value);
 
-	void addOrSet(const StringId& name, const glm::mat4& matrix);
-	void addOrSet(const StringId& name, const glm::mat3& matrix);
-	void addOrSet(const StringId& name, const glm::vec4& vector);
-	void addOrSet(const StringId& name, const glm::vec3& vector);
-	void addOrSet(const StringId& name, float value);
-	void addOrSet(const StringId& name, int value);
+	template <typename Type>
+	void addOrSet(const StringId& name, const Type& value);
 
-	void set(const StringId& name, const glm::mat4& matrix);
-	void set(const StringId& name, const glm::mat3& matrix);
-	void set(const StringId& name, const glm::vec4& vector);
-	void set(const StringId& name, const glm::vec3& vector);
-	void set(const StringId& name, float value);
-	void set(const StringId& name, int value);
+	template <typename Type>
+	void set(const StringId& name, const Type& value);
+
+	template <typename Type>
+	Type& get(const StringId& name);
 
 	void remove(const StringId& name);
 
 	bool has(const StringId& name) const;
 
-	const glm::mat4& getMat4x4(const StringId& name) const;
-	const glm::mat3& getMat3x3(const StringId& name) const;
-	const glm::vec4& getVector4(const StringId& name) const;
-	const glm::vec3& getVector3(const StringId& name) const;
-	float getFloat(const StringId& name) const;
-	int getInt(const StringId& name) const;
-
-	void apply(Shader& shader) const;
-	void apply(DrawState& otherState) const;
+	void apply(Shader& shader);
+	void apply(DrawState& otherState);
 
 private:
-	template<typename Type>
-	bool remove(const StringId& name, std::vector<StringId>& names, std::vector<Type>& values)
-	{
-		auto nameIt = std::find(names.begin(), names.end(), name);
-		if (nameIt == names.end()) {
-			return false;
-		}
+	template<typename Type, std::size_t... Is>
+	void add(const StringId& name, const Type& value, std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>);
 
-		size_t index = std::distance(names.begin(), nameIt);
+	template<typename Type, typename CurrentType, typename... Remains>
+	void add(const StringId& name, const Type& value, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains);
 
-		auto valueIt = values.begin();
-		std::advance(valueIt, index);
+	template<typename Type, typename... Remains>
+	void add(const StringId& name, const Type& value, UnorderedMap<StringId, Type>& currentMap, UnorderedMap<StringId, Remains>&... remains);
 
-		names.erase(nameIt);
-		values.erase(valueIt);
-		return true;
-	}
 
-	template<typename Type>
-	const Type& getValue(const StringId& name, const std::vector<StringId>& names, const std::vector<Type>& values, const Type& defaultValue) const
-	{
-		assert(has(name));
+	template<typename Type, std::size_t... Is>
+	void addOrSet(const StringId& name, const Type& value, std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>);
 
-		auto foundIt = std::find(names.begin(), names.end(), name);
-		if (foundIt == names.end()) {
-			return defaultValue;
-		}
+	template<typename Type, typename CurrentType, typename... Remains>
+	void addOrSet(const StringId& name, const Type& value, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains);
 
-		size_t index = std::distance(names.begin(), foundIt);
-		return values[index];
-	}
+	template<typename Type, typename... Remains>
+	void addOrSet(const StringId& name, const Type& value, UnorderedMap<StringId, Type>& currentMap, UnorderedMap<StringId, Remains>&... remains);
 
-	template<typename Type>
-	void addOrSet(const StringId& name, const std::vector<StringId>& names, std::vector<Type>& values, const Type& newValue)
-	{
-		auto foundIt = std::find(names.begin(), names.end(), name);
-		if (foundIt == names.end()) {
-			add(name, newValue);
-			return;
-		}
 
-		size_t index = std::distance(names.begin(), foundIt);
-		values[index] = newValue;
-	}
+	template<typename Type, std::size_t... Is>
+	void set(const StringId& name, const Type& value, std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>);
 
-	template<typename Type>
-	void set(const StringId& name, const std::vector<StringId>& names, std::vector<Type>& values, const Type& newValue)
-	{
-		assert(has(name));
+	template<typename Type, typename CurrentType, typename... Remains>
+	void set(const StringId& name, const Type& value, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains);
 
-		auto foundIt = std::find(names.begin(), names.end(), name);
-		if (foundIt == names.end()) {
-			return;
-		}
+	template<typename Type, typename... Remains>
+	void set(const StringId& name, const Type& value, UnorderedMap<StringId, Type>& currentMap, UnorderedMap<StringId, Remains>&... remains);
 
-		size_t index = std::distance(names.begin(), foundIt);
-		values[index] = newValue;
-	}
+
+	template<typename Type, std::size_t... Is>
+	Type& get(const StringId& name, std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>);
+
+	template<typename Type, typename CurrentType, typename... Remains>
+	Type& get(const StringId& name, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains);
+
+	template<typename Type, typename... Remains>
+	Type& get(const StringId& name, UnorderedMap<StringId, Type>& currentMap, UnorderedMap<StringId, Remains>&... remains);
+
+
+	template<std::size_t... Is>
+	void remove(const StringId& name, std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>);
+
+	template<typename CurrentType, typename... Remains>
+	void remove(const StringId& name, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains);
+
+	template<typename LastType>
+	void remove(const StringId& name, UnorderedMap<StringId, LastType>& lastMap);
+
+
+	template<std::size_t... Is>
+	bool has(const StringId& name, const std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>) const;
+
+	template<typename CurrentType, typename... Remains>
+	bool has(const StringId& name, const UnorderedMap<StringId, CurrentType>& currentMap, const UnorderedMap<StringId, Remains>&... remains) const;
+
+	template<typename LastType>
+	bool has(const StringId& name, const UnorderedMap<StringId, LastType>& lastMap) const;
+
+
+	template<std::size_t... Is>
+	void apply(Shader& shader, std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>);
+
+	template<typename CurrentType, typename... Remains>
+	void apply(Shader& shader, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains);
+
+	template<typename LastType>
+	void apply(Shader& shader, UnorderedMap<StringId, LastType>& lastMap);
+
+
+	template<std::size_t... Is>
+	void apply(DrawState& otherState, std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>);
+
+	template<typename CurrentType, typename... Remains>
+	void apply(DrawState& otherState, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains);
+
+	template<typename LastType>
+	void apply(DrawState& otherState, UnorderedMap<StringId, LastType>& lastMap);
 };
 
+
+template<typename... Types>
 class DrawStatePool
 {
 private:
-	std::vector<DrawState> _pool;
+	std::vector<DrawState<Types...>> _pool;
 	size_t _cursor;
 public:
 	DrawStatePool(size_t size);
 
-	DrawState& get();
+	DrawState<Types...>& get();
 
 	void push();
 	void pop();
 };
+
+
+using DrawStateDef = DrawState<glm::mat4, glm::mat3, glm::vec4, glm::vec3, float, int>;
+using DrawStatePoolDef = DrawStatePool<glm::mat4, glm::mat3, glm::vec4, glm::vec3, float, int>;
+
+
+
+
+template<typename... Types>
+template <typename Type>
+void DrawState<Types...>::add(const StringId& name, const Type& value) 
+{
+	add(name, value, _maps, std::index_sequence_for<Types...>());
+}
+
+template<typename... Types>
+template<typename Type, std::size_t... Is>
+void DrawState<Types...>::add(const StringId& name, const Type& value, std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>) 
+{
+	add(name, value, std::get<Is>(tuple)...);
+}
+
+template<typename... Types>
+template<typename Type, typename CurrentType, typename... Remains>
+void DrawState<Types...>::add(const StringId& name, const Type& value, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains)
+{
+	add(name, value, remains...);
+}
+
+template<typename... Types>
+template<typename Type, typename... Remains>
+void DrawState<Types...>::add(const StringId& name, const Type& value, UnorderedMap<StringId, Type>& currentMap, UnorderedMap<StringId, Remains>&... remains)
+{
+	currentMap.add(name, value);
+}
+
+
+template<typename... Types>
+template <typename Type>
+void DrawState<Types...>::addOrSet(const StringId& name, const Type& value) 
+{
+	addOrSet(name, value, _maps, std::index_sequence_for<Types...>());
+}
+
+template<typename... Types>
+template<typename Type, std::size_t... Is>
+void DrawState<Types...>::addOrSet(const StringId& name, const Type& value, std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>) 
+{
+	addOrSet(name, value, std::get<Is>(tuple)...);
+}
+
+template<typename... Types>
+template<typename Type, typename CurrentType, typename... Remains>
+void DrawState<Types...>::addOrSet(const StringId& name, const Type& value, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains)
+{
+	addOrSet(name, value, remains...);
+}
+
+template<typename... Types>
+template<typename Type, typename... Remains>
+void DrawState<Types...>::addOrSet(const StringId& name, const Type& value, UnorderedMap<StringId, Type>& currentMap, UnorderedMap<StringId, Remains>&... remains)
+{
+	auto valuePtr = currentMap.getPtr(name);
+	if (valuePtr) {
+		*valuePtr = value;
+		return;
+	}
+
+	add(name, value, currentMap, remains...);
+}
+
+
+template<typename... Types>
+template <typename Type>
+void DrawState<Types...>::set(const StringId& name, const Type& value) 
+{
+	set(name, value, _maps, std::index_sequence_for<Types...>());
+}
+
+template<typename... Types>
+template<typename Type, std::size_t... Is>
+void DrawState<Types...>::set(const StringId& name, const Type& value, std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>) 
+{
+	set(name, value, std::get<Is>(tuple)...);
+}
+
+template<typename... Types>
+template<typename Type, typename CurrentType, typename... Remains>
+void DrawState<Types...>::set(const StringId& name, const Type& value, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains)
+{
+	set(name, value, remains...);
+}
+
+template<typename... Types>
+template<typename Type, typename... Remains>
+void DrawState<Types...>::set(const StringId& name, const Type& value, UnorderedMap<StringId, Type>& currentMap, UnorderedMap<StringId, Remains>&... remains)
+{
+	currentMap.get(name) = value;
+}
+
+
+template<typename... Types>
+template <typename Type>
+Type& DrawState<Types...>::get(const StringId& name) 
+{
+	return get<Type>(name, _maps, std::index_sequence_for<Types...>());
+}
+
+template<typename... Types>
+template<typename Type, std::size_t... Is>
+Type& DrawState<Types...>::get(const StringId& name, std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>)
+{
+	return get(name, std::get<Is>(tuple)...);
+}
+
+template<typename... Types>
+template<typename Type, typename CurrentType, typename... Remains>
+Type& DrawState<Types...>::get(const StringId& name, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains)
+{
+	return get(name, value, remains...);
+}
+
+template<typename... Types>
+template<typename Type, typename... Remains>
+Type& DrawState<Types...>::get(const StringId& name, UnorderedMap<StringId, Type>& currentMap, UnorderedMap<StringId, Remains>&... remains)
+{
+	return currentMap.get(name);
+}
+
+
+template<typename... Types>
+void DrawState<Types...>::remove(const StringId& name) 
+{
+	remove(name, _maps, std::index_sequence_for<Types...>());
+}
+
+template<typename... Types>
+template<std::size_t... Is>
+void DrawState<Types...>::remove(const StringId& name, std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>)
+{
+	remove(name, std::get<Is>(tuple)...);
+}
+
+template<typename... Types>
+template<typename CurrentType, typename... Remains>
+void DrawState<Types...>::remove(const StringId& name, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains)
+{
+	if (currentMap.remove(name)) {
+		return;
+	}
+	remove(name, remains...);
+}
+
+template<typename... Types>
+template<typename LastType>
+void DrawState<Types...>::remove(const StringId& name, UnorderedMap<StringId, LastType>& lastMap)
+{
+	lastMap.remove(name);
+}
+
+
+template<typename... Types>
+bool DrawState<Types...>::has(const StringId& name) const 
+{
+	return has(name, _maps, std::index_sequence_for<Types...>());
+}
+
+template<typename... Types>
+template<std::size_t... Is>
+bool DrawState<Types...>::has(const StringId& name, const std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>) const
+{
+	return has(name, std::get<Is>(tuple)...);
+}
+
+template<typename... Types>
+template<typename CurrentType, typename... Remains>
+bool DrawState<Types...>::has(const StringId& name, const UnorderedMap<StringId, CurrentType>& currentMap, const UnorderedMap<StringId, Remains>&... remains) const
+{
+	if (currentMap.has(name)) {
+		return true;
+	}
+	return has(name, remains...);
+}
+
+template<typename... Types>
+template<typename LastType>
+bool DrawState<Types...>::has(const StringId& name, const UnorderedMap<StringId, LastType>& lastMap) const
+{
+	return lastMap.has(name);
+}
+
+
+template<typename... Types>
+void DrawState<Types...>::apply(Shader& shader) 
+{
+	apply(shader, _maps, std::index_sequence_for<Types...>());
+}
+
+template<typename... Types>
+template<std::size_t... Is>
+void DrawState<Types...>::apply(Shader& shader, std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>)
+{
+	apply(shader, std::get<Is>(tuple)...);
+}
+
+template<typename... Types>
+template<typename CurrentType, typename... Remains>
+void DrawState<Types...>::apply(Shader& shader, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains)
+{
+	for (size_t i = 0; i < currentMap.size(); i++) {
+		shader.setUniform(currentMap.keys()[i], currentMap.values()[i]);
+	}
+
+	apply(shader, remains...);
+}
+
+template<typename... Types>
+template<typename LastType>
+void DrawState<Types...>::apply(Shader& shader, UnorderedMap<StringId, LastType>& lastMap)
+{
+	for (size_t i = 0; i < lastMap.size(); i++) {
+		shader.setUniform(lastMap.keys()[i], lastMap.values()[i]);
+	}
+}
+
+
+template<typename... Types>
+void DrawState<Types...>::apply(DrawState& otherState) 
+{
+	apply(otherState, _maps, std::index_sequence_for<Types...>());
+}
+
+template<typename... Types>
+template<std::size_t... Is>
+void DrawState<Types...>::apply(DrawState& otherState, std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>) 
+{
+	apply(otherState, std::get<Is>(tuple)...);
+}
+
+template<typename... Types>
+template<typename CurrentType, typename... Remains>
+void DrawState<Types...>::apply(DrawState& otherState, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains)
+{
+	for (size_t i = 0; i < currentMap.size(); i++) {
+		otherState.add(currentMap.keys()[i], currentMap.values()[i]);
+	}
+
+	apply(otherState, remains...);
+}
+
+template<typename... Types>
+template<typename LastType>
+void DrawState<Types...>::apply(DrawState& otherState, UnorderedMap<StringId, LastType>& lastMap)
+{
+	for (size_t i = 0; i < lastMap.size(); i++) {
+		otherState.add(lastMap.keys()[i], lastMap.values()[i]);
+	}
+}
+
+
+
+
+template<typename... Types>
+DrawStatePool<Types...>::DrawStatePool(size_t size):
+	_cursor(0)
+{
+	assert(size > 1);
+	_pool.resize(size > 1 ? size : 1);
+}
+
+template<typename... Types>
+DrawState<Types...>& DrawStatePool<Types...>::get()
+{
+	return _pool[_cursor];
+}
+
+template<typename... Types>
+void DrawStatePool<Types...>::push()
+{
+	assert(_cursor < _pool.size() - 1);
+	_cursor++;
+	_pool[_cursor] = _pool[_cursor - 1];
+}
+
+template<typename... Types>
+void DrawStatePool<Types...>::pop()
+{
+	assert(_cursor > 0);
+	_cursor--;
+}

@@ -10,15 +10,15 @@ class Model
 private:
 	std::vector<Light*> _lights;
 	std::vector<Object*> _objects;
-	DrawState _state;
+	DrawStateDef _state;
 public:
 	~Model();
 
-	void predraw(DrawStatePool& statePool);
-	void draw(DrawStatePool& statePool);
+	void predraw(DrawStatePoolDef& statePool);
+	void draw(DrawStatePoolDef& statePool);
 
-	DrawState& getState() { return _state; }
-	const DrawState& getState() const { return _state; }
+	DrawStateDef& getState() { return _state; }
+	const DrawStateDef& getState() const { return _state; }
 	
 	Light* createLight();
 	Object* createObject();

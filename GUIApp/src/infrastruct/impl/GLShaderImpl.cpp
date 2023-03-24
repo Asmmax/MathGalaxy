@@ -206,14 +206,12 @@ void GLShaderImpl::setUniform(const StringId& name, int value)
 
 unsigned int GLShaderImpl::getLocation(const StringId& name) const
 {
-	auto foundIt = std::find(_names.begin(), _names.end(), name);
-	if (foundIt != _names.end()) {
-		auto id = std::distance(_names.begin(), foundIt);
-		return _locations[id];
+	auto locationPtr = _locations.getPtr(name);
+	if (locationPtr) {
+		return *locationPtr;
 	}
 
 	GLuint location = gl::GetUniformLocation(_programHandle, name.getChars());
-	_names.push_back(name);
-	_locations.push_back(location);
+	_locations.add(name, location);
 	return location;
 }

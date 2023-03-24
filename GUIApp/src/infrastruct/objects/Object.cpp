@@ -69,7 +69,7 @@ void Object::setMatrix(const glm::mat4& matrix)
 	_matrix = matrix;
 }
 
-void Object::draw(DrawStatePool& statePool)
+void Object::draw(DrawStatePoolDef& statePool)
 {
 	auto& currentState = statePool.get();
 

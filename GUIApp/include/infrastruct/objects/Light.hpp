@@ -1,8 +1,8 @@
 #pragma once
+#include "infrastruct/DrawState.hpp"
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
-class DrawStatePool;
 
 class Light
 {
@@ -22,7 +22,7 @@ public:
 	void setFadingArea(float fadingArea);
 	void setPosition(const glm::vec3& position);
 
-	void predraw(DrawStatePool& statePool);
+	void predraw(DrawStatePoolDef& statePool);
 
 	static int MAX_LIGHT_COUNT;
 };

@@ -6,8 +6,6 @@
 #include <glm/vec3.hpp>
 #include <string>
 
-class DrawState;
-
 class IShaderImpl
 {
 public:

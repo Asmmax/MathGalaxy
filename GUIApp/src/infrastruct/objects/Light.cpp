@@ -38,14 +38,14 @@ void Light::setPosition(const glm::vec3& position)
 	_position = position;
 }
 
-void Light::predraw(DrawStatePool& statePool)
+void Light::predraw(DrawStatePoolDef& statePool)
 {
 	auto& state = statePool.get();
 
 	static std::string nameTemplate = "PointLights";
 
 	static StringId viewMatrixName = StringId("ViewMatrix");
-	auto& viewMatrix = state.getMat4x4(viewMatrixName);
+	auto& viewMatrix = state.get<glm::mat4>(viewMatrixName);
 	glm::vec4 viewPosition = viewMatrix * glm::vec4(_position, 1.0f);
 
 	int i = 0;
