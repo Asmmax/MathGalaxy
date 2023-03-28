@@ -20,10 +20,12 @@ public:
 	virtual void use() = 0;
 	virtual void clear() = 0;
 
-	virtual void setUniform(const StringId& name, const glm::mat4& matrix) = 0;
-	virtual void setUniform(const StringId& name, const glm::mat3& matrix) = 0;
-	virtual void setUniform(const StringId& name, const glm::vec4& vector) = 0;
-	virtual void setUniform(const StringId& name, const glm::vec3& vector) = 0;
-	virtual void setUniform(const StringId& name, float value) = 0;
-	virtual void setUniform(const StringId& name, int value) = 0;
+	virtual void setUniform(unsigned int location, const glm::mat4& matrix) = 0;
+	virtual void setUniform(unsigned int location, const glm::mat3& matrix) = 0;
+	virtual void setUniform(unsigned int location, const glm::vec4& vector) = 0;
+	virtual void setUniform(unsigned int location, const glm::vec3& vector) = 0;
+	virtual void setUniform(unsigned int location, float value) = 0;
+	virtual void setUniform(unsigned int location, int value) = 0;
+
+	virtual unsigned int getLocation(const StringId& name) const = 0;
 };

@@ -1,9 +1,6 @@
 #include "infrastruct/impl/GLShaderImpl.hpp"
-#include "infrastruct/DrawState.hpp"
 #include "gl/gl_core_4_3.hpp"
 #include "glm/gtc/type_ptr.hpp"
-
-#undef DrawState
 
 GLShaderImpl::GLShaderImpl():
 	_vertexShaderHandle(0),
@@ -150,68 +147,37 @@ void GLShaderImpl::clear()
 	gl::UseProgram(0);
 }
 
-void GLShaderImpl::setUniform(const StringId& name, const glm::mat4& matrix)
+void GLShaderImpl::setUniform(unsigned int location, const glm::mat4& matrix)
 {
-	auto location = getLocation(name);
-	if (location == -1) {
-		return;
-	}
 	gl::UniformMatrix4fv(location, 1, gl::FALSE_, glm::value_ptr(matrix));
 }
 
-void GLShaderImpl::setUniform(const StringId& name, const glm::mat3& matrix)
+void GLShaderImpl::setUniform(unsigned int location, const glm::mat3& matrix)
 {
-	auto location = getLocation(name);
-	if (location == -1) {
-		return;
-	}
 	gl::UniformMatrix3fv(location, 1, gl::FALSE_, glm::value_ptr(matrix));
 }
 
-void GLShaderImpl::setUniform(const StringId& name, const glm::vec4& vector)
+void GLShaderImpl::setUniform(unsigned int location, const glm::vec4& vector)
 {
-	auto location = getLocation(name);
-	if (location == -1) {
-		return;
-	}
 	gl::Uniform4fv(location, 1, glm::value_ptr(vector));
 }
 
-void GLShaderImpl::setUniform(const StringId& name, const glm::vec3& vector)
+void GLShaderImpl::setUniform(unsigned int location, const glm::vec3& vector)
 {
-	auto location = getLocation(name);
-	if (location == -1) {
-		return;
-	}
 	gl::Uniform3fv(location, 1, glm::value_ptr(vector));
 }
 
-void GLShaderImpl::setUniform(const StringId& name, float value)
+void GLShaderImpl::setUniform(unsigned int location, float value)
 {
-	auto location = getLocation(name);
-	if (location == -1) {
-		return;
-	}
 	gl::Uniform1f(location, value);
 }
 
-void GLShaderImpl::setUniform(const StringId& name, int value)
+void GLShaderImpl::setUniform(unsigned int location, int value)
 {
-	auto location = getLocation(name);
-	if (location == -1) {
-		return;
-	}
 	gl::Uniform1i(location, value);
 }
 
 unsigned int GLShaderImpl::getLocation(const StringId& name) const
 {
-	auto locationPtr = _locations.getPtr(name);
-	if (locationPtr) {
-		return *locationPtr;
-	}
-
-	GLuint location = gl::GetUniformLocation(_programHandle, name.getChars());
-	_locations.add(name, location);
-	return location;
+	return gl::GetUniformLocation(_programHandle, name.getChars());
 }

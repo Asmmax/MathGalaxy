@@ -79,8 +79,13 @@ void Object::draw(DrawStatePoolDef& statePool)
 
 	int textureUnit = 0;
 	for (auto& texture : _textures) {
+		auto location = _shader->getLocation(texture.first);
+		if (location == -1) {
+			continue;
+		}
+
 		texture.second->apply(textureUnit);
-		_shader->setUniform(texture.first, textureUnit);
+		_shader->setUniform(location, textureUnit);
 		textureUnit++;
 	}
 

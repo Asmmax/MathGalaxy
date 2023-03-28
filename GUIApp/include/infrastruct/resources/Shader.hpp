@@ -22,10 +22,12 @@ public:
 	void use();
 	void clear();
 
-	void setUniform(const StringId& name, const glm::mat4& matrix);
-	void setUniform(const StringId& name, const glm::mat3& matrix);
-	void setUniform(const StringId& name, const glm::vec4& vector);
-	void setUniform(const StringId& name, const glm::vec3& vector);
-	void setUniform(const StringId& name, float value);
-	void setUniform(const StringId& name, int value);
+	void setUniform(unsigned int location, const glm::mat4& matrix);
+	void setUniform(unsigned int location, const glm::mat3& matrix);
+	void setUniform(unsigned int location, const glm::vec4& vector);
+	void setUniform(unsigned int location, const glm::vec3& vector);
+	void setUniform(unsigned int location, float value);
+	void setUniform(unsigned int location, int value);
+
+	unsigned int getLocation(const StringId& name) const;
 };

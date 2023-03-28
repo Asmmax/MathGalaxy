@@ -29,32 +29,37 @@ void Shader::clear()
 	_impl->clear();
 }
 
-void Shader::setUniform(const StringId& name, const glm::mat4& matrix)
+void Shader::setUniform(unsigned int location, const glm::mat4& matrix)
 {
-	_impl->setUniform(name, matrix);
+	_impl->setUniform(location, matrix);
 }
 
-void Shader::setUniform(const StringId& name, const glm::mat3& matrix)
+void Shader::setUniform(unsigned int location, const glm::mat3& matrix)
 {
-	_impl->setUniform(name, matrix);
+	_impl->setUniform(location, matrix);
 }
 
-void Shader::setUniform(const StringId& name, const glm::vec4& vector)
+void Shader::setUniform(unsigned int location, const glm::vec4& vector)
 {
-	_impl->setUniform(name, vector);
+	_impl->setUniform(location, vector);
 }
 
-void Shader::setUniform(const StringId& name, const glm::vec3& vector)
+void Shader::setUniform(unsigned int location, const glm::vec3& vector)
 {
-	_impl->setUniform(name, vector);
+	_impl->setUniform(location, vector);
 }
 
-void Shader::setUniform(const StringId& name, float value)
+void Shader::setUniform(unsigned int location, float value)
 {
-	_impl->setUniform(name, value);
+	_impl->setUniform(location, value);
 }
 
-void Shader::setUniform(const StringId& name, int value)
+void Shader::setUniform(unsigned int location, int value)
 {
-	_impl->setUniform(name, value);
+	_impl->setUniform(location, value);
+}
+
+unsigned int Shader::getLocation(const StringId& name) const
+{
+	return _impl->getLocation(name);
 }

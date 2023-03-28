@@ -1,6 +1,6 @@
 #include "infrastruct/StringId.hpp"
 
-StringId::CharsShell::CharsShell(const char* chars):
+StringIdContainer::CharsShell::CharsShell(const char* chars) :
 	_data(nullptr)
 {
 	size_t len = strlen(chars);
@@ -8,12 +8,12 @@ StringId::CharsShell::CharsShell(const char* chars):
 	strcpy_s(_data, len + 1, chars);
 }
 
-StringId::CharsShell::CharsShell(const CharsShell& other):
+StringIdContainer::CharsShell::CharsShell(const CharsShell& other) :
 	CharsShell(other._data)
 {
 }
 
-StringId::CharsShell& StringId::CharsShell::operator=(const CharsShell& other)
+StringIdContainer::CharsShell& StringIdContainer::CharsShell::operator=(const CharsShell& other)
 {
 	delete[] _data;
 
@@ -24,37 +24,18 @@ StringId::CharsShell& StringId::CharsShell::operator=(const CharsShell& other)
 	return *this;
 }
 
-StringId::CharsShell::~CharsShell()
+StringIdContainer::CharsShell::~CharsShell()
 {
 	delete[] _data;
 }
 
-std::vector<StringId::CharsShell> StringId::_strings;
-
-StringId::StringId(const char* chars):
-	_id(0)
+size_t StringIdContainer::add(const char* chars)
 {
-	auto res = find(chars);
-	if (res.first) {
-		_id = res.second;
-	}
-	else {
-		_id = _strings.size();
-		_strings.emplace_back(chars);
-	}
+	_strings.emplace_back(chars);
+	return _strings.size() - 1;
 }
 
-const char* StringId::getChars() const
-{
-	return _strings[_id].data();
-}
-
-bool StringId::operator==(const StringId& other) const
-{
-	return _id == other._id;
-}
-
-std::pair<bool, size_t> StringId::find(const char* chars)
+std::pair<bool, size_t> StringIdContainer::find(const char* chars) const
 {
 	auto foundIt = std::find_if(_strings.begin(), _strings.end(), [chars](const CharsShell& string) {
 		return strcmp(chars, string.data()) == 0;
@@ -65,4 +46,51 @@ std::pair<bool, size_t> StringId::find(const char* chars)
 
 	size_t id = std::distance(_strings.begin(), foundIt);
 	return { true, id };
+}
+
+const char* StringIdContainer::get(size_t id) const
+{
+	return _strings[id].data();
+}
+
+size_t StringIdContainer::size() const
+{
+	return _strings.size();
+}
+
+
+
+
+StringId::StringId(const char* chars, StringIdContainer& container):
+	_id(0),
+	_container(&container)
+{
+	auto res = _container->find(chars);
+	if (res.first) {
+		_id = res.second;
+	}
+	else {
+		_id = _container->add(chars);
+	}
+}
+
+StringId::StringId(const char* chars):
+	StringId(chars, getDefaultContainer())
+{
+}
+
+const char* StringId::getChars() const
+{
+	return _container->get(_id);
+}
+
+bool StringId::operator==(const StringId& other) const
+{
+	return _id == other._id && _container == other._container;
+}
+
+StringIdContainer& StringId::getDefaultContainer()
+{
+	static StringIdContainer defaultContainer;
+	return defaultContainer;
 }

@@ -71,9 +71,9 @@ int main(int argc, char* argv[])
 	solar->setShader(starShader);
 	solar->setMesh(sphereMesh);
 	auto& solarMaterial = solar->getState();
-	solarMaterial.add("Star.BaseColor", glm::vec3(1.0f, 0.5f, 0.0f));
-	solarMaterial.add("Star.BoundColor", glm::vec3(1.0f, 0.0f, 0.0f));
-	solarMaterial.add("Star.SpaceColor", glm::vec3(0.0f, 0.0f, 0.0f));
+	solarMaterial.add(StringId("Star.BaseColor"), glm::vec3(1.0f, 0.5f, 0.0f));
+	solarMaterial.add(StringId("Star.BoundColor"), glm::vec3(1.0f, 0.0f, 0.0f));
+	solarMaterial.add(StringId("Star.SpaceColor"), glm::vec3(0.0f, 0.0f, 0.0f));
 
 	root->addChild(solarTransform);
 
@@ -95,9 +95,9 @@ int main(int argc, char* argv[])
 		earth->setShader(planetShader);
 		earth->setMesh(sphereMesh);
 		auto& earthMaterial = earth->getState();
-		earthMaterial.add("Material.DiffuseColor", glm::vec3(disColor(gen), disColor(gen), disColor(gen)));
-		earthMaterial.add("Material.AmbientFactor", 0.2f);
-		earthMaterial.add("Material.DiffuseFactor", 0.8f);
+		earthMaterial.add(StringId("Material.DiffuseColor"), glm::vec3(disColor(gen), disColor(gen), disColor(gen)));
+		earthMaterial.add(StringId("Material.AmbientFactor"), 0.2f);
+		earthMaterial.add(StringId("Material.DiffuseFactor"), 0.8f);
 
 		root->addChild(earthTransform);
 
@@ -106,9 +106,9 @@ int main(int argc, char* argv[])
 	auto sky = model.createObject();
 	sky->setShader(skyShader);
 	sky->setMesh(sphereMesh);
-	sky->addTexture("skyMap", skyTexture);
+	sky->addTexture(StringId("skyMap"), skyTexture);
 	auto& skyMaterial = sky->getState();
-	skyMaterial.add("BaseColor", glm::vec3(1.0f, 1.0f, 1.0f));
+	skyMaterial.add(StringId("BaseColor"), glm::vec3(1.0f, 1.0f, 1.0f));
 	static StringId originName = StringId("Origin");
 	skyMaterial.add(originName, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
 	auto camera = window->creteView(512, 512);
 
 	auto& commonMaterial = model.getState();
-	commonMaterial.add("AmbientColor", glm::vec3(0.2f, 0.1f, 0.1f));
+	commonMaterial.add(StringId("AmbientColor"), glm::vec3(0.2f, 0.1f, 0.1f));
 
 	//construct widgets
 	auto viewportWidget = std::make_shared<ViewportWidget>("Main Viewport", 512, 512, camera);

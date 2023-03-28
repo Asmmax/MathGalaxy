@@ -12,8 +12,11 @@ class DrawState
 {
 private:
 	std::tuple<UnorderedMap<StringId,Types>...> _maps;
+	DrawState* _parentState;
 
 public:
+	DrawState(DrawState* parentState = nullptr);
+
 	template <typename Type>
 	void add(const StringId& name, const Type& value);
 
@@ -24,9 +27,10 @@ public:
 	void set(const StringId& name, const Type& value);
 
 	template <typename Type>
-	Type& get(const StringId& name);
+	const Type& get(const StringId& name) const;
 
 	void remove(const StringId& name);
+	void clear();
 
 	bool has(const StringId& name) const;
 
@@ -65,13 +69,13 @@ private:
 
 
 	template<typename Type, std::size_t... Is>
-	Type& get(const StringId& name, std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>);
+	const Type& get(const StringId& name, const std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>) const;
 
 	template<typename Type, typename CurrentType, typename... Remains>
-	Type& get(const StringId& name, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains);
+	const Type& get(const StringId& name, const UnorderedMap<StringId, CurrentType>& currentMap, const UnorderedMap<StringId, Remains>&... remains) const;
 
 	template<typename Type, typename... Remains>
-	Type& get(const StringId& name, UnorderedMap<StringId, Type>& currentMap, UnorderedMap<StringId, Remains>&... remains);
+	const Type& get(const StringId& name, const UnorderedMap<StringId, Type>& currentMap, const UnorderedMap<StringId, Remains>&... remains) const;
 
 
 	template<std::size_t... Is>
@@ -82,6 +86,16 @@ private:
 
 	template<typename LastType>
 	void remove(const StringId& name, UnorderedMap<StringId, LastType>& lastMap);
+
+
+	template<std::size_t... Is>
+	void clear(std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>);
+
+	template<typename CurrentType, typename... Remains>
+	void clear(UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains);
+
+	template<typename LastType>
+	void clear(UnorderedMap<StringId, LastType>& lastMap);
 
 
 	template<std::size_t... Is>
@@ -100,8 +114,8 @@ private:
 	template<typename CurrentType, typename... Remains>
 	void apply(Shader& shader, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains);
 
-	template<typename LastType>
-	void apply(Shader& shader, UnorderedMap<StringId, LastType>& lastMap);
+	template<typename Type>
+	void apply(Shader& shader, UnorderedMap<StringId, Type>& map);
 
 
 	template<std::size_t... Is>
@@ -110,8 +124,8 @@ private:
 	template<typename CurrentType, typename... Remains>
 	void apply(DrawState& otherState, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains);
 
-	template<typename LastType>
-	void apply(DrawState& otherState, UnorderedMap<StringId, LastType>& lastMap);
+	template<typename Type>
+	void apply(DrawState& otherState, UnorderedMap<StringId, Type>& map);
 };
 
 
@@ -136,6 +150,12 @@ using DrawStatePoolDef = DrawStatePool<glm::mat4, glm::mat3, glm::vec4, glm::vec
 
 
 
+
+template<typename... Types>
+DrawState<Types...>::DrawState(DrawState* parentState):
+	_parentState(parentState)
+{
+}
 
 template<typename... Types>
 template <typename Type>
@@ -232,30 +252,35 @@ void DrawState<Types...>::set(const StringId& name, const Type& value, Unordered
 
 template<typename... Types>
 template <typename Type>
-Type& DrawState<Types...>::get(const StringId& name) 
+const Type& DrawState<Types...>::get(const StringId& name) const
 {
 	return get<Type>(name, _maps, std::index_sequence_for<Types...>());
 }
 
 template<typename... Types>
 template<typename Type, std::size_t... Is>
-Type& DrawState<Types...>::get(const StringId& name, std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>)
+const Type& DrawState<Types...>::get(const StringId& name, const std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>) const
 {
 	return get(name, std::get<Is>(tuple)...);
 }
 
 template<typename... Types>
 template<typename Type, typename CurrentType, typename... Remains>
-Type& DrawState<Types...>::get(const StringId& name, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains)
+const Type& DrawState<Types...>::get(const StringId& name, const UnorderedMap<StringId, CurrentType>& currentMap, const UnorderedMap<StringId, Remains>&... remains) const
 {
 	return get(name, value, remains...);
 }
 
 template<typename... Types>
 template<typename Type, typename... Remains>
-Type& DrawState<Types...>::get(const StringId& name, UnorderedMap<StringId, Type>& currentMap, UnorderedMap<StringId, Remains>&... remains)
+const Type& DrawState<Types...>::get(const StringId& name, const UnorderedMap<StringId, Type>& currentMap, const UnorderedMap<StringId, Remains>&... remains) const
 {
-	return currentMap.get(name);
+	const Type* valuePtr = currentMap.getPtr(name);
+	if (!valuePtr && _parentState) {
+		return _parentState->get<Type>(name);
+	}
+	assert(valuePtr);
+	return *valuePtr;
 }
 
 
@@ -291,6 +316,35 @@ void DrawState<Types...>::remove(const StringId& name, UnorderedMap<StringId, La
 
 
 template<typename... Types>
+void DrawState<Types...>::clear()
+{
+	clear(_maps, std::index_sequence_for<Types...>());
+}
+
+template<typename... Types>
+template<std::size_t... Is>
+void DrawState<Types...>::clear(std::tuple<UnorderedMap<StringId, Types>...>& tuple, std::index_sequence<Is...>)
+{
+	clear(std::get<Is>(tuple)...);
+}
+
+template<typename... Types>
+template<typename CurrentType, typename... Remains>
+void DrawState<Types...>::clear(UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains)
+{
+	currentMap.clear();
+	clear(remains...);
+}
+
+template<typename... Types>
+template<typename LastType>
+void DrawState<Types...>::clear(UnorderedMap<StringId, LastType>& lastMap)
+{
+	lastMap.clear();
+}
+
+
+template<typename... Types>
 bool DrawState<Types...>::has(const StringId& name) const 
 {
 	return has(name, _maps, std::index_sequence_for<Types...>());
@@ -317,13 +371,19 @@ template<typename... Types>
 template<typename LastType>
 bool DrawState<Types...>::has(const StringId& name, const UnorderedMap<StringId, LastType>& lastMap) const
 {
-	return lastMap.has(name);
+	if (lastMap.has(name)) {
+		return true;
+	}
+	return _parentState && _parentState->has(name);
 }
 
 
 template<typename... Types>
 void DrawState<Types...>::apply(Shader& shader) 
 {
+	if (_parentState) {
+		_parentState->apply(shader);
+	}
 	apply(shader, _maps, std::index_sequence_for<Types...>());
 }
 
@@ -338,19 +398,19 @@ template<typename... Types>
 template<typename CurrentType, typename... Remains>
 void DrawState<Types...>::apply(Shader& shader, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains)
 {
-	for (size_t i = 0; i < currentMap.size(); i++) {
-		shader.setUniform(currentMap.keys()[i], currentMap.values()[i]);
-	}
-
+	apply(shader, currentMap);
 	apply(shader, remains...);
 }
 
 template<typename... Types>
-template<typename LastType>
-void DrawState<Types...>::apply(Shader& shader, UnorderedMap<StringId, LastType>& lastMap)
+template<typename Type>
+void DrawState<Types...>::apply(Shader& shader, UnorderedMap<StringId, Type>& map)
 {
-	for (size_t i = 0; i < lastMap.size(); i++) {
-		shader.setUniform(lastMap.keys()[i], lastMap.values()[i]);
+	for (size_t i = 0; i < map.size(); i++) {
+		auto location = shader.getLocation(map.keys()[i]);
+		if (location != -1) {
+			shader.setUniform(location, map.values()[i]);
+		}
 	}
 }
 
@@ -358,6 +418,9 @@ void DrawState<Types...>::apply(Shader& shader, UnorderedMap<StringId, LastType>
 template<typename... Types>
 void DrawState<Types...>::apply(DrawState& otherState) 
 {
+	if (_parentState) {
+		_parentState->apply(otherState);
+	}
 	apply(otherState, _maps, std::index_sequence_for<Types...>());
 }
 
@@ -372,19 +435,16 @@ template<typename... Types>
 template<typename CurrentType, typename... Remains>
 void DrawState<Types...>::apply(DrawState& otherState, UnorderedMap<StringId, CurrentType>& currentMap, UnorderedMap<StringId, Remains>&... remains)
 {
-	for (size_t i = 0; i < currentMap.size(); i++) {
-		otherState.add(currentMap.keys()[i], currentMap.values()[i]);
-	}
-
+	apply(otherState, currentMap);
 	apply(otherState, remains...);
 }
 
 template<typename... Types>
-template<typename LastType>
-void DrawState<Types...>::apply(DrawState& otherState, UnorderedMap<StringId, LastType>& lastMap)
+template<typename Type>
+void DrawState<Types...>::apply(DrawState& otherState, UnorderedMap<StringId, Type>& map)
 {
-	for (size_t i = 0; i < lastMap.size(); i++) {
-		otherState.add(lastMap.keys()[i], lastMap.values()[i]);
+	for (size_t i = 0; i < map.size(); i++) {
+		otherState.add(map.keys()[i], map.values()[i]);
 	}
 }
 
@@ -396,7 +456,11 @@ DrawStatePool<Types...>::DrawStatePool(size_t size):
 	_cursor(0)
 {
 	assert(size > 1);
-	_pool.resize(size > 1 ? size : 1);
+	_pool.reserve(size);
+	DrawState<Types...>* parentState = nullptr;
+	for (size_t i = 0; i < size; i++) {
+		parentState = &_pool.emplace_back(parentState);
+	}
 }
 
 template<typename... Types>
@@ -410,12 +474,12 @@ void DrawStatePool<Types...>::push()
 {
 	assert(_cursor < _pool.size() - 1);
 	_cursor++;
-	_pool[_cursor] = _pool[_cursor - 1];
 }
 
 template<typename... Types>
 void DrawStatePool<Types...>::pop()
 {
 	assert(_cursor > 0);
+	_pool[_cursor].clear();
 	_cursor--;
 }
