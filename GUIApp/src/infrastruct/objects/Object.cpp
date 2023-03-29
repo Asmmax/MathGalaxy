@@ -1,12 +1,10 @@
 #include "infrastruct/objects/Object.hpp"
-#include "infrastruct/resources/Shader.hpp"
-#include "infrastruct/resources/Texture.hpp"
 #include "infrastruct/resources/Mesh.hpp"
-#include "infrastruct/DrawState.hpp"
+#include "infrastruct/StringId.hpp"
+#include "infrastruct/resources/Shader.hpp"
 
 Object::Object():
 	_matrix(),
-	_shader(nullptr),
 	_mesh(nullptr)
 {
 }
@@ -16,84 +14,42 @@ void Object::setMesh(Mesh* mesh)
 	_mesh = mesh;
 }
 
-void Object::setShader(Shader* shader)
-{
-	_shader = shader;
-}
-
-bool Object::hasTexture(const StringId& name) const
-{
-	auto&& it = std::find_if(_textures.begin(), _textures.end(), [name](auto& texturePair) {
-		return texturePair.first == name;
-		});
-
-	return it != _textures.end();
-}
-
-void Object::addTexture(const StringId& name, Texture* texture)
-{
-	if (!texture) {
-		return;
-	}
-
-	assert(!hasTexture(name));
-
-	_textures.emplace_back(name, texture);
-}
-
-void Object::setTexture(const StringId& name, Texture* texture)
-{
-	if (!texture) {
-		return;
-	}
-
-	assert(hasTexture(name));
-	auto&& it = std::find_if(_textures.begin(), _textures.end(), [name](auto& texturePair) {
-		return texturePair.first == name;
-		});
-
-	it->second = texture;
-}
-
-void Object::removeTexture(const StringId& name)
-{
-	assert(hasTexture(name));
-	auto&& it = std::find_if(_textures.begin(), _textures.end(), [name](auto& texturePair) {
-		return texturePair.first == name;
-		});
-	_textures.erase(it);
-}
-
 void Object::setMatrix(const glm::mat4& matrix)
 {
 	_matrix = matrix;
 }
 
-void Object::draw(DrawStatePoolDef& statePool)
+void Object::draw(Shader* shader, const glm::mat4& viewMatrix, const glm::mat4& projMatrix)
 {
-	auto& currentState = statePool.get();
+	auto mvMatrix = viewMatrix * _matrix;
+	auto normalMatrix4x4 = glm::transpose(glm::inverse(mvMatrix));
+	glm::mat3 normalMatrix(normalMatrix4x4);
 
-	_shader->use();
-
-	currentState.apply(*_shader);
-
-	int textureUnit = 0;
-	for (auto& texture : _textures) {
-		auto location = _shader->getLocation(texture.first);
-		if (location == -1) {
-			continue;
-		}
-
-		texture.second->apply(textureUnit);
-		_shader->setUniform(location, textureUnit);
-		textureUnit++;
+	static StringId modelMatrixName = StringId("ModelMatrix");
+	auto modelMatrixLocation = shader->getLocation(modelMatrixName);
+	if (modelMatrixLocation != -1) {
+		shader->setUniform(modelMatrixLocation, _matrix);
 	}
 
-	_state.apply(*_shader);
+	static StringId mvMatrixName = StringId("ModelViewMatrix");
+	auto mvMatrixLocation = shader->getLocation(mvMatrixName);
+	if (mvMatrixLocation != -1) {
+		shader->setUniform(mvMatrixLocation, mvMatrix);
+	}
+
+	static StringId mvpMatrixName = StringId("MVP");
+	auto mvpMatrixLocation = shader->getLocation(mvpMatrixName);
+	if (mvpMatrixLocation != -1) {
+		shader->setUniform(mvpMatrixLocation, projMatrix * mvMatrix);
+	}
+
+	static StringId normalMatrixName = StringId("NormalMatrix");
+	auto normalMatrixLocation = shader->getLocation(normalMatrixName);
+	if (normalMatrixLocation != -1) {
+		shader->setUniform(normalMatrixLocation, normalMatrix);
+	}
 
 	if (_mesh) {
 		_mesh->draw();
 	}
-
-	_shader->clear();
 }

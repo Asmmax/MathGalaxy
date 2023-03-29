@@ -23,6 +23,7 @@
 #include "infrastruct/Loader.hpp"
 #include "infrastruct/resources/ShaderData.hpp"
 #include "infrastruct/resources/TextureData.hpp"
+#include "infrastruct/objects/Batch.hpp"
 
 #include <glm/gtx/transform.hpp>
 #include <random>
@@ -64,13 +65,14 @@ int main(int argc, char* argv[])
 	//construct drawable tree
 	auto root = std::make_shared<Transform>();
 
-	auto solar = model.createObject();
+	auto solarBatch = model.createBatch();
+	auto solar = solarBatch->createObject();
 	auto solarLight = model.createLight();
 	auto solarTransform = std::make_shared<Transform>();
 	solarTransform->setPosition(glm::vec3(0, 0, 0));
-	solar->setShader(starShader);
+	solarBatch->setShader(starShader);
 	solar->setMesh(sphereMesh);
-	auto& solarMaterial = solar->getState();
+	auto& solarMaterial = solarBatch->getState();
 	solarMaterial.add(StringId("Star.BaseColor"), glm::vec3(1.0f, 0.5f, 0.0f));
 	solarMaterial.add(StringId("Star.BoundColor"), glm::vec3(1.0f, 0.0f, 0.0f));
 	solarMaterial.add(StringId("Star.SpaceColor"), glm::vec3(0.0f, 0.0f, 0.0f));
@@ -79,35 +81,41 @@ int main(int argc, char* argv[])
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<> dis(-100.0, 100.0);
-	std::uniform_real_distribution<> disColor(0.0, 1.0);
+	std::uniform_real_distribution<float> dis(-50.0f, 50.0f);
+	std::uniform_real_distribution<float> disColor(0.0f, 1.0f);
+	std::uniform_real_distribution<float> disScale(0.1f, 1.0f);
 
 	std::vector<Object*> bodies;
 	std::vector<std::shared_ptr<Transform>> bodyTransforms;
-	for (int i = 0; i < 10000; i++) {
+	for (int i = 0; i < 100; i++) {
 
-		auto earth = model.createObject();
-		bodies.push_back(earth);
-		auto earthTransform = std::make_shared<Transform>();
-		bodyTransforms.push_back(earthTransform);
-		earthTransform->setPosition(glm::vec3(dis(gen), dis(gen), dis(gen)));
-		earthTransform->setScale(glm::vec3(0.5f));
-		earth->setShader(planetShader);
-		earth->setMesh(sphereMesh);
-		auto& earthMaterial = earth->getState();
+		auto earthBatch = model.createBatch();
+		earthBatch->setShader(planetShader);
+		auto& earthMaterial = earthBatch->getState();
 		earthMaterial.add(StringId("Material.DiffuseColor"), glm::vec3(disColor(gen), disColor(gen), disColor(gen)));
 		earthMaterial.add(StringId("Material.AmbientFactor"), 0.2f);
 		earthMaterial.add(StringId("Material.DiffuseFactor"), 0.8f);
 
-		root->addChild(earthTransform);
+		for (int j = 0; j < 100; j++) {
 
+			auto earth = earthBatch->createObject();
+			bodies.push_back(earth);
+			auto earthTransform = std::make_shared<Transform>();
+			bodyTransforms.push_back(earthTransform);
+			earthTransform->setPosition(glm::vec3(dis(gen), dis(gen), dis(gen)));
+			earthTransform->setScale(glm::vec3(disScale(gen)));
+			earth->setMesh(sphereMesh);
+
+			root->addChild(earthTransform);
+		}
 	}
 
-	auto sky = model.createObject();
-	sky->setShader(skyShader);
+	auto skyBatch = model.createBatch();
+	auto sky = skyBatch->createObject();
+	skyBatch->setShader(skyShader);
 	sky->setMesh(sphereMesh);
-	sky->addTexture(StringId("skyMap"), skyTexture);
-	auto& skyMaterial = sky->getState();
+	skyBatch->addTexture(StringId("skyMap"), skyTexture);
+	auto& skyMaterial = skyBatch->getState();
 	skyMaterial.add(StringId("BaseColor"), glm::vec3(1.0f, 1.0f, 1.0f));
 	static StringId originName = StringId("Origin");
 	skyMaterial.add(originName, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));

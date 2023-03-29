@@ -1,4 +1,7 @@
 #include "infrastruct/Model.hpp"
+#include "infrastruct/objects/Batch.hpp"
+#include "infrastruct/objects/Light.hpp"
+
 
 Model::~Model()
 {
@@ -6,8 +9,8 @@ Model::~Model()
 		delete light;
 	}
 
-	for (auto& object : _objects) {
-		delete object;
+	for (auto& batch : _batches) {
+		delete batch;
 	}
 }
 
@@ -23,39 +26,9 @@ void Model::predraw(DrawStatePoolDef& statePool)
 
 void Model::draw(DrawStatePoolDef& statePool)
 {
-	auto& currentState = statePool.get();
-
-	static StringId viewMatrixName = StringId("ViewMatrix");
-	auto& viewMatrix = currentState.get<glm::mat4>(viewMatrixName);
-
-	static StringId projMatrixName = StringId("ProjectionMatrix");
-	auto& projMatrix = currentState.get<glm::mat4>(projMatrixName);
-
-	for (auto& object : _objects) 
-	{
+	for (auto& batch : _batches) {
 		statePool.push();
-		auto& nextState = statePool.get();
-
-		auto&& modelMatrix = object->getMatrix();
-
-		static StringId modelMatrixName = StringId("ModelMatrix");
-		nextState.add(modelMatrixName, modelMatrix);
-
-		auto modelViewMatrix = viewMatrix * modelMatrix;
-		auto normalMatrix4x4 = glm::transpose(glm::inverse(modelViewMatrix));
-		glm::mat3 normalMatrix(normalMatrix4x4);
-
-		static StringId modelViewMatrixName = StringId("ModelViewMatrix");
-		nextState.add(modelViewMatrixName, modelViewMatrix);
-
-		static StringId mvpMatrixName = StringId("MVP");
-		nextState.add(mvpMatrixName, projMatrix * modelViewMatrix);
-
-		static StringId normalMatrixName = StringId("NormalMatrix");
-		nextState.add(normalMatrixName, normalMatrix);
-
-		object->draw(statePool);
-
+		batch->draw(statePool);
 		statePool.pop();
 	}
 }
@@ -67,9 +40,9 @@ Light* Model::createLight()
 	return newLight;
 }
 
-Object* Model::createObject()
+Batch* Model::createBatch()
 {
-	Object* newObject = new Object();
-	_objects.push_back(newObject);
-	return newObject;
+	Batch* newBatch = new Batch();
+	_batches.push_back(newBatch);
+	return newBatch;
 }

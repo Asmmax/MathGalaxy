@@ -453,7 +453,7 @@ void DrawState<Types...>::apply(DrawState& otherState, UnorderedMap<StringId, Ty
 
 template<typename... Types>
 DrawStatePool<Types...>::DrawStatePool(size_t size):
-	_cursor(0)
+	_cursor(-1)
 {
 	assert(size > 1);
 	_pool.reserve(size);
@@ -466,20 +466,21 @@ DrawStatePool<Types...>::DrawStatePool(size_t size):
 template<typename... Types>
 DrawState<Types...>& DrawStatePool<Types...>::get()
 {
+	assert(_cursor != -1);
 	return _pool[_cursor];
 }
 
 template<typename... Types>
 void DrawStatePool<Types...>::push()
 {
-	assert(_cursor < _pool.size() - 1);
+	assert(_cursor == -1 || _cursor < _pool.size() - 1);
 	_cursor++;
 }
 
 template<typename... Types>
 void DrawStatePool<Types...>::pop()
 {
-	assert(_cursor > 0);
+	assert(_cursor != -1);
 	_pool[_cursor].clear();
 	_cursor--;
 }
