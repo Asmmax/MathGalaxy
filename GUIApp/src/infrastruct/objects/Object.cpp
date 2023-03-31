@@ -21,7 +21,21 @@ void Object::setMatrix(const glm::mat4& matrix)
 
 void Object::draw(Shader* shader, const glm::mat4& viewMatrix, const glm::mat4& projMatrix)
 {
+	if (!_mesh) {
+		return;
+	}
+
 	auto mvMatrix = viewMatrix * _matrix;
+	auto mvpMatrix = projMatrix * mvMatrix;
+
+	auto& bbox = _mesh->getBoundingBox();
+	BBox projectedBbox = bbox.project(mvpMatrix);
+
+	static BBox screenBbox = { -1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 2.0f };
+	if (!projectedBbox.isOverlapped(screenBbox, 1e-4f)) {
+		return;
+	}
+
 	auto normalMatrix4x4 = glm::transpose(glm::inverse(mvMatrix));
 	glm::mat3 normalMatrix(normalMatrix4x4);
 
@@ -40,7 +54,7 @@ void Object::draw(Shader* shader, const glm::mat4& viewMatrix, const glm::mat4& 
 	static StringId mvpMatrixName = StringId("MVP");
 	auto mvpMatrixLocation = shader->getLocation(mvpMatrixName);
 	if (mvpMatrixLocation != -1) {
-		shader->setUniform(mvpMatrixLocation, projMatrix * mvMatrix);
+		shader->setUniform(mvpMatrixLocation, mvpMatrix);
 	}
 
 	static StringId normalMatrixName = StringId("NormalMatrix");
@@ -49,7 +63,5 @@ void Object::draw(Shader* shader, const glm::mat4& viewMatrix, const glm::mat4& 
 		shader->setUniform(normalMatrixLocation, normalMatrix);
 	}
 
-	if (_mesh) {
-		_mesh->draw();
-	}
+	_mesh->draw();
 }

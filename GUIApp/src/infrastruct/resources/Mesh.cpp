@@ -24,6 +24,10 @@ void Mesh::updateData(const MeshData& data)
 {
 	_impl->updateData(data);
 	_indicesCount = data.indices.size();
+
+	for (auto& point : data.positions) {
+		_bounds.addPoint(point.x, point.y, point.z);
+	}
 }
 
 void Mesh::draw()

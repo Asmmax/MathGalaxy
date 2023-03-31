@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> dis(-50.0f, 50.0f);
+	std::uniform_real_distribution<float> dis(-100.0f, 100.0f);
 	std::uniform_real_distribution<float> disColor(0.0f, 1.0f);
 	std::uniform_real_distribution<float> disScale(0.1f, 1.0f);
 
