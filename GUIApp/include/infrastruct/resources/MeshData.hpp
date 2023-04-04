@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
 #include <vector>
 
 struct MeshData
@@ -7,6 +8,8 @@ struct MeshData
 	std::vector<glm::vec3> positions;
 	std::vector<glm::vec3> normals;
 	std::vector<unsigned short> indices;
+
+	void addData(const MeshData& otherData, const glm::mat4& offset);
 };
 
 const float pi = 3.1415926536f;

@@ -1,6 +1,27 @@
 #include "infrastruct/resources/MeshData.hpp"
 #include "glm/gtx/normal.hpp"
 
+
+void MeshData::addData(const MeshData& otherData, const glm::mat4& offset)
+{
+	assert(positions.size() + otherData.positions.size() < static_cast<size_t>(std::numeric_limits<unsigned short>::max()));
+
+	indices.reserve(indices.size() + otherData.indices.size());
+	for (auto index : otherData.indices) {
+		indices.emplace_back(static_cast<unsigned short>(positions.size()) + index);
+	}
+
+	positions.reserve(positions.size() + otherData.positions.size());
+	for (auto& position : otherData.positions) {
+		positions.emplace_back(offset * glm::vec4(position, 1.0f));
+	}
+
+	normals.reserve(normals.size() + otherData.normals.size());
+	for (auto& normal : otherData.normals) {
+		normals.emplace_back(normal);
+	}
+}
+
 MeshData createTriangle(float size)
 {
     MeshData data;
