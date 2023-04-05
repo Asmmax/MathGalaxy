@@ -4,21 +4,47 @@
 
 void MeshData::addData(const MeshData& otherData, const glm::mat4& offset)
 {
-	assert(positions.size() + otherData.positions.size() < static_cast<size_t>(std::numeric_limits<unsigned short>::max()));
+	assert(static_cast<unsigned long int>(positions.size()) + static_cast<unsigned long int>(otherData.positions.size()) < static_cast<unsigned long int>(std::numeric_limits<unsigned int>::max()));
 
 	indices.reserve(indices.size() + otherData.indices.size());
-	for (auto index : otherData.indices) {
-		indices.emplace_back(static_cast<unsigned short>(positions.size()) + index);
-	}
-
 	positions.reserve(positions.size() + otherData.positions.size());
+	normals.reserve(normals.size() + otherData.normals.size());
+
+	for (auto index : otherData.indices) {
+		indices.emplace_back(static_cast<unsigned int>(positions.size()) + index);
+	}
+	
 	for (auto& position : otherData.positions) {
 		positions.emplace_back(offset * glm::vec4(position, 1.0f));
 	}
-
-	normals.reserve(normals.size() + otherData.normals.size());
+	
 	for (auto& normal : otherData.normals) {
 		normals.emplace_back(normal);
+	}
+}
+
+void MeshData::addData(const MeshData& otherData, const std::vector<glm::mat4>& offsets)
+{
+	assert(static_cast<unsigned long int>(positions.size()) + static_cast<unsigned long int>(otherData.positions.size()) * offsets.size() < static_cast<unsigned long int>(std::numeric_limits<unsigned int>::max()));
+
+	indices.reserve(indices.size() + otherData.indices.size() * offsets.size());
+	positions.reserve(positions.size() + otherData.positions.size() * offsets.size());
+	normals.reserve(normals.size() + otherData.normals.size() * offsets.size());
+
+	for (auto& offset : offsets) {
+		for (auto index : otherData.indices) {
+			indices.emplace_back(static_cast<unsigned int>(positions.size()) + index);
+		}
+
+		positions.reserve(positions.size() + otherData.positions.size());
+		for (auto& position : otherData.positions) {
+			positions.emplace_back(offset * glm::vec4(position, 1.0f));
+		}
+
+		normals.reserve(normals.size() + otherData.normals.size());
+		for (auto& normal : otherData.normals) {
+			normals.emplace_back(normal);
+		}
 	}
 }
 

@@ -47,7 +47,7 @@ void GLMeshImpl::draw(size_t indicesCount)
 {
 	gl::BindVertexArray(_vaoHandle);
 
-	gl::DrawElements(gl::TRIANGLES, static_cast<int>(indicesCount), gl::UNSIGNED_SHORT, 0);
+	gl::DrawElements(gl::TRIANGLES, static_cast<int>(indicesCount), gl::UNSIGNED_INT, 0);
 
 	gl::BindVertexArray(0);
 }
@@ -59,7 +59,7 @@ void GLMeshImpl::updateData(const MeshData& data)
 	const GLuint elemBufHandle = _vboHandles[2];
 
 	gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, elemBufHandle);
-	gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, data.indices.size() * sizeof(short), data.indices.data(), gl::STATIC_DRAW);
+	gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, data.indices.size() * sizeof(unsigned int), data.indices.data(), gl::STATIC_DRAW);
 
 	gl::BindBuffer(gl::ARRAY_BUFFER, posBufHandle);
 	gl::BufferData(gl::ARRAY_BUFFER, data.positions.size() * sizeof(glm::vec3), data.positions.data(), gl::STATIC_DRAW);

@@ -7,9 +7,10 @@ struct MeshData
 {
 	std::vector<glm::vec3> positions;
 	std::vector<glm::vec3> normals;
-	std::vector<unsigned short> indices;
+	std::vector<unsigned int> indices;
 
 	void addData(const MeshData& otherData, const glm::mat4& offset);
+	void addData(const MeshData& otherData, const std::vector<glm::mat4>& offsets);
 };
 
 const float pi = 3.1415926536f;
