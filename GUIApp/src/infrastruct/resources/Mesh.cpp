@@ -11,7 +11,7 @@ Mesh::Mesh(IMeshImpl* meshImpl):
 Mesh::~Mesh()
 {
 	_impl->terminate();
-	delete _impl;
+	_impl->free();
 }
 
 void Mesh::init(const MeshData& data)

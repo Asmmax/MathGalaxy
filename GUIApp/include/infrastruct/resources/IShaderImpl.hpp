@@ -9,13 +9,12 @@
 class IShaderImpl
 {
 public:
-	virtual ~IShaderImpl() {}
-
 	virtual void compileVertexShader(const std::string& shader) = 0;
 	virtual void compileFragmentShader(const std::string& shader) = 0;
 	virtual void link() = 0;
 
 	virtual void terminate() = 0;
+	virtual void free() = 0;
 
 	virtual void use() = 0;
 	virtual void clear() = 0;
@@ -28,4 +27,7 @@ public:
 	virtual void setUniform(unsigned int location, int value) = 0;
 
 	virtual unsigned int getLocation(const StringId& name) const = 0;
+
+protected:
+	virtual ~IShaderImpl() {}
 };

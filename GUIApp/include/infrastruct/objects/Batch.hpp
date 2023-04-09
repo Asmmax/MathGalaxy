@@ -1,5 +1,6 @@
 #pragma once
 #include "infrastruct/DrawState.hpp"
+#include "infrastruct/PoolAllocator.hpp"
 #include <vector>
 
 class Shader;
@@ -13,9 +14,13 @@ private:
 	Shader* _shader;
 	std::vector<std::pair<StringId, Texture*>> _textures;
 	std::vector<Object*> _objects;
+	std::vector<Object*> _hiddenObjects;
+
+	PoolAllocator<Object> _objectAllocator;
 
 public:
-	Batch();
+	Batch(size_t poolSize = 100);
+	~Batch();
 
 	DrawStateDef& getState() { return _state; }
 	const DrawStateDef& getState() const { return _state; }
@@ -28,6 +33,11 @@ public:
 	void removeTexture(const StringId& name);
 
 	Object* createObject();
+	Object* createObject(Object* other);
+	void enableObject(Object* object);
+	void disableObject(Object* object);
+	void removeObject(Object* object);
+	void clear();
 
 	void draw(DrawStatePoolDef& statePool);
 };

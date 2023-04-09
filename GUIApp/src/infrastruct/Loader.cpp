@@ -6,10 +6,17 @@
 #include "infrastruct/IGraphicsContext.hpp"
 #include <assert.h>
 
-Loader::Loader(ILoaderImpl* loaderImpl):
+Loader::Loader(ILoaderImpl* loaderImpl, size_t poolSize /*= 100*/):
 	_impl(loaderImpl),
-	_context(nullptr)
+	_context(nullptr),
+	_meshAllocator(poolSize),
+	_textureAllocator(poolSize),
+	_shaderAllocator(poolSize)
 {
+	//Allocate memory for vectors in advance
+	_meshes.reserve(poolSize);
+	_textures.reserve(poolSize);
+	_shaders.reserve(poolSize);
 }
 
 Loader::~Loader()
@@ -20,15 +27,15 @@ Loader::~Loader()
 	_context->makeCurrent();
 
 	for (auto meshPtr : _meshes) {
-		delete meshPtr;
+		_meshAllocator.destroy(meshPtr);
 	}
 
 	for (auto texturePtr : _textures) {
-		delete texturePtr;
+		_textureAllocator.destroy(texturePtr);
 	}
 
 	for (auto shaderPtr : _shaders) {
-		delete shaderPtr;
+		_shaderAllocator.destroy(shaderPtr);
 	}
 
 	delete _impl;
@@ -51,7 +58,8 @@ Mesh* Loader::loadMesh(const MeshData& data)
 		return nullptr;
 	}
 
-	Mesh* newMesh = new Mesh(meshImpl);
+	Mesh* newMesh = _meshAllocator.allocate();
+	_meshAllocator.construct(newMesh, meshImpl);
 	newMesh->init(data);
 	_meshes.push_back(newMesh);
 	return newMesh;
@@ -69,7 +77,8 @@ Texture* Loader::loadTexture(const TextureData& data)
 		return nullptr;
 	}
 
-	Texture* newTexture = new Texture(textureImpl);
+	Texture* newTexture = _textureAllocator.allocate();
+	_textureAllocator.construct(newTexture, textureImpl);
 	newTexture->init(data);
 	_textures.push_back(newTexture);
 	return newTexture;
@@ -87,7 +96,8 @@ Shader* Loader::loadShader(const std::string& vertexShader, const std::string& f
 		return nullptr;
 	}
 
-	Shader* newShader = new Shader(shaderImpl);
+	Shader* newShader = _shaderAllocator.allocate();
+	_shaderAllocator.construct(newShader, shaderImpl);
 	newShader->init(vertexShader, fragmentShader);
 	_shaders.push_back(newShader);
 	return newShader;
@@ -109,7 +119,8 @@ void Loader::release(Mesh* mesh)
 		return;
 	}
 
-	delete mesh;
+	_meshAllocator.destroy(mesh);
+	_meshAllocator.deallocate(mesh);
 	_meshes.erase(foundIt);
 }
 
@@ -129,7 +140,8 @@ void Loader::release(Texture* texture)
 		return;
 	}
 
-	delete texture;
+	_textureAllocator.destroy(texture);
+	_textureAllocator.deallocate(texture);
 	_textures.erase(foundIt);
 }
 
@@ -149,6 +161,7 @@ void Loader::release(Shader* shader)
 		return;
 	}
 
-	delete shader;
+	_shaderAllocator.destroy(shader);
+	_shaderAllocator.deallocate(shader);
 	_shaders.erase(foundIt);
 }

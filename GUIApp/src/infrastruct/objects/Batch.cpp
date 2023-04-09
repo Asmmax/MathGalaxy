@@ -2,10 +2,20 @@
 #include "infrastruct/objects/Object.hpp"
 #include "infrastruct/resources/Shader.hpp"
 #include "infrastruct/resources/Texture.hpp"
+#include <algorithm>
 
-Batch::Batch() :
-	_shader(nullptr)
+Batch::Batch(size_t poolSize /*= 100*/) :
+	_shader(nullptr),
+	_objectAllocator(poolSize)
 {
+	_objects.reserve(poolSize);
+}
+
+Batch::~Batch()
+{
+	for (auto& object : _objects) {
+		_objectAllocator.destroy(object);
+	}
 }
 
 void Batch::setShader(Shader* shader)
@@ -58,13 +68,79 @@ void Batch::removeTexture(const StringId& name)
 
 Object* Batch::createObject()
 {
-	Object* newObject = new Object();
-	_objects.push_back(newObject);
+	Object* newObject = _objectAllocator.allocate();
+	_objectAllocator.construct(newObject);
+
+	auto foundIt = std::lower_bound(_objects.begin(), _objects.end(), newObject);
+	_objects.insert(foundIt, newObject);
+
 	return newObject;
+}
+
+Object* Batch::createObject(Object* other)
+{
+	Object* newObject = _objectAllocator.allocate();
+	_objectAllocator.construct(newObject, *other);
+
+	auto foundIt = std::lower_bound(_objects.begin(), _objects.end(), newObject);
+	_objects.insert(foundIt, newObject);
+
+	return newObject;
+}
+
+void Batch::enableObject(Object* object)
+{
+	auto foundHidObjIt = std::lower_bound(_hiddenObjects.begin(), _hiddenObjects.end(), object);
+	if (*foundHidObjIt != object) {
+		return;
+	}
+
+	_hiddenObjects.erase(foundHidObjIt);
+
+	auto foundObjIt = std::lower_bound(_objects.begin(), _objects.end(), object);
+	_objects.insert(foundObjIt, object);
+}
+
+void Batch::disableObject(Object* object)
+{
+	auto foundObjIt = std::lower_bound(_objects.begin(), _objects.end(), object);
+	if (*foundObjIt != object) {
+		return;
+	}
+
+	_objects.erase(foundObjIt);
+
+	auto foundHidObjIt = std::lower_bound(_hiddenObjects.begin(), _hiddenObjects.end(), object);
+	_hiddenObjects.insert(foundHidObjIt, object);
+}
+
+void Batch::removeObject(Object* object)
+{
+	auto foundIt = std::lower_bound(_objects.begin(), _objects.end(), object);
+	if (*foundIt != object) {
+		return;
+	}
+
+	_objects.erase(foundIt);
+	_objectAllocator.destroy(object);
+	_objectAllocator.deallocate(object);
+}
+
+void Batch::clear()
+{
+	for (auto& object : _objects) {
+		_objectAllocator.destroy(object);
+	}
+	_objectAllocator.reset();
+	_objects.clear();
 }
 
 void Batch::draw(DrawStatePoolDef& statePool)
 {
+	if (_objects.empty()) {
+		return;
+	}
+
 	auto& state = statePool.get();
 
 	_shader->use();

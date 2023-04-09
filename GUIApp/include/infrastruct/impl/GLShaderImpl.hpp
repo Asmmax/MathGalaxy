@@ -1,5 +1,6 @@
 #pragma once
 #include "infrastruct/resources/IShaderImpl.hpp"
+#include "infrastruct/PoolAllocator.hpp"
 
 class GLShaderImpl : public IShaderImpl
 {
@@ -7,15 +8,17 @@ private:
 	unsigned int _vertexShaderHandle;
 	unsigned int _fragmentShaderHandle;
 	unsigned int _programHandle;
+	PoolAllocator<GLShaderImpl>* _allocator;
 
 public:
-	GLShaderImpl();
+	GLShaderImpl(PoolAllocator<GLShaderImpl>* allocator);
 
 	void compileVertexShader(const std::string& shader) override;
 	void compileFragmentShader(const std::string& shader) override;
 	void link() override;
 
 	void terminate() override;
+	void free() override;
 
 	void use() override;
 	void clear() override;

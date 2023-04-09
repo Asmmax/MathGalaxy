@@ -3,8 +3,9 @@
 #include "gl/gl_core_4_3.hpp"
 #include <glm/vec3.hpp>
 
-GLMeshImpl::GLMeshImpl():
-	_vaoHandle(0)
+GLMeshImpl::GLMeshImpl(PoolAllocator<GLMeshImpl>* allocator):
+	_vaoHandle(0),
+	_allocator(allocator)
 {
 }
 
@@ -41,6 +42,13 @@ void GLMeshImpl::terminate()
 
 	gl::DeleteBuffers(static_cast<GLsizei>(_vboHandles.size()), &_vboHandles[0]);
 	_vboHandles.clear();
+}
+
+void GLMeshImpl::free()
+{
+	PoolAllocator<GLMeshImpl>* tempAllocator = _allocator;
+	tempAllocator->destroy(this);
+	tempAllocator->deallocate(this);
 }
 
 void GLMeshImpl::draw(size_t indicesCount)

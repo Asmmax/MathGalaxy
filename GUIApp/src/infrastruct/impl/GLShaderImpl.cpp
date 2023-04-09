@@ -2,10 +2,11 @@
 #include "gl/gl_core_4_3.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-GLShaderImpl::GLShaderImpl():
+GLShaderImpl::GLShaderImpl(PoolAllocator<GLShaderImpl>* allocator):
 	_vertexShaderHandle(0),
 	_fragmentShaderHandle(0),
-	_programHandle(0)
+	_programHandle(0),
+	_allocator(allocator)
 {
 }
 
@@ -135,6 +136,13 @@ void GLShaderImpl::terminate()
 {
 	gl::DeleteProgram(_programHandle);
 	_programHandle = 0;
+}
+
+void GLShaderImpl::free()
+{
+	PoolAllocator<GLShaderImpl>* tempAllocator = _allocator;
+	tempAllocator->destroy(this);
+	tempAllocator->deallocate(this);
 }
 
 void GLShaderImpl::use()

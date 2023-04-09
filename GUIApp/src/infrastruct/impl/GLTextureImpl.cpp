@@ -2,8 +2,9 @@
 #include "infrastruct/resources/TextureData.hpp"
 #include "gl/gl_core_4_3.hpp"
 
-GLTextureImpl::GLTextureImpl():
-	_textureHandle(0)
+GLTextureImpl::GLTextureImpl(PoolAllocator<GLTextureImpl>* allocator):
+	_textureHandle(0),
+	_allocator(allocator)
 {
 }
 
@@ -22,6 +23,13 @@ void GLTextureImpl::terminate()
 {
 	gl::DeleteTextures(1, &_textureHandle);
 	_textureHandle = 0;
+}
+
+void GLTextureImpl::free()
+{
+	PoolAllocator<GLTextureImpl>* tempAllocator = _allocator;
+	tempAllocator->destroy(this);
+	tempAllocator->deallocate(this);
 }
 
 void GLTextureImpl::applyTo(int texUnit)

@@ -2,6 +2,7 @@
 #include "infrastruct/resources/Mesh.hpp"
 #include "infrastruct/resources/Texture.hpp"
 #include "infrastruct/resources/Shader.hpp"
+#include "infrastruct/PoolAllocator.hpp"
 #include <vector>
 #include <string>
 
@@ -21,8 +22,12 @@ private:
 	std::vector<Texture*> _textures;
 	std::vector<Shader*> _shaders;
 
+	PoolAllocator<Mesh> _meshAllocator;
+	PoolAllocator<Texture> _textureAllocator;
+	PoolAllocator<Shader> _shaderAllocator;
+
 public:
-	Loader(ILoaderImpl* loaderImpl);
+	Loader(ILoaderImpl* loaderImpl, size_t poolSize = 100);
 	~Loader();
 
 	void init(IGraphicsContext* context);

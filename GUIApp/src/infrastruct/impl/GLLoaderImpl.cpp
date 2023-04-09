@@ -1,17 +1,30 @@
 #include "infrastruct/impl/GLLoaderImpl.hpp"
 #include <cstdint>
 
+GLLoaderImpl::GLLoaderImpl(size_t poolSize /*= 100*/):
+	_meshAllocator(poolSize),
+	_textureAllocator(poolSize),
+	_shaderAllocator(poolSize)
+{
+}
+
 IMeshImpl* GLLoaderImpl::createMesh()
 {
-	return new GLMeshImpl();
+	GLMeshImpl* newMesh = _meshAllocator.allocate();
+	_meshAllocator.construct(newMesh, &_meshAllocator);
+	return newMesh;
 }
 
 ITextureImpl* GLLoaderImpl::createTexture()
 {
-	return new GLTextureImpl();
+	GLTextureImpl* newTexture = _textureAllocator.allocate();
+	_textureAllocator.construct(newTexture, &_textureAllocator);
+	return newTexture;
 }
 
 IShaderImpl* GLLoaderImpl::createShader()
 {
-	return new GLShaderImpl();
+	GLShaderImpl* newShader = _shaderAllocator.allocate();
+	_shaderAllocator.construct(newShader, &_shaderAllocator);
+	return newShader;
 }

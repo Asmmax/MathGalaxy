@@ -1,5 +1,6 @@
 #pragma once
 #include "infrastruct/DrawState.hpp"
+#include "infrastruct/PoolAllocator.hpp"
 #include <vector>
 #include <glm/mat4x4.hpp>
 
@@ -13,7 +14,12 @@ private:
 	std::vector<Light*> _lights;
 	std::vector<Batch*> _batches;
 	DrawStateDef _state;
+
+	PoolAllocator<Light> _lightAllocator;
+	PoolAllocator<Batch> _batchAllocator;
+
 public:
+	Model(size_t poolSize = 100);
 	~Model();
 
 	void predraw(DrawStatePoolDef& statePool);
@@ -24,4 +30,7 @@ public:
 	
 	Light* createLight();
 	Batch* createBatch();
+
+	void removeLight(Light* light);
+	void removeBatch(Batch* batch);
 };

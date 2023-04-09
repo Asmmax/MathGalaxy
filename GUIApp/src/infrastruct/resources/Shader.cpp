@@ -9,7 +9,7 @@ Shader::Shader(IShaderImpl* shaderImpl):
 Shader::~Shader()
 {
 	_impl->terminate();
-	delete _impl;
+	_impl->free();
 }
 
 void Shader::init(const std::string& vertexShader, const std::string& fragmentShader)

@@ -13,7 +13,7 @@ Texture::Texture(ITextureImpl* textureImpl):
 Texture::~Texture()
 {
 	_impl->terminate();
-	delete _impl;
+	_impl->free();
 }
 
 void Texture::init(const TextureData& data)
