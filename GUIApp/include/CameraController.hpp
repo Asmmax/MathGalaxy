@@ -1,5 +1,5 @@
 #pragma once
-#include "infrastruct/IController.hpp"
+#include "IController.hpp"
 #include <memory>
 
 class Transform;

@@ -1,5 +1,5 @@
 #pragma once
-#include "infrastruct/IGUI.hpp"
+#include "IGUI.hpp"
 #include <memory>
 #include <vector>
 

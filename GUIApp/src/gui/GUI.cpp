@@ -2,8 +2,6 @@
 #include "gui/MenuPanel.hpp"
 #include "gui/GUI.hpp"
 #include "imgui.h"
-#include "gl/gl_core_4_3.hpp"
-#include "GLFW/glfw3.h"
 
 void GUI::addWidget(const std::shared_ptr<AWidget>& child)
 {

@@ -1,29 +1,28 @@
-#include "infrastruct/Application.hpp"
-#include "infrastruct/Window.hpp"
+#include "Application.hpp"
+#include "Window.hpp"
 #include "gui/DemoGUI.hpp"
-#include "infrastruct/View.hpp"
+#include "View.hpp"
 #include "gui/widgets/ViewportWidget.hpp"
 #include "drawables/Transform.hpp"
-#include "infrastruct/Model.hpp"
-#include "infrastruct/objects/Light.hpp"
-#include "infrastruct/objects/Object.hpp"
+#include "Model.hpp"
+#include "objects/Light.hpp"
+#include "objects/Object.hpp"
 #include "gui/widgets/TransformWidget.hpp"
 #include "gui/widgets/WidgetGroup.hpp"
 #include "gui/GUI.hpp"
-#include "infrastruct/resources/Mesh.hpp"
-#include "infrastruct/resources/MeshData.hpp"
+#include "resources/Mesh.hpp"
+#include "resources/MeshData.hpp"
 #include "CameraController.hpp"
 #include "gui/MenuPanel.hpp"
 #include "gui/menu/MenuList.hpp"
 #include "gui/menu/MenuItemEnabler.hpp"
-#include "infrastruct/impl/GLFWApplicationImpl.hpp"
-#include "infrastruct/resources/Shader.hpp"
+#include "resources/Shader.hpp"
 #include "Path.hpp"
-#include "infrastruct/resources/Texture.hpp"
-#include "infrastruct/Loader.hpp"
-#include "infrastruct/resources/ShaderData.hpp"
-#include "infrastruct/resources/TextureData.hpp"
-#include "infrastruct/objects/Batch.hpp"
+#include "resources/Texture.hpp"
+#include "Loader.hpp"
+#include "resources/ShaderData.hpp"
+#include "resources/TextureData.hpp"
+#include "objects/Batch.hpp"
 
 #include <glm/gtx/transform.hpp>
 #include <random>
@@ -34,7 +33,6 @@ int main(int argc, char* argv[])
 	Path path("settings.dat");
 
 	Application& app = Application::getInstance();
-	app.setImpl<GLFWApplicationImpl>();
 	Window* window = app.getWindow(1280, 720, "Dear imGui Demo");
 	if (!window)
 		return -1;

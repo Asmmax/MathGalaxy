@@ -1,5 +1,5 @@
 #include "gui/widgets/ViewportWidget.hpp"
-#include "infrastruct/View.hpp"
+#include "View.hpp"
 #include "imgui.h"
 
 ViewportWidget::ViewportWidget(const std::string& name, int width, int height, View* view):

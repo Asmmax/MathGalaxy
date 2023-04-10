@@ -1,5 +1,5 @@
 #pragma once
-#include "infrastruct/IGUI.hpp"
+#include "IGUI.hpp"
 
 class DemoGUI : public IGUI
 {
