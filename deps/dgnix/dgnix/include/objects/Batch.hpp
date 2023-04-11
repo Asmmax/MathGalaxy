@@ -15,6 +15,7 @@ private:
 	std::vector<std::pair<StringId, Texture*>> _textures;
 	std::vector<Object*> _objects;
 	std::vector<Object*> _hiddenObjects;
+	std::vector<Object*> _culledObjects;
 
 	PoolAllocator<Object> _objectAllocator;
 

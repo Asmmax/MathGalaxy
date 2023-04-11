@@ -19,6 +19,22 @@ void Object::setMatrix(const glm::mat4& matrix)
 	_matrix = matrix;
 }
 
+bool Object::isCaughtIntoView(const glm::mat4& viewProjMatrix) const
+{
+	if (!_mesh) {
+		return false;
+	}
+
+	auto mvpMatrix = viewProjMatrix * _matrix;
+
+	auto& bbox = _mesh->getBoundingBox();
+	BBox projectedBbox = bbox.project(mvpMatrix);
+
+	static BBox screenBbox = { -1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 2.0f };
+
+	return projectedBbox.isOverlapped(screenBbox, 1e-4f);
+}
+
 void Object::draw(Shader* shader, const glm::mat4& viewMatrix, const glm::mat4& projMatrix)
 {
 	if (!_mesh) {
@@ -27,14 +43,6 @@ void Object::draw(Shader* shader, const glm::mat4& viewMatrix, const glm::mat4& 
 
 	auto mvMatrix = viewMatrix * _matrix;
 	auto mvpMatrix = projMatrix * mvMatrix;
-
-	auto& bbox = _mesh->getBoundingBox();
-	BBox projectedBbox = bbox.project(mvpMatrix);
-
-	static BBox screenBbox = { -1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 2.0f };
-	if (!projectedBbox.isOverlapped(screenBbox, 1e-4f)) {
-		return;
-	}
 
 	auto normalMatrix4x4 = glm::transpose(glm::inverse(mvMatrix));
 	glm::mat3 normalMatrix(normalMatrix4x4);

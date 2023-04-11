@@ -143,6 +143,21 @@ void Batch::draw(DrawStatePoolDef& statePool)
 
 	auto& state = statePool.get();
 
+	static StringId viewProjMatrixName = StringId("ViewProjectionMatrix");
+	auto& viewProjMatrix = state.get<glm::mat4>(viewProjMatrixName);
+
+	_culledObjects.clear();
+	for (auto& object : _objects)
+	{
+		if (object->isCaughtIntoView(viewProjMatrix)) {
+			_culledObjects.push_back(object);
+		}
+	}
+
+	if (_culledObjects.empty()) {
+		return;
+	}
+
 	_shader->use();
 
 	state.apply(*_shader);
@@ -167,7 +182,7 @@ void Batch::draw(DrawStatePoolDef& statePool)
 	static StringId projMatrixName = StringId("ProjectionMatrix");
 	auto& projMatrix = state.get<glm::mat4>(projMatrixName);
 
-	for (auto& object : _objects)
+	for (auto& object : _culledObjects)
 	{
 		object->draw(_shader, viewMatrix, projMatrix);
 	}

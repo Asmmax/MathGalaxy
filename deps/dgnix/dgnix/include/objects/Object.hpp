@@ -19,5 +19,6 @@ public:
 	void setMatrix(const glm::mat4& matrix);
 	const glm::mat4& getMatrix() const { return _matrix; }
 
+	bool isCaughtIntoView(const glm::mat4& viewProjMatrix) const;
 	void draw(Shader* shader, const glm::mat4& viewMatrix, const glm::mat4& projMatrix);
 };
