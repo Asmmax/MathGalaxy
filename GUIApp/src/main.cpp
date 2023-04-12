@@ -155,7 +155,15 @@ int main(int argc, char* argv[])
 	window->setGUI(gui);
 
 	auto controller = std::make_shared<CameraController>(cameraTarget, cameraEye);
-	window->setController(controller);
+	window->setResetMousePosCallback([controller](double posX, double posY) {
+		controller->resetMousePos(posX, posY);
+		});
+	window->setMoveMouseCallback([controller](double posX, double posY) {
+		controller->moveMouse(posX, posY);
+		});
+	window->setScrollMouseCallback([controller](double step) {
+		controller->scrollMouse(step);
+		});
 
 	while (!window->isDone()) {
 		window->handle();

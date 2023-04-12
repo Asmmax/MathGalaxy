@@ -1,6 +1,5 @@
 #include "Window.hpp"
 #include "IGUI.hpp"
-#include "IController.hpp"
 #include "IWindowImpl.hpp"
 #include "IInputHandler.hpp"
 #include "IGraphicsContext.hpp"
@@ -53,11 +52,6 @@ void Window::setGUI(const std::shared_ptr<IGUI>& gui)
 	if (_gui) {
 		_gui->init();
 	}
-}
-
-void Window::setController(const std::shared_ptr<IController>& controller)
-{ 
-	_controller = controller;
 }
 
 bool Window::isDone()
@@ -129,16 +123,16 @@ Loader* Window::getLoader()
 
 void Window::mouseButtonCallback(double posX, double posY)
 {
-	if (!_controller) {
+	if (!_resetMousePosCallback) {
 		return;
 	}
 
-	_controller->resetMousePos(posX, posY);
+	_resetMousePosCallback(posX, posY);
 }
 
 void Window::mousePositionCallback(double x, double y)
 {
-	if (!_controller) {
+	if (!_moveMouseCallback) {
 		return;
 	}
 
@@ -148,15 +142,15 @@ void Window::mousePositionCallback(double x, double y)
 	}
 
 	if (inputHandler->isRightMousePressed()) {
-		_controller->moveMouse(x, y);
+		_moveMouseCallback(x, y);
 	}
 }
 
 void Window::mouseScrollCallback(double yOffset)
 {
-	if (!_controller) {
+	if (!_scrollMouseCallback) {
 		return;
 	}
 
-	_controller->scrollMouse(yOffset);
+	_scrollMouseCallback(yOffset);
 }
