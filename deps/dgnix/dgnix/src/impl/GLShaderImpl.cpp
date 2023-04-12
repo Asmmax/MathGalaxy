@@ -29,16 +29,16 @@ void GLShaderImpl::compileVertexShader(const std::string& shader)
 
 	gl::CompileShader(_vertexShaderHandle);
 
-	GLint result;
+	GLint result = gl::FALSE_;
 	gl::GetShaderiv(_vertexShaderHandle, gl::COMPILE_STATUS, &result);
 	if (result == gl::FALSE_) {
 		fprintf(stderr, "Vertex shader compilation failed!\n");
 
-		GLint logLen;
+		GLint logLen = 0;
 		gl::GetShaderiv(_vertexShaderHandle, gl::INFO_LOG_LENGTH, &logLen);
 		if (logLen > 0) {
 			GLchar* log = new char[logLen];
-			GLsizei written;
+			GLsizei written = 0;
 			gl::GetShaderInfoLog(_vertexShaderHandle, logLen, &written, log);
 
 			fprintf(stderr, "Shader log:\n%s", log);
@@ -66,16 +66,16 @@ void GLShaderImpl::compileFragmentShader(const std::string& shader)
 
 	gl::CompileShader(_fragmentShaderHandle);
 
-	GLint result;
+	GLint result = gl::FALSE_;
 	gl::GetShaderiv(_fragmentShaderHandle, gl::COMPILE_STATUS, &result);
 	if (result == gl::FALSE_) {
 		fprintf(stderr, "Fragment shader compilation failed!\n");
 
-		GLint logLen;
+		GLint logLen = 0;
 		gl::GetShaderiv(_fragmentShaderHandle, gl::INFO_LOG_LENGTH, &logLen);
 		if (logLen > 0) {
 			GLchar* log = new char[logLen];
-			GLsizei written;
+			GLsizei written = 0;
 			gl::GetShaderInfoLog(_fragmentShaderHandle, logLen, &written, log);
 
 			fprintf(stderr, "Shader log:\n%s", log);
@@ -102,17 +102,17 @@ void GLShaderImpl::link()
 
 	gl::LinkProgram(_programHandle);
 
-	GLint result;
-	gl::GetShaderiv(_programHandle, gl::LINK_STATUS, &result);
+	GLint result = gl::FALSE_;
+	gl::GetProgramiv(_programHandle, gl::LINK_STATUS, &result);
 	if (result == gl::FALSE_) {
 		fprintf(stderr, "Failed to link shader program!\n");
 
-		GLint logLen;
-		gl::GetShaderiv(_programHandle, gl::INFO_LOG_LENGTH, &logLen);
+		GLint logLen = 0;
+		gl::GetProgramiv(_programHandle, gl::INFO_LOG_LENGTH, &logLen);
 		if (logLen > 0) {
 			GLchar* log = new char[logLen];
-			GLsizei written;
-			gl::GetShaderInfoLog(_programHandle, logLen, &written, log);
+			GLsizei written = 0;
+			gl::GetProgramInfoLog(_programHandle, logLen, &written, log);
 
 			fprintf(stderr, "Program log:\n%s", log);
 			delete[] log;
