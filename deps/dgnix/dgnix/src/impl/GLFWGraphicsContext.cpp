@@ -51,9 +51,16 @@ GLFWGraphicsContext::ISize GLFWGraphicsContext::getFramebufferSize()
 	return size;
 }
 
-void GLFWGraphicsContext::swapBuffers()
+void GLFWGraphicsContext::resizeBuffer()
 {
-	glfwSwapBuffers(_window);
+	auto size = getFramebufferSize();
+	gl::Viewport(0, 0, size.width, size.height);
+}
+
+void GLFWGraphicsContext::clearBuffer(const glm::vec3& background)
+{
+	gl::ClearColor(background.r, background.g, background.b, 1.0f);
+	gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 }
 
 void GLFWGraphicsContext::setupImgui()
@@ -64,13 +71,12 @@ void GLFWGraphicsContext::setupImgui()
 
 void GLFWGraphicsContext::renderImgui()
 {
-	auto size = getFramebufferSize();
-	gl::Viewport(0, 0, size.width, size.height);
-
-	gl::ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
-
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void GLFWGraphicsContext::swapBuffers()
+{
+	glfwSwapBuffers(_window);
 }
 
 ILoaderImpl* GLFWGraphicsContext::createLoader()

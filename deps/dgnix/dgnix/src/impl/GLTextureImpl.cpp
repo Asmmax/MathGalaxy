@@ -47,7 +47,7 @@ void GLTextureImpl::clear(int texUnit)
 void GLTextureImpl::updateData(const TextureData& data)
 {
 	gl::BindTexture(gl::TEXTURE_2D, _textureHandle);
-	gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGBA, data.width, data.height, 0, gl::RGBA, gl::UNSIGNED_BYTE, data.data.data());
+	gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGBA, data.width, data.height, 0, gl::RGBA, gl::UNSIGNED_BYTE, data.data.empty() ? nullptr : data.data.data());
 }
 
 void GLTextureImpl::resize(int width, int height)

@@ -1,4 +1,5 @@
 #include "gui/widgets/ViewportWidget.hpp"
+#include "resources/Texture.hpp"
 #include "View.hpp"
 #include "imgui.h"
 
@@ -19,7 +20,7 @@ void ViewportWidget::setupContent()
 	ImDrawList* drawList = ImGui::GetWindowDrawList();
 
 	_view->setSize(static_cast<int>(size.x), static_cast<int>(size.y));
-	auto fboTexture64 = _view->getFBOTextureId();
+	auto fboTexture64 = _view->getFboTexture()->getId();
 	drawList->AddImage((void*)fboTexture64,
 		pos,
 		ImVec2(pos.x + size.x, pos.y + size.y),

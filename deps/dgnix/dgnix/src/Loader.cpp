@@ -3,6 +3,7 @@
 #include "resources/IMeshImpl.hpp"
 #include "resources/ITextureImpl.hpp"
 #include "resources/IShaderImpl.hpp"
+#include "resources/TextureData.hpp"
 #include "IGraphicsContext.hpp"
 #include <assert.h>
 
@@ -82,6 +83,16 @@ Texture* Loader::loadTexture(const TextureData& data)
 	newTexture->init(data);
 	_textures.push_back(newTexture);
 	return newTexture;
+}
+
+Texture* Loader::createTexture(int width, int height)
+{
+	TextureData dummyData;
+	dummyData.width = width;
+	dummyData.height = height;
+	dummyData.bytesPerPixel = 4;
+
+	return loadTexture(dummyData);
 }
 
 Shader* Loader::loadShader(const std::string& vertexShader, const std::string& fragmentShader)

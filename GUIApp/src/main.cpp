@@ -124,7 +124,8 @@ int main(int argc, char* argv[])
 	root->addChild(cameraTarget);
 	cameraEye->setPosition(glm::vec3{ 0, 0, 5 });
 
-	auto camera = window->creteView(512, 512);
+	auto cameraTex = loader->createTexture(512, 512);
+	auto camera = window->creteView(cameraTex);
 
 	auto& commonMaterial = model.getState();
 	commonMaterial.add(StringId("AmbientColor"), glm::vec3(0.2f, 0.1f, 0.1f));
@@ -152,8 +153,6 @@ int main(int argc, char* argv[])
 	gui->addWidget(cameraWidget);
 	gui->setMenu(menu);
 
-	window->setGUI(gui);
-
 	auto controller = std::make_shared<CameraController>(cameraTarget, cameraEye);
 	window->setResetMousePosCallback([controller](double posX, double posY) {
 		controller->resetMousePos(posX, posY);
@@ -164,6 +163,8 @@ int main(int argc, char* argv[])
 	window->setScrollMouseCallback([controller](double step) {
 		controller->scrollMouse(step);
 		});
+
+	bool imguiInited = false;
 
 	while (!window->isDone()) {
 		window->handle();
@@ -185,7 +186,15 @@ int main(int argc, char* argv[])
 
 		camera->render(&model);
 
-		window->render();
+		window->beginRender();
+		if (!imguiInited) {
+			gui->init();
+			imguiInited = true;
+		}
+		window->setupImgui();
+		gui->setup();
+		window->renderImgui();
+		window->endRender();
 	}
 	return 0;
 }

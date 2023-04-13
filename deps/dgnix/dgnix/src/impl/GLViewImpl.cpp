@@ -8,15 +8,13 @@ GLViewImpl::GLViewImpl():
 {
 }
 
-void GLViewImpl::init()
+void GLViewImpl::init(TextureId fboTextureId)
 {
 	gl::GenFramebuffers(1, &_fboId);
 	gl::BindFramebuffer(gl::FRAMEBUFFER, _fboId);
 
-	gl::GenTextures(1, &_fboTextureId);
+	_fboTextureId = fboTextureId;
 	gl::BindTexture(gl::TEXTURE_2D, _fboTextureId);
-	gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR);
-	gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR);
 
 	gl::GenRenderbuffers(1, &_fboDepthBufferId);
 	gl::BindRenderbuffer(gl::RENDERBUFFER, _fboDepthBufferId);
@@ -29,7 +27,6 @@ void GLViewImpl::terminate()
 	gl::DeleteRenderbuffers(1, &_fboDepthBufferId);
 	_fboDepthBufferId = 0;
 
-	gl::DeleteTextures(1, &_fboTextureId);
 	_fboTextureId = 0;
 
 	gl::DeleteFramebuffers(1, &_fboId);

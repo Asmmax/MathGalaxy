@@ -19,9 +19,12 @@ public:
 	void terminate() override;
 	void makeCurrent() override;
 	ISize getFramebufferSize() override;
-	void swapBuffers() override;
+
+	void resizeBuffer() override;
+	void clearBuffer(const glm::vec3& background) override;
 	void setupImgui() override;
 	void renderImgui() override;
+	void swapBuffers() override;
 
 	ILoaderImpl* createLoader() override;
 };

@@ -22,13 +22,22 @@ Model::~Model()
 	}
 }
 
-void Model::predraw(DrawStatePoolDef& statePool)
+void Model::predraw(DrawStatePoolDef& statePool, const glm::mat4& viewMatrix, const glm::mat4& projMatrix)
 {
+	glm::mat4 viewProjMat = projMatrix * viewMatrix;
+
+	auto& currentState = statePool.get();
+	static StringId viewMatrixName = StringId("ViewMatrix");
+	currentState.add(viewMatrixName, viewMatrix);
+	static StringId projMatrixName = StringId("ProjectionMatrix");
+	currentState.add(projMatrixName, projMatrix);
+	static StringId viewProjMatrixName = StringId("ViewProjectionMatrix");
+	currentState.add(viewProjMatrixName, viewProjMat);
+
 	for (auto& light : _lights) {
 		light->predraw(statePool);
 	}
 
-	auto& currentState = statePool.get();
 	_state.apply(currentState);
 }
 

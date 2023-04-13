@@ -34,6 +34,7 @@ public:
 
 	Mesh* loadMesh(const MeshData& data);
 	Texture* loadTexture(const TextureData& data);
+	Texture* createTexture(int width, int height);
 	Shader* loadShader(const std::string& vertexShader, const std::string& fragmentShader);
 
 	void release(Mesh* mesh);

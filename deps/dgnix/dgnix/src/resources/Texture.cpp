@@ -54,3 +54,8 @@ void Texture::resize(int width, int height)
 	_width = width;
 	_height = height;
 }
+
+TextureId Texture::getId() const
+{
+	return static_cast<TextureId>(_impl->getTextureHandle());
+}

@@ -1,12 +1,14 @@
 #pragma once
-#include "View.hpp"
+#include "DrawState.hpp"
 #include "Loader.hpp"
 #include <memory>
 #include <vector>
 #include <functional>
 
-class IGUI;
 class IWindowImpl;
+class Texture;
+class Model;
+class View;
 
 class Window
 {
@@ -17,7 +19,6 @@ private:
 	using MouseScrollCallback = std::function<void(double)>;
 
 	IWindowImpl* _impl;
-	std::shared_ptr<IGUI> _gui;
 	std::vector<View*> _views;
 	std::unique_ptr<Loader> _loader;
 
@@ -25,16 +26,29 @@ private:
 	MousePosCallback _moveMouseCallback;
 	MouseScrollCallback _scrollMouseCallback;
 
+	glm::vec3 _background;
+	glm::mat4 _viewMatrix;
+	DrawStatePoolDef _statePool;
+
 public:
 	~Window();
 
-	void setGUI(const std::shared_ptr<IGUI>& gui);
-
 	bool isDone();
 	void handle();
-	void render();
-	View* creteView(int width, int height);
+	View* creteView(Texture* fboTexture);
 	Loader* getLoader();
+
+	void beginRender();
+	void render(Model* model);
+	void setupImgui();
+	void renderImgui();
+	void endRender();
+
+	void setViewMatrix(const glm::mat4& matrix) { _viewMatrix = matrix; }
+	const glm::mat4& getViewMatrix() const { return _viewMatrix; }
+
+	void setBackground(const glm::vec3& color) { _background = color; }
+	const glm::vec3& getBackground() const { return _background; }
 
 	void setResetMousePosCallback(const MousePosCallback& callback) { _resetMousePosCallback = callback; }
 	void setMoveMouseCallback(const MousePosCallback& callback) { _moveMouseCallback = callback; }

@@ -15,6 +15,8 @@ public:
 	virtual void updateData(const TextureData& data) = 0;
 	virtual void resize(int width, int height) = 0;
 
+	virtual unsigned int getTextureHandle() const = 0;
+
 protected:
 	virtual ~ITextureImpl() {}
 };

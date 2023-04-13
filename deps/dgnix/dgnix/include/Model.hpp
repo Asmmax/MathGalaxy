@@ -22,7 +22,7 @@ public:
 	Model(size_t poolSize = 100);
 	~Model();
 
-	void predraw(DrawStatePoolDef& statePool);
+	void predraw(DrawStatePoolDef& statePool, const glm::mat4& viewMatrix, const glm::mat4& projMatrix);
 	void draw(DrawStatePoolDef& statePool);
 
 	DrawStateDef& getState() { return _state; }

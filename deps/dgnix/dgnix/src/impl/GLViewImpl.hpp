@@ -11,12 +11,10 @@ private:
 public:
 	GLViewImpl();
 
-	void init() override;
+	void init(TextureId fboTextureId) override;
 	void terminate() override;
 
 	void beginDraw(int width, int height, const glm::vec3& background) override;
 	void endDraw() override;
 	void resizeBuffer(int width, int height) override;
-
-	unsigned int getFBOTextureId() const override { return _fboTextureId; }
 };
