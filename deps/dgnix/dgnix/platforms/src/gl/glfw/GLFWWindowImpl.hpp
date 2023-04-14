@@ -1,8 +1,8 @@
 #pragma once
 #include "IWindowImpl.hpp"
-#include "impl/GLFWGraphicsContext.hpp"
-#include "impl/GLFWInputHandler.hpp"
-#include "impl/GLViewImpl.hpp"
+#include "GLFWGraphicsContext.hpp"
+#include "GLFWInputHandler.hpp"
+#include "../common/GLViewImpl.hpp"
 #include <vector>
 
 struct GLFWwindow;

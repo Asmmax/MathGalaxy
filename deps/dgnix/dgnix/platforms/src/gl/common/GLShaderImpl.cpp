@@ -1,6 +1,6 @@
-#include "impl/GLShaderImpl.hpp"
+#include "GLShaderImpl.hpp"
 #include "gl/gl_core_4_3.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 GLShaderImpl::GLShaderImpl(PoolAllocator<GLShaderImpl>* allocator):
 	_vertexShaderHandle(0),

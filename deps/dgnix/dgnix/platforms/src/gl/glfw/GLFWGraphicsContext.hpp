@@ -1,6 +1,6 @@
 #pragma once
 #include "IGraphicsContext.hpp"
-#include "impl/GLLoaderImpl.hpp"
+#include "../common/GLLoaderImpl.hpp"
 #include <vector>
 
 struct GLFWwindow;

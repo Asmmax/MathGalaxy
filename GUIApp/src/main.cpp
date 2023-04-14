@@ -23,6 +23,7 @@
 #include "resources/ShaderData.hpp"
 #include "resources/TextureData.hpp"
 #include "objects/Batch.hpp"
+#include "GLFWApplicationImpl.hpp"
 
 #include <glm/gtx/transform.hpp>
 #include <random>
@@ -33,6 +34,7 @@ int main(int argc, char* argv[])
 	Path path("settings.dat");
 
 	Application& app = Application::getInstance();
+	app.bindImpl<GLFWApplicationImpl>();
 	Window* window = app.getWindow(1280, 720, "Dear imGui Demo");
 	if (!window)
 		return -1;

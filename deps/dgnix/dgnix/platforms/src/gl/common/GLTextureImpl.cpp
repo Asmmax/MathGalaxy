@@ -1,4 +1,4 @@
-#include "impl/GLTextureImpl.hpp"
+#include "GLTextureImpl.hpp"
 #include "resources/TextureData.hpp"
 #include "gl/gl_core_4_3.hpp"
 

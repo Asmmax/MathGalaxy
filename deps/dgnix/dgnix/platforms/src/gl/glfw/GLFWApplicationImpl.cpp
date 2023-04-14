@@ -1,5 +1,5 @@
-#include "impl/GLFWApplicationImpl.hpp"
-#include "impl/GLFWWindowImpl.hpp"
+#include "GLFWApplicationImpl.hpp"
+#include "GLFWWindowImpl.hpp"
 #include "gl/gl_core_4_3.hpp"
 #include "GLFW/glfw3.h"
 #include <assert.h>

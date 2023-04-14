@@ -1,7 +1,7 @@
 #include "Application.hpp"
 #include "Window.hpp"
 #include "IApplicationImpl.hpp"
-#include "impl/GLFWApplicationImpl.hpp"
+#include "GLFWApplicationImpl.hpp"
 #include <iostream>
 
 Application::StopWrapper::StopWrapper()
@@ -28,10 +28,8 @@ void Application::StopWrapper::stop()
 }
 
 Application::Application():
-    _isValid(false),
-    _impl(std::make_unique<GLFWApplicationImpl>())
+    _isValid(false)
 {
-    initGraphics();
 }
 
 void Application::initGraphics()
@@ -41,12 +39,18 @@ void Application::initGraphics()
     }
 }
 
-Application::~Application()
+void Application::clear()
 {
     if (_isValid && _impl) {
         _window.reset();
         _impl->terminate();
+        _isValid = false;
     }
+}
+
+Application::~Application()
+{
+    clear();
 }
 
 Application& Application::getInstance()
@@ -67,6 +71,14 @@ Application::StopWrapper& Application::getStopWrapper()
 }
 #endif // _DEBUG
 
+template<typename Impl>
+void Application::bindImpl()
+{
+    clear();
+    _impl = std::make_unique<Impl>();
+    initGraphics();
+}
+
 Window* Application::getWindow(int width, int height, const std::string& title)
 {
     if (!_isValid)
@@ -74,6 +86,8 @@ Window* Application::getWindow(int width, int height, const std::string& title)
 
     if (!_impl)
         return nullptr;
+
+    assert(!_window);
 
     auto windowImpl = _impl->createWindow(width, height, title);
     if (!windowImpl) {
@@ -83,3 +97,5 @@ Window* Application::getWindow(int width, int height, const std::string& title)
     _window.reset(new Window(windowImpl));
     return _window.get();
 }
+
+template void Application::bindImpl<GLFWApplicationImpl>();

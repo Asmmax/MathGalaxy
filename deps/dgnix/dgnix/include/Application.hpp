@@ -32,6 +32,7 @@ public:
 private:
 	Application();
 	void initGraphics();
+	void clear();
 
 public:
 	~Application();
@@ -41,6 +42,9 @@ public:
 #ifdef _DEBUG
 	static StopWrapper& getStopWrapper();
 #endif // _DEBUG
+
+	template<typename Impl>
+	void bindImpl();
 
 	Window* getWindow(int width, int height, const std::string& title);
 };

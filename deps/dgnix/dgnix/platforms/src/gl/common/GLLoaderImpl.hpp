@@ -1,8 +1,8 @@
 #pragma once
 #include "ILoaderImpl.hpp"
-#include "impl/GLMeshImpl.hpp"
-#include "impl/GLTextureImpl.hpp"
-#include "impl/GLShaderImpl.hpp"
+#include "GLMeshImpl.hpp"
+#include "GLTextureImpl.hpp"
+#include "GLShaderImpl.hpp"
 #include "PoolAllocator.hpp"
 
 class GLLoaderImpl : public ILoaderImpl

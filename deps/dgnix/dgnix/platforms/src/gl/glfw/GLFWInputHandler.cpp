@@ -1,4 +1,4 @@
-#include "impl/GLFWInputHandler.hpp"
+#include "GLFWInputHandler.hpp"
 #include "gl/gl_core_4_3.hpp"
 #include "GLFW/glfw3.h"
 

@@ -1,4 +1,4 @@
-#include "impl/GLLoaderImpl.hpp"
+#include "GLLoaderImpl.hpp"
 #include <cstdint>
 
 GLLoaderImpl::GLLoaderImpl(size_t poolSize /*= 100*/):

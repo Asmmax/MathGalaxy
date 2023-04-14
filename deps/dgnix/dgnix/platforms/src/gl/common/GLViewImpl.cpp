@@ -1,4 +1,4 @@
-#include "impl/GLViewImpl.hpp"
+#include "GLViewImpl.hpp"
 #include "gl/gl_core_4_3.hpp"
 
 GLViewImpl::GLViewImpl():
@@ -13,7 +13,7 @@ void GLViewImpl::init(TextureId fboTextureId)
 	gl::GenFramebuffers(1, &_fboId);
 	gl::BindFramebuffer(gl::FRAMEBUFFER, _fboId);
 
-	_fboTextureId = fboTextureId;
+	_fboTextureId = static_cast<GLuint>(fboTextureId);
 	gl::BindTexture(gl::TEXTURE_2D, _fboTextureId);
 
 	gl::GenRenderbuffers(1, &_fboDepthBufferId);

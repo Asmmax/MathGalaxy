@@ -1,4 +1,4 @@
-#include "impl/GLMeshImpl.hpp"
+#include "GLMeshImpl.hpp"
 #include "resources/MeshData.hpp"
 #include "gl/gl_core_4_3.hpp"
 #include <glm/vec3.hpp>
