@@ -14,5 +14,9 @@ target_compile_features (GUIApp PRIVATE cxx_std_17)
 target_include_directories(GUIApp PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(GUIApp PRIVATE glm_interface PRIVATE imgui PRIVATE dgnix)
 
+if(WIN32)
+	set_target_properties(GUIApp PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS")
+endif()
+
 set(RESOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/assets")
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/settings.dat.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/settings.dat)

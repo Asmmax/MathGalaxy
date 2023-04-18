@@ -21,13 +21,9 @@ set( GLFW_BUILD_WIN32 off )
 set( USE_MSVC_RUNTIME_LIBRARY_DLL off )
 endif()
 
-find_package(OpenGL REQUIRED)
-
 add_subdirectory ("deps/entt")
 add_subdirectory ("deps/catch2")
 add_subdirectory ("deps/glm")
-add_subdirectory ("deps/gl")
-add_subdirectory ("deps/stb")
 add_subdirectory ("deps/infrastruct")
 add_subdirectory ("deps/math")
 add_subdirectory ("deps/dgnix")
