@@ -6,29 +6,44 @@ CameraController::CameraController(const std::shared_ptr<Transform>& target, con
 	_eye(eye),
 	_lastX(0),
 	_lastY(0),
-	_scrollSpeed(scrollSpeed)
+	_sumDeltaX(0),
+	_sumDeltaY(0),
+	_scrollSpeed(scrollSpeed),
+	_isMoving(false)
 {
+	_storagedRotation = _target->getLocalRotation();
 }
 
-void CameraController::resetMousePos(double posX, double posY)
+void CameraController::stopMoving()
 {
-	_lastX = posX;
-	_lastY = posY;
+	_isMoving = false;
+}
+
+void CameraController::startMoving()
+{
+	_sumDeltaX = 0.0;
+	_sumDeltaY = 0.0;
+	_storagedRotation = _target->getLocalRotation();
+	_isMoving = true;
 }
 
 void CameraController::moveMouse(double posX, double posY)
 {
-	double deltaX = posX - _lastX;
-	double deltaY = posY - _lastY;
+	_sumDeltaX += posX - _lastX;
+	_sumDeltaY += posY - _lastY;
+	_lastX = posX;
+	_lastY = posY;
 
-	auto rotatation = _target->getLocalRotation();
+	if (!_isMoving) {
+		return;
+	}
 
-	rotatation.x += static_cast<float>(deltaY);
-	rotatation.y += static_cast<float>(deltaX);
+	auto rotatation = _storagedRotation;
+
+	rotatation.x += static_cast<float>(_sumDeltaY);
+	rotatation.y += static_cast<float>(_sumDeltaX);
 
 	_target->setRotation(rotatation);
-
-	resetMousePos(posX, posY);
 }
 
 void CameraController::scrollMouse(double scrollStep)
