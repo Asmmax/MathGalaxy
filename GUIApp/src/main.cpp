@@ -156,11 +156,17 @@ int main(int argc, char* argv[])
 	gui->setMenu(menu);
 
 	auto controller = std::make_shared<CameraController>(cameraTarget, cameraEye);
-	window->setMouseLeftButtonUpCallback([controller](double posX, double posY) {
-		controller->stopMoving();
-		});
-	window->setMouseLeftButtonDownCallback([controller](double posX, double posY) {
-		controller->startMoving();
+	window->setMouseButtonCallback([window, controller](InputEvents::MouseKey key, InputEvents::KeyState state) {
+		if (key == InputEvents::MouseKey::RIGHT_BUTTON) {
+			if (state == InputEvents::KeyState::KEY_DOWN) {
+				window->captureMouse();
+				controller->startMoving();
+			}
+			else if (state == InputEvents::KeyState::KEY_UP) {
+				window->uncaptureMouse();
+				controller->stopMoving();
+			}
+		}
 		});
 	window->setMouseMoveCallback([controller](double posX, double posY) {
 		controller->moveMouse(posX, posY);
