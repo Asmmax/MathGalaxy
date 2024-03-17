@@ -1,5 +1,7 @@
 cmake_minimum_required (VERSION 3.8)
 
+set(assets_dir "${CMAKE_CURRENT_SOURCE_DIR}/assets")
+
 set(guiapp_include_dir "include/")
 set(guiapp_src_dir "src/")
 
@@ -18,5 +20,5 @@ if(WIN32)
 	set_target_properties(GUIApp PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS")
 endif()
 
-set(RESOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/assets")
+file(RELATIVE_PATH RESOURCE_PATH ${PROJECT_BINARY_DIR} ${assets_dir})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/settings.dat.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/settings.dat)

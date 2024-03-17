@@ -29,7 +29,7 @@
 #include <random>
 
 
-int main(int argc, char* argv[])
+int main()
 {
 	Path path("settings.dat");
 
@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
 
 		camera->render(&model);
 
-		window->beginRender();
+		window->prepareRender();
 		if (!imguiInited) {
 			gui->init();
 			imguiInited = true;
@@ -205,7 +205,7 @@ int main(int argc, char* argv[])
 		window->setupImgui();
 		gui->setup();
 		window->renderImgui();
-		window->endRender();
+		window->swapBuffers();
 	}
 	return 0;
 }
