@@ -42,7 +42,7 @@ int main()
 	Model model;
 	Loader* loader = window->getLoader();
 
-	auto sphereMeshData = createSphere(1.0f, 24);
+	auto sphereMeshData = createSphere(1.0f, 24, 48);
 
 	auto starVert = loadShader(path.find("shaders/star.vert"));
 	auto starFrag = loadShader(path.find("shaders/star.frag"));
