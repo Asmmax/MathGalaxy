@@ -5,7 +5,6 @@
 #include "gui/widgets/ViewportWidget.hpp"
 #include "drawables/Transform.hpp"
 #include "Model.hpp"
-#include "objects/Light.hpp"
 #include "objects/Object.hpp"
 #include "gui/widgets/TransformWidget.hpp"
 #include "gui/widgets/WidgetGroup.hpp"
@@ -58,7 +57,7 @@ int main()
 
 	Mesh* sphereMesh = loader->loadMesh(sphereMeshData);
 
-	auto skyTextureData = loadTexture(path.find("textures/sky.png"));
+	auto skyTextureData = readTexture(path.find("textures/sky.png"));
 	Texture* skyTexture = loader->loadTexture(skyTextureData);
 
 
@@ -67,7 +66,6 @@ int main()
 
 	auto solarBatch = model.createBatch();
 	auto solar = solarBatch->createObject();
-	auto solarLight = model.createLight();
 	auto solarTransform = std::make_shared<Transform>();
 	solarTransform->setPosition(glm::vec3(0, 0, 0));
 	solarBatch->setShader(starShader);
@@ -126,6 +124,10 @@ int main()
 	root->addChild(cameraTarget);
 	cameraEye->setPosition(glm::vec3{ 0, 0, 5 });
 
+	auto mainViewTex = loader->createTexture(512, 512);
+	auto mainView = window->creteView(mainViewTex);
+	window->setMainView(mainView);
+
 	auto cameraTex = loader->createTexture(512, 512);
 	auto camera = window->creteView(cameraTex);
 
@@ -183,7 +185,21 @@ int main()
 		root->computeGlobalMatrices();
 
 		solar->setMatrix(solarTransform->getGlobalMatrix());
-		solarLight->setPosition(solarTransform->getGlobalPosition());
+
+		auto& state = model.getState();
+		static const StringId pointLightCountName = StringId("PointLightCount");
+		state.addOrSet(pointLightCountName, static_cast<int>(1));
+		static const StringId pointLightPosition = StringId("PointLights[0].Position");
+		const glm::vec3 position = solarTransform->getGlobalPosition();
+		state.addOrSet(pointLightPosition, position);
+		static const StringId pointLightColor = StringId("PointLights[0].Color");
+		state.addOrSet(pointLightColor, glm::vec3{1.0f, 1.0f, 1.0f});
+		static const StringId pointLightIntensity = StringId("PointLights[0].Intensity");
+		state.addOrSet(pointLightIntensity, 1.0f);
+		static const StringId pointLightRadius = StringId("PointLights[0].Radius");
+		state.addOrSet(pointLightRadius, 100.0f);
+		static const StringId pointLightFadingArea = StringId("PointLights[0].FadingArea");
+		state.addOrSet(pointLightFadingArea, 0.0f);
 
 		for (size_t i = 0; i < bodies.size(); i++) {
 			bodies[i]->setMatrix(bodyTransforms[i]->getGlobalMatrix());
@@ -192,19 +208,29 @@ int main()
 		sky->setMatrix(cameraEye->getGlobalMatrix() * glm::scale(glm::vec3(500.0f)));
 		skyMaterial.set(originName, cameraEye->getGlobalMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
-		auto viewMatrix = glm::inverse(cameraEye->getGlobalMatrix());
-		camera->setMatrix(viewMatrix);
+		const auto viewMatrix = glm::inverse(cameraEye->getGlobalMatrix());
+		const auto projMatrix = glm::perspective(45.0f, camera->getWidth() / static_cast<float>(camera->getHeight()), 0.01f, 1000.0f);
 
-		camera->render(&model);
+		camera->beginRender();
+		camera->render(&model, viewMatrix, projMatrix);
+		camera->endRender();
 
-		window->prepareRender();
+		int frameWidth = 0;
+		int frameHeight = 0;
+		window->getFrameSize(frameWidth, frameHeight);
+		mainView->setSize(frameWidth, frameHeight);
+
+		mainView->beginRender();
 		if (!imguiInited) {
 			gui->init();
 			imguiInited = true;
 		}
-		window->setupImgui();
+		mainView->setupImgui();
 		gui->setup();
-		window->renderImgui();
+		mainView->renderImgui();
+		mainView->endRender();
+
+		window->render();
 		window->swapBuffers();
 	}
 	return 0;

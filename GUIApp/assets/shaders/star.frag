@@ -7,7 +7,7 @@ struct StarInfo
 	vec3 SpaceColor;
 };
 
-in vec3 EyeNormal;
+in vec3 OutNormal;
 in vec3 ToEye;
 
 out vec4 FragColor;
@@ -16,7 +16,7 @@ uniform StarInfo Star;
 
 void main(void)
 {
-	float pre_coef = 1.0 - abs(dot(EyeNormal, ToEye));
+	float pre_coef = 1.0 - abs(dot(OutNormal, ToEye));
 	
 	float bound_coef = exp(-pre_coef + 0.5) - 0.8;
 	
