@@ -209,10 +209,9 @@ int main()
 		skyMaterial.set(originName, cameraEye->getGlobalMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
 		const auto viewMatrix = glm::inverse(cameraEye->getGlobalMatrix());
-		const auto projMatrix = glm::perspective(45.0f, camera->getWidth() / static_cast<float>(camera->getHeight()), 0.01f, 1000.0f);
 
 		camera->beginRender();
-		camera->render(&model, viewMatrix, projMatrix);
+		camera->render(&model, viewMatrix);
 		camera->endRender();
 
 		int frameWidth = 0;
