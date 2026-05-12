@@ -4,8 +4,6 @@
 #include "View.hpp"
 #include "gui/widgets/ViewportWidget.hpp"
 #include "drawables/Transform.hpp"
-#include "Model.hpp"
-#include "objects/Object.hpp"
 #include "gui/widgets/TransformWidget.hpp"
 #include "gui/widgets/WidgetGroup.hpp"
 #include "gui/GUI.hpp"
@@ -21,7 +19,8 @@
 #include "Loader.hpp"
 #include "resources/ShaderData.hpp"
 #include "resources/TextureData.hpp"
-#include "objects/Batch.hpp"
+#include "RenderQueue.hpp"
+#include "Material.hpp"
 #include "GLFWApplicationImpl.hpp"
 
 #include <glm/gtx/transform.hpp>
@@ -38,44 +37,40 @@ int main()
 	if (!window)
 		return -1;
 
-	Model model;
 	Loader* loader = window->getLoader();
 
 	auto sphereMeshData = createSphere(1.0f, 24, 48);
+	Mesh* sphereMesh = loader->loadMesh(sphereMeshData);
 
 	auto starVert = loadShader(path.find("shaders/star.vert"));
 	auto starFrag = loadShader(path.find("shaders/star.frag"));
-	auto starShader = loader->loadShader(starVert, starFrag);
+	Shader* starShader = loader->loadShader(starVert, starFrag);
 
 	auto planetVert = loadShader(path.find("shaders/planet.vert"));
 	auto planetFrag = loadShader(path.find("shaders/planet.frag"));
-	auto planetShader = loader->loadShader(planetVert, planetFrag);
+	Shader* planetShader = loader->loadShader(planetVert, planetFrag);
 
 	auto skyVert = loadShader(path.find("shaders/sky.vert"));
 	auto skyFrag = loadShader(path.find("shaders/sky.frag"));
-	auto skyShader = loader->loadShader(skyVert, skyFrag);
-
-	Mesh* sphereMesh = loader->loadMesh(sphereMeshData);
+	Shader* skyShader = loader->loadShader(skyVert, skyFrag);
 
 	auto skyTextureData = readTexture(path.find("textures/sky.png"));
 	Texture* skyTexture = loader->loadTexture(skyTextureData);
 
-
-	//construct drawable tree
 	auto root = std::make_shared<Transform>();
-
-	auto solarBatch = model.createBatch();
-	auto solar = solarBatch->createObject();
 	auto solarTransform = std::make_shared<Transform>();
 	solarTransform->setPosition(glm::vec3(0, 0, 0));
-	solarBatch->setShader(starShader);
-	solar->setMesh(sphereMesh);
-	auto& solarMaterial = solarBatch->getState();
-	solarMaterial.add(StringId("Star.BaseColor"), glm::vec3(1.0f, 0.5f, 0.0f));
-	solarMaterial.add(StringId("Star.BoundColor"), glm::vec3(1.0f, 0.0f, 0.0f));
-	solarMaterial.add(StringId("Star.SpaceColor"), glm::vec3(0.0f, 0.0f, 0.0f));
-
 	root->addChild(solarTransform);
+
+	Material* solarMaterial = loader->createMaterial();
+	solarMaterial->getMaterialData().setVec3(StringId("Star.BaseColor"), glm::vec3(1.0f, 0.5f, 0.0f));
+	solarMaterial->getMaterialData().setVec3(StringId("Star.BoundColor"), glm::vec3(1.0f, 0.0f, 0.0f));
+	solarMaterial->getMaterialData().setVec3(StringId("Star.SpaceColor"), glm::vec3(0.0f, 0.0f, 0.0f));
+
+	Material* skyMaterial = loader->createMaterial();
+	skyMaterial->setTexture(StringId("skyMap"), skyTexture);
+	skyMaterial->getMaterialData().setVec3(StringId("BaseColor"), glm::vec3(1.0f, 1.0f, 1.0f));
+	skyMaterial->getMaterialData().setVec4(StringId("Origin"), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
@@ -83,40 +78,24 @@ int main()
 	std::uniform_real_distribution<float> disColor(0.0f, 1.0f);
 	std::uniform_real_distribution<float> disScale(0.1f, 1.0f);
 
-	std::vector<Object*> bodies;
 	std::vector<std::shared_ptr<Transform>> bodyTransforms;
-	for (int i = 0; i < 100; i++) {
+	std::vector<Material*> bodyMaterials;
 
-		auto earthBatch = model.createBatch();
-		earthBatch->setShader(planetShader);
-		auto& earthMaterial = earthBatch->getState();
-		earthMaterial.add(StringId("Material.DiffuseColor"), glm::vec3(disColor(gen), disColor(gen), disColor(gen)));
-		earthMaterial.add(StringId("Material.AmbientFactor"), 0.2f);
-		earthMaterial.add(StringId("Material.DiffuseFactor"), 0.8f);
+	for (int i = 0; i < 100; i++) {
+		Material* material = loader->createMaterial();
+		material->getMaterialData().setVec3(StringId("Material.DiffuseColor"), glm::vec3(disColor(gen), disColor(gen), disColor(gen)));
+		material->getMaterialData().setFloat(StringId("Material.AmbientFactor"), 0.2f);
+		material->getMaterialData().setFloat(StringId("Material.DiffuseFactor"), 0.8f);
+		bodyMaterials.push_back(material);
 
 		for (int j = 0; j < 100; j++) {
-
-			auto earth = earthBatch->createObject();
-			bodies.push_back(earth);
-			auto earthTransform = std::make_shared<Transform>();
-			bodyTransforms.push_back(earthTransform);
-			earthTransform->setPosition(glm::vec3(dis(gen), dis(gen), dis(gen)));
-			earthTransform->setScale(glm::vec3(disScale(gen)));
-			earth->setMesh(sphereMesh);
-
-			root->addChild(earthTransform);
+			auto bodyTransform = std::make_shared<Transform>();
+			bodyTransforms.push_back(bodyTransform);
+			bodyTransform->setPosition(glm::vec3(dis(gen), dis(gen), dis(gen)));
+			bodyTransform->setScale(glm::vec3(disScale(gen)));
+			root->addChild(bodyTransform);
 		}
 	}
-
-	auto skyBatch = model.createBatch();
-	auto sky = skyBatch->createObject();
-	skyBatch->setShader(skyShader);
-	sky->setMesh(sphereMesh);
-	skyBatch->addTexture(StringId("skyMap"), skyTexture);
-	auto& skyMaterial = skyBatch->getState();
-	skyMaterial.add(StringId("BaseColor"), glm::vec3(1.0f, 1.0f, 1.0f));
-	static StringId originName = StringId("Origin");
-	skyMaterial.add(originName, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	auto cameraTarget = std::make_shared<Transform>();
 	auto cameraEye = std::make_shared<Transform>();
@@ -131,10 +110,6 @@ int main()
 	auto cameraTex = loader->createTexture(512, 512);
 	auto camera = window->creteView(cameraTex);
 
-	auto& commonMaterial = model.getState();
-	commonMaterial.add(StringId("AmbientColor"), glm::vec3(0.2f, 0.1f, 0.1f));
-
-	//construct widgets
 	auto viewportWidget = std::make_shared<ViewportWidget>("Main Viewport", 512, 512, camera);
 
 	auto cameraWidget = std::make_shared<WidgetGroup>("Camera Nodes");
@@ -144,12 +119,9 @@ int main()
 	cameraWidget->addChild(rotWidget);
 
 	auto menu = std::make_shared<MenuPanel>();
-
 	auto windowList = std::make_shared<MenuList>("Windows");
 	auto cameraWidgetEnabler = std::make_shared<MenuItemEnabler>("Camera Nodes Window", cameraWidget);
-
 	windowList->addItem(cameraWidgetEnabler);
-
 	menu->addList(windowList);
 
 	auto gui = std::make_shared<GUI>();
@@ -177,6 +149,9 @@ int main()
 		controller->scrollMouse(step);
 		});
 
+	RenderData frameData;
+	RenderQueue renderQueue;
+
 	bool imguiInited = false;
 
 	while (!window->isDone()) {
@@ -184,34 +159,47 @@ int main()
 
 		root->computeGlobalMatrices();
 
-		solar->setMatrix(solarTransform->getGlobalMatrix());
+		frameData.clear();
+		frameData.setVec3(StringId("AmbientColor"), glm::vec3(0.2f, 0.1f, 0.1f));
+		frameData.setInt(StringId("PointLightCount"), 1);
+		frameData.setVec3(StringId("PointLights[0].Position"), solarTransform->getGlobalPosition());
+		frameData.setVec3(StringId("PointLights[0].Color"), glm::vec3(1.0f, 1.0f, 1.0f));
+		frameData.setFloat(StringId("PointLights[0].Intensity"), 1.0f);
+		frameData.setFloat(StringId("PointLights[0].Radius"), 100.0f);
+		frameData.setFloat(StringId("PointLights[0].FadingArea"), 0.0f);
 
-		auto& state = model.getState();
-		static const StringId pointLightCountName = StringId("PointLightCount");
-		state.addOrSet(pointLightCountName, static_cast<int>(1));
-		static const StringId pointLightPosition = StringId("PointLights[0].Position");
-		const glm::vec3 position = solarTransform->getGlobalPosition();
-		state.addOrSet(pointLightPosition, position);
-		static const StringId pointLightColor = StringId("PointLights[0].Color");
-		state.addOrSet(pointLightColor, glm::vec3{1.0f, 1.0f, 1.0f});
-		static const StringId pointLightIntensity = StringId("PointLights[0].Intensity");
-		state.addOrSet(pointLightIntensity, 1.0f);
-		static const StringId pointLightRadius = StringId("PointLights[0].Radius");
-		state.addOrSet(pointLightRadius, 100.0f);
-		static const StringId pointLightFadingArea = StringId("PointLights[0].FadingArea");
-		state.addOrSet(pointLightFadingArea, 0.0f);
+		renderQueue.clear();
 
-		for (size_t i = 0; i < bodies.size(); i++) {
-			bodies[i]->setMatrix(bodyTransforms[i]->getGlobalMatrix());
+		RenderCommand solarCmd;
+		solarCmd.shader = starShader;
+		solarCmd.material = solarMaterial;
+		solarCmd.mesh = sphereMesh;
+		solarCmd.modelMatrix = solarTransform->getGlobalMatrix();
+		renderQueue.submit(solarCmd);
+
+		for (size_t i = 0; i < bodyTransforms.size(); i++) {
+			RenderCommand cmd;
+			cmd.shader = planetShader;
+			cmd.material = bodyMaterials[i / 100];
+			cmd.mesh = sphereMesh;
+			cmd.modelMatrix = bodyTransforms[i]->getGlobalMatrix();
+			renderQueue.submit(cmd);
 		}
 
-		sky->setMatrix(cameraEye->getGlobalMatrix() * glm::scale(glm::vec3(500.0f)));
-		skyMaterial.set(originName, cameraEye->getGlobalMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		RenderCommand skyCmd;
+		skyCmd.shader = skyShader;
+		skyCmd.material = skyMaterial;
+		skyCmd.mesh = sphereMesh;
+		skyCmd.modelMatrix = cameraEye->getGlobalMatrix() * glm::scale(glm::vec3(500.0f));
+		skyMaterial->getMaterialData().setVec4(StringId("Origin"), cameraEye->getGlobalMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		renderQueue.submit(skyCmd);
+
+		renderQueue.sort();
 
 		const auto viewMatrix = glm::inverse(cameraEye->getGlobalMatrix());
 
 		camera->beginRender();
-		camera->render(&model, viewMatrix);
+		camera->render(renderQueue, frameData, viewMatrix);
 		camera->endRender();
 
 		int frameWidth = 0;
@@ -232,5 +220,19 @@ int main()
 		window->render();
 		window->swapBuffers();
 	}
+
+	loader->release(sphereMesh);
+	loader->release(skyTexture);
+	loader->release(starShader);
+	loader->release(planetShader);
+	loader->release(skyShader);
+	loader->release(solarMaterial);
+	loader->release(skyMaterial);
+	for (Material* mat : bodyMaterials) {
+		loader->release(mat);
+	}
+	loader->release(mainViewTex);
+	loader->release(cameraTex);
+
 	return 0;
 }
